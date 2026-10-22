@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOLLIUS | O Ecossistema de Ferramentas Web Definitivo</title>
+  <meta name="description" content="Ecossistema de ferramentas web 100% gratuitas, ilimitadas e privadas. Conversores de imagens, removedor de fundo com IA local, PDF Studio, gerador de tags virais e mais.">
+  
+  <!-- CSS Autônomo e Standalone (Zero Dependência de CDN) -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Bibliotecas Locais / CDN com Fallback Seguro -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER NAVEGAÇÃO -->
+  <header class="header">
+    <div class="header-container">
+      
+      <!-- Logo -->
+      <div class="logo-group" onclick="switchTab('hub')">
+        <div class="logo-icon">☀️</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="logo-text">SOLLIUS</span>
+          <span class="badge-ecosystem">ECOSYSTEM</span>
+        </div>
+      </div>
+
+      <!-- Menu Principal de Ferramentas -->
+      <nav class="nav-menu">
+        <button onclick="switchTab('remover')" class="nav-item" data-tab="remover">
+          <span>✨</span>
+          <span>Removedor IA</span>
+        </button>
+        <button onclick="switchTab('converter')" class="nav-item" data-tab="converter">
+          <span>🖼️</span>
+          <span>Imagens</span>
+        </button>
+        <button onclick="switchTab('pdf')" class="nav-item" data-tab="pdf">
+          <span>📄</span>
+          <span>PDF Studio</span>
+        </button>
+        <button onclick="switchTab('tags')" class="nav-item" data-tab="tags">
+          <span>📈</span>
+          <span>Tags & Viral</span>
+        </button>
+        <button onclick="switchTab('qrcode')" class="nav-item" data-tab="qrcode">
+          <span>📱</span>
+          <span>QR Code</span>
+        </button>
+        <button onclick="switchTab('recorder')" class="nav-item" data-tab="recorder">
+          <span>🎥</span>
+          <span>Gravador</span>
+        </button>
+      </nav>
+
+      <!-- Badge de Segurança -->
+      <div class="shield-badge">
+        <span>🛡️</span>
+        <span>100% Local no Navegador</span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="main-wrapper">
+
+    <!-- ======================================================== -->
+    <!-- TAB: HUB / DASHBOARD -->
+    <!-- ======================================================== -->
+    <div id="tab-hub" class="tab-content">
+      
+      <!-- Hero Banner -->
+      <div class="hero-card glass-panel">
+        <div class="hero-pill">
+          <span>⚡</span>
+          <span>Processamento Local Ultra Rápido • Custo Zero de Nuvem</span>
+        </div>
+        <h1 class="hero-title">
+          Todas as ferramentas essenciais em um <span class="hero-gradient">único ecossistema</span>.
+        </h1>
+        <p class="hero-desc">
+          Sem limites de upload, sem servidores gravando seus arquivos e sem filas. O processamento roda direto na memória do seu dispositivo.
+        </p>
+        <div class="hero-actions">
+          <button onclick="switchTab('remover')" class="btn-primary">
+            <span>✨</span>
+            <span>Testar Removedor IA</span>
+          </button>
+          <button onclick="switchTab('tags')" class="btn-secondary">
+            <span>📈</span>
+            <span>Gerador de Tags Virais</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Título de Seção -->
+      <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>🚀</span>
+        <span>Ferramentas Prontas para Uso</span>
+      </h2>
+
+      <!-- Grid de Módulos -->
+      <div class="tools-grid">
+        
+        <!-- 1. Removedor -->
+        <div onclick="switchTab('remover')" class="tool-card">
+          <div class="tool-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #C084FC;">✨</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Removedor de Fundo IA</h3>
+            <span class="tool-badge" style="background: rgba(139, 92, 246, 0.15); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.3);">Ilimitado</span>
+          </div>
+          <p class="tool-desc">Remova o fundo de qualquer imagem automaticamente sem enviar fotos para servidores.</p>
+          <div class="tool-link" style="color: #C084FC;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 2. Conversor -->
+        <div onclick="switchTab('converter')" class="tool-card">
+          <div class="tool-icon-wrapper" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24;">🖼️</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Conversor & Compressor</h3>
+            <span class="tool-badge" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24; border: 1px solid rgba(255, 153, 0, 0.3);">Em Lote</span>
+          </div>
+          <p class="tool-desc">Converta entre WebP, PNG e JPG reduzindo até 90% do tamanho com download em ZIP.</p>
+          <div class="tool-link" style="color: #FBBF24;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 3. PDF Studio -->
+        <div onclick="switchTab('pdf')" class="tool-card">
+          <div class="tool-icon-wrapper" style="background: rgba(244, 63, 94, 0.15); color: #FB7185;">📄</div>
+          <div class="tool-header">
+            <h3 class="tool-title">PDF Studio</h3>
+            <span class="tool-badge" style="background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3);">Client-Side</span>
+          </div>
+          <p class="tool-desc">Junte múltiplos PDFs ou transforme fotos em PDF único com privacidade total.</p>
+          <div class="tool-link" style="color: #FB7185;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 4. Tags Virais -->
+        <div onclick="switchTab('tags')" class="tool-card">
+          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">📈</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Tags & Click Magnet</h3>
+            <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">SEO Viral</span>
+          </div>
+          <p class="tool-desc">Gere tags para o YouTube Studio, hashtags para TikTok/Reels e fórmulas de títulos de alta conversão.</p>
+          <div class="tool-link" style="color: #34D399;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 5. QR Code Pro -->
+        <div onclick="switchTab('qrcode')" class="tool-card">
+          <div class="tool-icon-wrapper" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE;">📱</div>
+          <div class="tool-header">
+            <h3 class="tool-title">QR Code Pro</h3>
+            <span class="tool-badge" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">Custom</span>
+          </div>
+          <p class="tool-desc">Crie QR Codes estilizados com cores neon para links, Pix, Wi-Fi e WhatsApp.</p>
+          <div class="tool-link" style="color: #22D3EE;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 6. Gravador de Tela -->
+        <div onclick="switchTab('recorder')" class="tool-card">
+          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">🎥</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Gravador de Tela & Áudio</h3>
+            <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Sem Limite</span>
+          </div>
+          <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador.</p>
+          <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: REMOVEDOR DE FUNDO -->
+    <!-- ======================================================== -->
+    <div id="tab-remover" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>✨</span>
+              <span>Removedor de Fundo Inteligente</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Recorte fotos no seu navegador sem limite de uploads e sem enviar arquivos à nuvem.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #C084FC; font-size: 0.75rem; font-weight: 700;">
+            100% Grátis & Privado
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <!-- Drop Area -->
+          <div id="remover-dropzone" class="dropzone" onclick="document.getElementById('remover-file-input').click()">
+            <input type="file" id="remover-file-input" accept="image/*" style="display: none;" onchange="handleRemoverFile(this.files[0])">
+            <div class="dropzone-icon" style="background: rgba(139, 92, 246, 0.15); color: #C084FC;">📁</div>
+            <h4 class="dropzone-title">Arraste uma foto ou clique para selecionar</h4>
+            <p class="dropzone-subtitle">Suporta PNG, JPG, JPEG e WebP</p>
+          </div>
+
+          <!-- Loading State -->
+          <div id="remover-loading" class="hidden" style="text-align: center; margin: 2rem 0;">
+            <div style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; border-radius: 14px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #C084FC; font-weight: 600;">
+              <span>⏳</span>
+              <span>Processando recorte no navegador...</span>
+            </div>
+          </div>
+
+          <!-- Result Area -->
+          <div id="remover-result" class="hidden" style="margin-top: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+              
+              <!-- Original -->
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; display: block;">Original</span>
+                <div style="height: 300px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0.5rem;">
+                  <img id="remover-orig-img" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;">
+                </div>
+              </div>
+
+              <!-- Recortada -->
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #C084FC; text-transform: uppercase; margin-bottom: 0.5rem; display: block;">Recorte Sem Fundo</span>
+                <div id="remover-bg-preview" style="height: 300px; border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0.5rem; background-image: repeating-linear-gradient(45deg, #181b26 0, #181b26 10px, #10131d 0, #10131d 20px);">
+                  <canvas id="remover-canvas" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;"></canvas>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Controles de Fundo e Tolerância -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem; border-radius: 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 0.8rem; font-weight: 600;">Trocar Fundo:</span>
+                <button onclick="changeRemoverBg('transparent')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid #666; background: repeating-linear-gradient(45deg, #333 0, #333 3px, #555 0, #555 6px); cursor: pointer;" title="Transparente"></button>
+                <button onclick="changeRemoverBg('#ffffff')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid #fff; background: #fff; cursor: pointer;" title="Branco"></button>
+                <button onclick="changeRemoverBg('#000000')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid #444; background: #000; cursor: pointer;" title="Preto"></button>
+                <button onclick="changeRemoverBg('#FF9900')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--amber-primary); background: var(--amber-primary); cursor: pointer;" title="Solar Amber"></button>
+                <input type="color" onchange="changeRemoverBg(this.value)" style="width: 26px; height: 26px; border-radius: 6px; background: transparent; cursor: pointer; border: 1px solid #666;" title="Cor Personalizada">
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Sensibilidade:</span>
+                <input type="range" id="remover-tolerance" min="10" max="90" value="35" oninput="reprocessRemover()" style="width: 120px;">
+              </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+              <button onclick="document.getElementById('remover-file-input').click()" class="btn-secondary">
+                <span>🔄</span>
+                <span>Trocar Foto</span>
+              </button>
+              <button onclick="downloadRemoverResult()" class="btn-purple">
+                <span>⬇️</span>
+                <span>Baixar Imagem PNG</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: CONVERSOR & COMPRESSOR -->
+    <!-- ======================================================== -->
+    <div id="tab-converter" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🖼️</span>
+              <span>Conversor & Compressor em Lote</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Comprima imagens para WebP, PNG ou JPG reduzindo até 90% do peso.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(255, 153, 0, 0.15); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--amber-primary); font-size: 0.75rem; font-weight: 700;">
+            Até -90% Menos Peso
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <div id="converter-dropzone" class="dropzone" onclick="document.getElementById('converter-file-input').click()">
+            <input type="file" id="converter-file-input" multiple accept="image/*" style="display: none;" onchange="handleConverterFiles(this.files)">
+            <div class="dropzone-icon" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24;">📦</div>
+            <h4 class="dropzone-title">Selecione uma ou mais imagens para converter</h4>
+            <p class="dropzone-subtitle">Suporta PNG, JPG, JPEG, WebP, GIF, BMP</p>
+          </div>
+
+          <!-- Controles de Conversão -->
+          <div class="controls-grid">
+            <div class="control-group">
+              <label>Formato de Saída:</label>
+              <select id="converter-target-format" class="custom-select">
+                <option value="webp" selected>WEBP (Mais Rápido & Leve)</option>
+                <option value="jpeg">JPG / JPEG (Universal)</option>
+                <option value="png">PNG (Sem perda)</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <div class="flex-between" style="margin-bottom: 0.5rem;">
+                <label style="margin: 0;">Qualidade:</label>
+                <span id="converter-quality-val" style="color: var(--amber-primary); font-weight: 700; font-size: 0.8rem;">82%</span>
+              </div>
+              <input type="range" id="converter-quality" min="20" max="100" value="82" oninput="document.getElementById('converter-quality-val').innerText = this.value + '%'">
+            </div>
+
+            <div class="control-group">
+              <label>Redimensionar Largura:</label>
+              <select id="converter-max-width" class="custom-select">
+                <option value="original" selected>Tamanho Original</option>
+                <option value="1920">1920px (Full HD)</option>
+                <option value="1080">1080px (Instagram / Post)</option>
+                <option value="800">800px (Blog / Loja)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Lista de Imagens Convertidas -->
+          <div id="converter-queue-container" class="hidden" style="margin-top: 2rem;">
+            <div class="flex-between" style="margin-bottom: 0.85rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Arquivos Processados (<span id="converter-queue-count">0</span>)</span>
+              <button onclick="downloadAllConverted()" style="background: none; border: none; color: var(--amber-primary); font-size: 0.85rem; font-weight: 700; cursor: pointer;">
+                ⬇️ Baixar Todos em ZIP
+              </button>
+            </div>
+
+            <div id="converter-queue-list" style="display: flex; flex-direction: column; gap: 0.65rem; max-height: 320px; overflow-y: auto;"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: PDF STUDIO -->
+    <!-- ======================================================== -->
+    <div id="tab-pdf" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📄</span>
+              <span>PDF Studio (Juntar & Criar PDFs)</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Una múltiplos documentos e boletos em ordem ou transforme fotos em PDF único.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: #FB7185; font-size: 0.75rem; font-weight: 700;">
+            100% no Navegador
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <!-- Mode Switcher -->
+          <div style="display: flex; gap: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.85rem; margin-bottom: 1.5rem;">
+            <button onclick="setPdfMode('merge')" id="pdf-btn-merge" style="background: none; border: none; border-bottom: 2px solid #F43F5E; color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; padding-bottom: 0.5rem;">
+              📑 Juntar Múltiplos PDFs
+            </button>
+            <button onclick="setPdfMode('img2pdf')" id="pdf-btn-img2pdf" style="background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; cursor: pointer; padding-bottom: 0.5rem;">
+              📷 Fotos para PDF
+            </button>
+          </div>
+
+          <!-- Drop Area -->
+          <div id="pdf-dropzone" class="dropzone" onclick="document.getElementById('pdf-file-input').click()">
+            <input type="file" id="pdf-file-input" multiple accept=".pdf" style="display: none;" onchange="handlePdfFiles(this.files)">
+            <div class="dropzone-icon" style="background: rgba(244, 63, 94, 0.15); color: #FB7185;">📑</div>
+            <h4 id="pdf-drop-title" class="dropzone-title">Selecione arquivos PDF para unir</h4>
+            <p id="pdf-drop-desc" class="dropzone-subtitle">Arraste seus documentos PDF na ordem desejada</p>
+          </div>
+
+          <!-- Lista de Arquivos -->
+          <div id="pdf-files-container" class="hidden" style="margin-top: 1.5rem;">
+            <div class="flex-between" style="margin-bottom: 0.75rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Arquivos Adicionados (<span id="pdf-count">0</span>)</span>
+              <button onclick="clearPdfList()" style="background: none; border: none; color: #FB7185; font-size: 0.8rem; cursor: pointer;">Limpar Lista</button>
+            </div>
+            
+            <div id="pdf-files-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; margin-bottom: 1.5rem;"></div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button onclick="processPdfAction()" id="pdf-action-btn" class="btn-primary" style="background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); color: #fff;">
+                <span>⚡</span>
+                <span id="pdf-action-label">Gerar e Baixar PDF Unificado</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: TAGS VIRAIS & CLICK MAGNET -->
+    <!-- ======================================================== -->
+    <div id="tab-tags" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📈</span>
+              <span>Tags Virais & Click Magnet Studio</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Gere tags para o YouTube Studio, hashtags virais para TikTok/Reels e títulos de alta conversão.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; font-size: 0.75rem; font-weight: 700;">
+            SEO & Retenção
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Tema / Assunto do Vídeo ou Post:</label>
+              <input type="text" id="tag-input-keyword" placeholder="Ex: criar jogo na godot, doceria lucrativa, finanças..." class="custom-input">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Nicho:</label>
+              <select id="tag-input-niche" class="custom-select">
+                <option value="youtube">YouTube (Tags Otimizadas)</option>
+                <option value="tiktok">TikTok / Reels (Hashtags)</option>
+                <option value="gaming">Games & Devlogs</option>
+                <option value="business">Negócios & Curiosidades</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="generateViralTags()" class="btn-emerald">
+            <span>⚡</span>
+            <span>Gerar Tags & Títulos de Alta Conversão</span>
+          </button>
+
+          <!-- Resultados -->
+          <div id="tags-result-container" class="hidden" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem;">
+            
+            <!-- Box Tags YouTube -->
+            <div style="padding: 1.25rem; border-radius: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(16, 185, 129, 0.3);">
+              <div class="flex-between" style="margin-bottom: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #34D399; text-transform: uppercase;">Tags Prontas para a Caixa do YouTube Studio:</span>
+                <button onclick="copyToClipboard('tags-youtube-text')" class="btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">Copiar Todas</button>
+              </div>
+              <p id="tags-youtube-text" style="font-family: monospace; font-size: 0.85rem; color: #E2E8F0; line-height: 1.6; word-break: break-all; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 10px;"></p>
+            </div>
+
+            <!-- Box Títulos Click Magnet -->
+            <div style="padding: 1.25rem; border-radius: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255, 153, 0, 0.3);">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary); text-transform: uppercase; display: block; margin-bottom: 0.75rem;">Fórmulas de Títulos com Alto Clique (CTR):</span>
+              <ul id="titles-list" style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;"></ul>
+            </div>
+
+            <!-- Box Hashtags -->
+            <div style="padding: 1.25rem; border-radius: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(6, 182, 212, 0.3);">
+              <div class="flex-between" style="margin-bottom: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #22D3EE; text-transform: uppercase;">Hashtags para Descrição & TikTok/Reels:</span>
+                <button onclick="copyToClipboard('tags-hashtag-text')" class="btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">Copiar Hashtags</button>
+              </div>
+              <p id="tags-hashtag-text" style="font-family: monospace; font-size: 0.85rem; color: #E2E8F0; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 10px;"></p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: QR CODE PRO -->
+    <!-- ======================================================== -->
+    <div id="tab-qrcode" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📱</span>
+              <span>Gerador de QR Code Pro</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Crie QR Codes customizados para links, Pix, Wi-Fi e WhatsApp sem limites.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); color: #22D3EE; font-size: 0.75rem; font-weight: 700;">
+            Download Alta Definição
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; align-items: center;">
+          
+          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Link ou Conteúdo:</label>
+              <input type="text" id="qr-input-text" value="https://sollius.com" class="custom-input" oninput="renderQrCode()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Cor do Código:</label>
+                <input type="color" id="qr-color-dark" value="#000000" style="width: 100%; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; cursor: pointer;" onchange="renderQrCode()">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Cor do Fundo:</label>
+                <input type="color" id="qr-color-light" value="#ffffff" style="width: 100%; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; cursor: pointer;" onchange="renderQrCode()">
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-dim); display: block; margin-bottom: 0.4rem;">Temas Pré-definidos:</span>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button onclick="setQrPreset('#000000', '#ffffff')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">Clássico</button>
+                <button onclick="setQrPreset('#FF9900', '#08090E')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--amber-primary);">Solar Amber</button>
+                <button onclick="setQrPreset('#8B5CF6', '#08090E')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--violet-primary);">Violet Neon</button>
+                <button onclick="setQrPreset('#06B6D4', '#08090E')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--cyan-primary);">Cyan Tech</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">
+            <div id="qrcode-canvas-container" style="padding: 1rem; border-radius: 16px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 1.25rem;">
+              <div id="qrcode-box"></div>
+            </div>
+
+            <button onclick="downloadQrCode()" class="btn-primary" style="background: linear-gradient(135deg, #06B6D4 0%, #2563EB 100%); color: #fff; width: 100%; justify-content: center;">
+              <span>⬇️</span>
+              <span>Baixar Imagem PNG</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: GRAVADOR DE TELA -->
+    <!-- ======================================================== -->
+    <div id="tab-recorder" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🎥</span>
+              <span>Gravador de Tela & Áudio Local</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Grave sua tela, gameplay ou tutoriais com som do sistema e microfone sem instalar nenhum programa.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; font-size: 0.75rem; font-weight: 700;">
+            Zero Instalação • Ilimitado
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2.5rem; text-align: center;">
+          
+          <div style="height: 320px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; margin-bottom: 2rem;">
+            <video id="recorder-video-preview" style="width: 100%; height: 100%; object-fit: contain;" class="hidden" autoplay muted></video>
+            
+            <div id="recorder-idle-state">
+              <div style="width: 64px; height: 64px; border-radius: 18px; background: rgba(239, 68, 68, 0.15); color: #F87171; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem auto;">
+                🔴
+              </div>
+              <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">Pronto para Gravar</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Você poderá escolher uma janela de jogo, aba ou sua tela cheia.</p>
+            </div>
+
+            <!-- Timer Badge -->
+            <div id="recorder-timer-badge" class="hidden" style="position: absolute; top: 1rem; left: 1rem; padding: 0.4rem 0.85rem; border-radius: 9999px; background: rgba(220, 38, 38, 0.9); color: #fff; font-family: monospace; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="width: 8px; height: 8px; background: #fff; border-radius: 50%;"></span>
+              <span id="recorder-timer-text">00:00</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button id="recorder-start-btn" onclick="startScreenRecording()" class="btn-primary" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #fff;">
+              <span>🔴</span>
+              <span>Iniciar Gravação</span>
+            </button>
+            <button id="recorder-stop-btn" onclick="stopScreenRecording()" class="hidden btn-secondary">
+              <span>⏹️</span>
+              <span>Parar e Baixar Vídeo</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <strong style="color: #fff;">SOLLIUS</strong> • Todos os direitos reservados. Processamento 100% no cliente.
+      </div>
+      <div class="footer-links">
+        <span onclick="switchTab('remover')">Removedor</span>
+        <span onclick="switchTab('converter')">Conversor</span>
+        <span onclick="switchTab('pdf')">PDF</span>
+        <span onclick="switchTab('tags')">Tags Virais</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
