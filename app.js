@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   // Inicializa QR Code padrão
   renderQrCode();
+  
+  // Inicializa Pré-visualizações
+  if (typeof updateResumePreview === 'function') updateResumePreview();
+  if (typeof updateCardPreview === 'function') updateCardPreview();
+  if (typeof initSignaturePad === 'function') initSignaturePad();
 });
 
 // Navegação entre abas
@@ -18,6 +23,16 @@ function switchTab(tabId) {
 
   const activeContent = document.getElementById(`tab-${tabId}`);
   if (activeContent) {
+    activeContent.classList.remove('hidden');
+  }
+
+  // Se abrir assinatura, recalibra canvas
+  if (tabId === 'assinar-pdf' && typeof initSignaturePad === 'function') {
+    setTimeout(initSignaturePad, 50);
+  }
+  if (tabId === 'cartao' && typeof updateCardPreview === 'function') {
+    setTimeout(updateCardPreview, 50);
+  }
     activeContent.classList.remove('hidden');
   }
 
@@ -688,3 +703,591 @@ function downloadBlob(blob, filename) {
   a.href = URL.createObjectURL(blob);
   a.click();
 }
+
+// ========================================================
+// 1. CRIADOR DE CURRÍCULOS ATS-FRIENDLY & ACESSÍVEL
+// ========================================================
+let currentResumeTheme = 'executive';
+
+function setResumeTheme(theme) {
+  currentResumeTheme = theme;
+  const paper = document.getElementById('resume-paper');
+  if (!paper) return;
+  paper.className = `resume-paper theme-${theme}`;
+  
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === theme);
+  });
+}
+
+function updateResumePreview() {
+  const name = document.getElementById('res-input-name')?.value || 'Seu Nome Completo';
+  const title = document.getElementById('res-input-title')?.value || 'Seu Cargo / Especialidade';
+  const email = document.getElementById('res-input-email')?.value || 'email@exemplo.com';
+  const phone = document.getElementById('res-input-phone')?.value || '(11) 99999-9999';
+  const loc = document.getElementById('res-input-loc')?.value || 'São Paulo, SP';
+  const site = document.getElementById('res-input-site')?.value || 'linkedin.com/in/perfil';
+  const summary = document.getElementById('res-input-summary')?.value || 'Profissional com sólida experiência em resolução de problemas, foco em resultados mensuráveis e inovação contínua.';
+
+  // Header
+  document.getElementById('res-view-name').innerText = name;
+  document.getElementById('res-view-title').innerText = title;
+  
+  // Contacts
+  const contactsContainer = document.getElementById('res-view-contacts');
+  if (contactsContainer) {
+    contactsContainer.innerHTML = `
+      <span>📧 ${email}</span>
+      <span>📱 ${phone}</span>
+      <span>📍 ${loc}</span>
+      <span>🔗 ${site}</span>
+    `;
+  }
+
+  // Summary
+  const summaryEl = document.getElementById('res-view-summary');
+  if (summaryEl) summaryEl.innerText = summary;
+
+  // Skills
+  const skillsInput = document.getElementById('res-input-skills')?.value || 'Liderança, Comunicação, Gestão de Projetos, Resolução de Problemas';
+  const skillsContainer = document.getElementById('res-view-skills');
+  if (skillsContainer) {
+    const skills = skillsInput.split(',').map(s => s.trim()).filter(Boolean);
+    skillsContainer.innerHTML = skills.map(s => `<span class="res-tag-badge">${s}</span>`).join('');
+  }
+
+  // Formação
+  const eduDegree = document.getElementById('res-input-edu-degree')?.value || 'Graduação / Especialização';
+  const eduInst = document.getElementById('res-input-edu-inst')?.value || 'Universidade / Faculdade';
+  const eduYear = document.getElementById('res-input-edu-year')?.value || '2020 - 2024';
+  
+  const eduContainer = document.getElementById('res-view-education');
+  if (eduContainer) {
+    eduContainer.innerHTML = `
+      <div class="res-item">
+        <div class="res-item-header">
+          <span>${eduDegree}</span>
+          <span style="font-size: 0.8rem; color: #64748b;">${eduYear}</span>
+        </div>
+        <div class="res-item-sub">${eduInst}</div>
+      </div>
+    `;
+  }
+
+  // Experiências Dinâmicas
+  const expItems = document.querySelectorAll('.res-exp-block');
+  const expContainer = document.getElementById('res-view-experience');
+  if (expContainer) {
+    let expHtml = '';
+    expItems.forEach(item => {
+      const role = item.querySelector('.exp-role')?.value || 'Cargo';
+      const company = item.querySelector('.exp-company')?.value || 'Empresa';
+      const period = item.querySelector('.exp-period')?.value || 'Período';
+      const desc = item.querySelector('.exp-desc')?.value || 'Principais entregas e resultados alcançados no cargo.';
+      
+      expHtml += `
+        <div class="res-item">
+          <div class="res-item-header">
+            <strong>${role}</strong>
+            <span style="font-size: 0.8rem; color: #64748b;">${period}</span>
+          </div>
+          <div class="res-item-sub" style="font-weight: 500; color: #475569;">${company}</div>
+          <p style="font-size: 0.84rem; color: #334155; margin-top: 0.25rem;">${desc}</p>
+        </div>
+      `;
+    });
+    expContainer.innerHTML = expHtml;
+  }
+}
+
+function addExperienceField() {
+  const container = document.getElementById('res-exp-inputs-container');
+  if (!container) return;
+  const block = document.createElement('div');
+  block.className = 'res-exp-block glass-panel';
+  block.style.padding = '1rem';
+  block.style.marginBottom = '1rem';
+  block.style.border = '1px solid rgba(255,255,255,0.08)';
+  block.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary);">Experiência</span>
+      <button type="button" onclick="this.parentElement.parentElement.remove(); updateResumePreview();" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem;">Remover ✕</button>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+      <input type="text" class="exp-role form-input" placeholder="Cargo (ex: Gerente de Projetos)" oninput="updateResumePreview()">
+      <input type="text" class="exp-company form-input" placeholder="Empresa" oninput="updateResumePreview()">
+    </div>
+    <input type="text" class="exp-period form-input" placeholder="Período (ex: 2022 - Atual)" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
+    <textarea class="exp-desc form-input" rows="2" placeholder="Descreva conquistas mensuráveis..." oninput="updateResumePreview()"></textarea>
+  `;
+  container.appendChild(block);
+  updateResumePreview();
+}
+
+function loadResumeSample() {
+  document.getElementById('res-input-name').value = 'Mariana Silva Alencar';
+  document.getElementById('res-input-title').value = 'Especialista em Marketing Digital & Growth';
+  document.getElementById('res-input-email').value = 'mariana.alencar@email.com';
+  document.getElementById('res-input-phone').value = '(11) 98765-4321';
+  document.getElementById('res-input-loc').value = 'São Paulo, Brasil';
+  document.getElementById('res-input-site').value = 'linkedin.com/in/mariana-growth';
+  document.getElementById('res-input-summary').value = 'Especialista em Growth e Estratégia de Conteúdo com 6+ anos de experiência liderando campanhas digitais de alta conversão, gestão de tráfego pago e automação de marketing com ROAS médio de 4.8x.';
+  document.getElementById('res-input-skills').value = 'SEO Avançado, Google Ads, Meta Ads, Análise de Dados, Growth Hacking, Copywriting, Liderança de Equipes, Automação de E-mail';
+  document.getElementById('res-input-edu-degree').value = 'Pós-Graduação em Marketing Estratégico & Data Science';
+  document.getElementById('res-input-edu-inst').value = 'Fundação Getulio Vargas (FGV)';
+  document.getElementById('res-input-edu-year').value = '2022 - 2023';
+
+  const container = document.getElementById('res-exp-inputs-container');
+  if (container) {
+    container.innerHTML = `
+      <div class="res-exp-block glass-panel" style="padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary);">Experiência 1</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <input type="text" class="exp-role form-input" value="Head de Growth & Tráfego" oninput="updateResumePreview()">
+          <input type="text" class="exp-company form-input" value="Nexus Tech Corp" oninput="updateResumePreview()">
+        </div>
+        <input type="text" class="exp-period form-input" value="2023 - Presente" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
+        <textarea class="exp-desc form-input" rows="2" oninput="updateResumePreview()">Liderança de 8 profissionais, escala de faturamento de R$ 300k para R$ 1.8M/mês através de otimização de funil de vendas e testes A/B contínuos.</textarea>
+      </div>
+      <div class="res-exp-block glass-panel" style="padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary);">Experiência 2</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <input type="text" class="exp-role form-input" value="Coordenadora de Performance" oninput="updateResumePreview()">
+          <input type="text" class="exp-company form-input" value="Vanguard Mídia Digital" oninput="updateResumePreview()">
+        </div>
+        <input type="text" class="exp-period form-input" value="2020 - 2023" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
+        <textarea class="exp-desc form-input" rows="2" oninput="updateResumePreview()">Gestão de R$ 500k mensais em mídia de performance, redução do CAC em 34% e estruturação de dashboards em tempo real.</textarea>
+      </div>
+    `;
+  }
+  updateResumePreview();
+}
+
+function printResume() {
+  window.print();
+}
+
+// ========================================================
+// 2. CRIADOR DE CARTÃO DE VISITA (ARTE DE ELITE FRENTE E VERSO)
+// ========================================================
+let currentCardTheme = 'gold';
+
+function setCardTheme(theme) {
+  currentCardTheme = theme;
+  const front = document.getElementById('card-preview-front');
+  const back = document.getElementById('card-preview-back');
+  if (front && back) {
+    front.className = `business-card bc-theme-${theme}`;
+    back.className = `business-card bc-theme-${theme}`;
+  }
+  document.querySelectorAll('.card-theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === theme);
+  });
+}
+
+function updateCardPreview() {
+  const name = document.getElementById('card-input-name')?.value || 'Carlos Eduardo';
+  const role = document.getElementById('card-input-role')?.value || 'Arquiteto de Soluções';
+  const company = document.getElementById('card-input-company')?.value || 'SOLLIUS STUDIO';
+  const phone = document.getElementById('card-input-phone')?.value || '+55 (11) 98888-7777';
+  const email = document.getElementById('card-input-email')?.value || 'carlos@sollius.com.br';
+  const site = document.getElementById('card-input-site')?.value || 'sollius.com.br';
+
+  // Front
+  const fName = document.getElementById('card-front-name');
+  if (fName) fName.innerText = name;
+  const fRole = document.getElementById('card-front-role');
+  if (fRole) fRole.innerText = role;
+  const fCompany = document.getElementById('card-front-company');
+  if (fCompany) fCompany.innerText = company;
+
+  // Back
+  const bCompany = document.getElementById('card-back-company');
+  if (bCompany) bCompany.innerText = company;
+  const bPhone = document.getElementById('card-back-phone');
+  if (bPhone) bPhone.innerText = phone;
+  const bEmail = document.getElementById('card-back-email');
+  if (bEmail) bEmail.innerText = email;
+  const bSite = document.getElementById('card-back-site');
+  if (bSite) bSite.innerText = site;
+
+  // Render QR Code on Card Back
+  const qrContainer = document.getElementById('card-qr-box');
+  if (qrContainer && window.QRCode) {
+    qrContainer.innerHTML = '';
+    const qrData = site.startsWith('http') ? site : `https://${site}`;
+    new QRCode(qrContainer, {
+      text: qrData,
+      width: 72,
+      height: 72,
+      colorDark: currentCardTheme === 'minimal' ? '#0f172a' : '#ffffff',
+      colorLight: 'transparent',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+}
+
+function downloadCardAsImage(elementId, filename) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  // Render high-res canvas
+  const canvas = document.createElement('canvas');
+  canvas.width = 1050; // 3.5 inches at 300 DPI
+  canvas.height = 600;  // 2.0 inches at 300 DPI
+  const ctx = canvas.getContext('2d');
+
+  // Desenha fundo estilizado de acordo com o tema
+  if (currentCardTheme === 'gold') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#2a2211');
+    grad.addColorStop(1, '#0a0a0c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Borda ouro
+    ctx.strokeStyle = '#D4AF37';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  } else if (currentCardTheme === 'cyber') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#090A10');
+    grad.addColorStop(1, '#1A0F2E');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#8B5CF6';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  } else if (currentCardTheme === 'holographic') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#1E1B4B');
+    grad.addColorStop(0.5, '#4C0519');
+    grad.addColorStop(1, '#082F49');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  } else {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#E2E8F0';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  }
+
+  const name = document.getElementById('card-input-name')?.value || 'Carlos Eduardo';
+  const role = document.getElementById('card-input-role')?.value || 'Arquiteto de Soluções';
+  const company = document.getElementById('card-input-company')?.value || 'SOLLIUS STUDIO';
+  const phone = document.getElementById('card-input-phone')?.value || '+55 (11) 98888-7777';
+  const email = document.getElementById('card-input-email')?.value || 'carlos@sollius.com.br';
+  const site = document.getElementById('card-input-site')?.value || 'sollius.com.br';
+
+  const isLight = currentCardTheme === 'minimal';
+  ctx.fillStyle = isLight ? '#0F172A' : '#FFFFFF';
+
+  if (elementId === 'card-preview-front') {
+    // Top tag
+    ctx.font = 'bold 24px -apple-system, sans-serif';
+    ctx.fillStyle = currentCardTheme === 'gold' ? '#D4AF37' : (isLight ? '#2563EB' : '#A855F7');
+    ctx.fillText(company.toUpperCase(), 70, 100);
+
+    // Center Name
+    ctx.font = 'bold 56px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? '#0F172A' : '#FFFFFF';
+    ctx.fillText(name, 70, 300);
+
+    // Role
+    ctx.font = '32px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? '#64748B' : '#94A3B8';
+    ctx.fillText(role, 70, 360);
+  } else {
+    // Back side
+    ctx.font = 'bold 36px -apple-system, sans-serif';
+    ctx.fillStyle = currentCardTheme === 'gold' ? '#D4AF37' : (isLight ? '#2563EB' : '#A855F7');
+    ctx.fillText(company, 70, 100);
+
+    ctx.font = '28px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? '#334155' : '#E2E8F0';
+    ctx.fillText(`📱  ${phone}`, 70, 220);
+    ctx.fillText(`📧  ${email}`, 70, 290);
+    ctx.fillText(`🌐  ${site}`, 70, 360);
+  }
+
+  canvas.toBlob(blob => {
+    downloadBlob(blob, filename);
+  }, 'image/png');
+}
+
+// ========================================================
+// 3. ASSINADOR DE PDF 100% PRIVADO NO NAVEGADOR
+// ========================================================
+let signatureCanvas, signatureCtx;
+let isDrawingSignature = false;
+let currentPenColor = '#0f172a';
+let currentPenWidth = 3;
+let uploadedPdfBytes = null;
+let uploadedPdfDoc = null;
+
+function initSignaturePad() {
+  signatureCanvas = document.getElementById('signature-canvas');
+  if (!signatureCanvas) return;
+  signatureCtx = signatureCanvas.getContext('2d');
+  
+  // Set real pixel resolution
+  const rect = signatureCanvas.getBoundingClientRect();
+  signatureCanvas.width = rect.width * 2;
+  signatureCanvas.height = rect.height * 2;
+  signatureCtx.scale(2, 2);
+  signatureCtx.lineCap = 'round';
+  signatureCtx.lineJoin = 'round';
+
+  function getPos(e) {
+    const r = signatureCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - r.left,
+      y: clientY - r.top
+    };
+  }
+
+  signatureCanvas.addEventListener('pointerdown', (e) => {
+    isDrawingSignature = true;
+    const pos = getPos(e);
+    signatureCtx.beginPath();
+    signatureCtx.moveTo(pos.x, pos.y);
+    signatureCtx.strokeStyle = currentPenColor;
+    signatureCtx.lineWidth = currentPenWidth;
+  });
+
+  signatureCanvas.addEventListener('pointermove', (e) => {
+    if (!isDrawingSignature) return;
+    const pos = getPos(e);
+    signatureCtx.lineTo(pos.x, pos.y);
+    signatureCtx.stroke();
+  });
+
+  window.addEventListener('pointerup', () => {
+    if (isDrawingSignature) {
+      isDrawingSignature = false;
+    }
+  });
+}
+
+function clearSignaturePad() {
+  if (!signatureCanvas || !signatureCtx) return;
+  signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+}
+
+function setPenColor(color) {
+  currentPenColor = color;
+  document.querySelectorAll('.ink-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.color === color);
+  });
+}
+
+async function handlePdfToSign(file) {
+  if (!file) return;
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    uploadedPdfBytes = arrayBuffer;
+    uploadedPdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    
+    const pageCount = uploadedPdfDoc.getPageCount();
+    document.getElementById('pdf-sign-info').innerText = `📄 Documento Carregado: ${file.name} (${pageCount} página${pageCount > 1 ? 's' : ''}) - 100% no seu dispositivo`;
+    document.getElementById('pdf-sign-action-area').classList.remove('hidden');
+    
+    if (window.confetti) confetti({ particleCount: 20 });
+  } catch (err) {
+    alert('Erro ao carregar PDF: ' + err.message);
+  }
+}
+
+async function stampSignatureOnPdf() {
+  if (!uploadedPdfBytes || !uploadedPdfDoc) {
+    alert('Por favor, carregue um arquivo PDF primeiro.');
+    return;
+  }
+  if (!signatureCanvas) return;
+
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.load(uploadedPdfBytes);
+    const pages = pdfDoc.getPages();
+    const targetPage = pages[pages.length - 1]; // Carimba na última página
+    const { width, height } = targetPage.getSize();
+
+    // Export signature as PNG data url
+    const signatureDataUrl = signatureCanvas.toDataURL('image/png');
+    const signatureImage = await pdfDoc.embedPng(signatureDataUrl);
+
+    // Dimensões do carimbo de assinatura no PDF
+    const sigWidth = 150;
+    const sigHeight = (sigWidth / signatureCanvas.width) * signatureCanvas.height;
+
+    // Posiciona no canto inferior direito
+    targetPage.drawImage(signatureImage, {
+      x: width - sigWidth - 50,
+      y: 60,
+      width: sigWidth,
+      height: sigHeight,
+    });
+
+    // Salva o PDF assinado
+    const signedPdfBytes = await pdfDoc.save();
+    const blob = new Blob([signedPdfBytes], { type: 'application/pdf' });
+    downloadBlob(blob, 'documento-assinado-sollius.pdf');
+
+    if (window.confetti) {
+      confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
+    }
+  } catch (err) {
+    alert('Erro ao assinar PDF: ' + err.message);
+  }
+}
+
+// ========================================================
+// 4. LIMPADOR DE LOCALIZAÇÃO GPS & METADADOS EXIF
+// ========================================================
+let cleanedPhotoBlobs = [];
+
+async function handleGpsCleanFiles(files) {
+  if (!files || !files.length) return;
+  cleanedPhotoBlobs = [];
+  const container = document.getElementById('gps-results-list');
+  if (container) container.innerHTML = '';
+  document.getElementById('gps-results-area').classList.remove('hidden');
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const img = new Image();
+    const fileUrl = URL.createObjectURL(file);
+
+    await new Promise((resolve) => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        // Desenhar no canvas descarta 100% de tags EXIF, coordenadas GPS e metadados de câmera
+        ctx.drawImage(img, 0, 0);
+
+        canvas.toBlob((blob) => {
+          cleanedPhotoBlobs.push({ blob, name: `privacidade-limpa_${file.name}` });
+
+          const row = document.createElement('div');
+          row.className = 'glass-panel';
+          row.style.padding = '0.85rem 1.25rem';
+          row.style.marginBottom = '0.75rem';
+          row.style.display = 'flex';
+          row.style.justifyContent = 'space-between';
+          row.style.alignItems = 'center';
+          row.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <span style="font-size: 1.4rem;">🛡️</span>
+              <div>
+                <strong style="font-size: 0.9rem; color: #fff;">${file.name}</strong>
+                <div style="font-size: 0.78rem; color: #10B981;">✓ GPS Coordenadas Excluídas • Metadados Sanitizados (${formatFileSize(file.size)} → ${formatFileSize(blob.size)})</div>
+              </div>
+            </div>
+            <button onclick="downloadBlob(cleanedPhotoBlobs[${cleanedPhotoBlobs.length - 1}].blob, '${file.name}')" class="btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+              Baixar Limpa
+            </button>
+          `;
+          container.appendChild(row);
+          resolve();
+        }, file.type === 'image/png' ? 'image/png' : 'image/jpeg', 0.95);
+      };
+      img.src = fileUrl;
+    });
+  }
+
+  if (window.confetti) confetti({ particleCount: 40 });
+}
+
+async function downloadAllCleanedPhotos() {
+  if (!cleanedPhotoBlobs.length) return;
+  if (cleanedPhotoBlobs.length === 1) {
+    downloadBlob(cleanedPhotoBlobs[0].blob, cleanedPhotoBlobs[0].name);
+    return;
+  }
+  const zip = new JSZip();
+  cleanedPhotoBlobs.forEach(item => {
+    zip.file(item.name, item.blob);
+  });
+  const content = await zip.generateAsync({ type: 'blob' });
+  downloadBlob(content, 'fotos-sem-gps-sollius.zip');
+}
+
+// ========================================================
+// 5. TEXT STUDIO & FORMATADOR DE LINHAS
+// ========================================================
+function updateTextStats() {
+  const text = document.getElementById('text-studio-input')?.value || '';
+  const charCount = text.length;
+  const charNoSpace = text.replace(/\s+/g, '').length;
+  const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+  const lineCount = text === '' ? 0 : text.split('\n').length;
+  const readTimeMin = Math.ceil(wordCount / 200);
+
+  document.getElementById('stat-chars').innerText = charCount;
+  document.getElementById('stat-chars-nospace').innerText = charNoSpace;
+  document.getElementById('stat-words').innerText = wordCount;
+  document.getElementById('stat-lines').innerText = lineCount;
+  document.getElementById('stat-readtime').innerText = `${readTimeMin} min`;
+}
+
+function transformText(action) {
+  const input = document.getElementById('text-studio-input');
+  if (!input) return;
+  let val = input.value;
+
+  switch (action) {
+    case 'upper':
+      val = val.toUpperCase();
+      break;
+    case 'lower':
+      val = val.toLowerCase();
+      break;
+    case 'capitalize':
+      val = capitalizeWords(val.toLowerCase());
+      break;
+    case 'trim':
+      val = val.split('\n').map(l => l.trim()).join('\n');
+      break;
+    case 'remove-empty':
+      val = val.split('\n').filter(l => l.trim().length > 0).join('\n');
+      break;
+    case 'remove-duplicates':
+      const lines = val.split('\n');
+      const unique = Array.from(new Set(lines));
+      val = unique.join('\n');
+      break;
+    case 'fix-breaks':
+      val = val.replace(/([^\n])\n([^\n])/g, '$1 $2');
+      break;
+  }
+
+  input.value = val;
+  updateTextStats();
+}
+
+function copyTextStudio() {
+  const input = document.getElementById('text-studio-input');
+  if (!input) return;
+  navigator.clipboard.writeText(input.value).then(() => {
+    alert('Texto copiado com sucesso!');
+  });
+}
+
+function clearTextStudio() {
+  const input = document.getElementById('text-studio-input');
+  if (input) {
+    input.value = '';
+    updateTextStats();
+  }
+}
+

@@ -1,15 +1,81 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOLLIUS | O Ecossistema de Ferramentas Web Definitivo</title>
-  <meta name="description" content="Ecossistema de ferramentas web 100% gratuitas, ilimitadas e privadas. Conversores de imagens, removedor de fundo com IA local, PDF Studio, gerador de tags virais e mais.">
   
-  <!-- CSS Autônomo e Standalone (Zero Dependência de CDN) -->
+  <!-- SEO PRIMÁRIO 100/100 -->
+  <title>SOLLIUS | Ecossistema Grátis: Removedor de Fundo IA, Criador de Currículo, PDF Studio e Design</title>
+  <meta name="description" content="Ecossistema completo de ferramentas web 100% gratuitas, privadas e ilimitadas. Removedor de fundo com IA local, criador de currículos ATS, cartão de visita artístico, assinador de PDF privado, limpador de GPS/EXIF e conversor de imagens. Zero custo de nuvem e sem cadastro.">
+  <meta name="keywords" content="removedor de fundo gratis, criador de curriculo ats, criar cartao de visita online, assinar pdf gratis, limpar gps foto, juntar pdf, conversor webp, gerador de tags youtube, qr code permanente">
+  <meta name="author" content="SOLLIUS Ecosystem">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#07090E">
+  <link rel="canonical" href="https://sollius.com.br/">
+
+  <!-- OPEN GRAPH / FACEBOOK / WHATSAPP / LINKEDIN -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:url" content="https://sollius.com.br/">
+  <meta property="og:site_name" content="SOLLIUS">
+  <meta property="og:title" content="SOLLIUS | O Maior Ecossistema de Ferramentas Web Gratuitas & Privadas">
+  <meta property="og:description" content="Sem cadastros, sem limites diários e 100% no seu navegador. Removedor de fundo IA, criador de currículo ATS, cartão de visita de luxo, assinador de PDF e conversores.">
+  <meta property="og:image" content="https://sollius.com.br/og-banner.png">
+
+  <!-- TWITTER CARDS -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SOLLIUS | Ferramentas Web Gratuitas & Ilimitadas">
+  <meta name="twitter:description" content="Removedor IA, Currículo ATS, Cartão de Visita, Assinador de PDF e Conversores 100% no cliente.">
+  <meta name="twitter:image" content="https://sollius.com.br/og-banner.png">
+
+  <!-- SCHEMA.ORG DADOS ESTRUTURADOS (JSON-LD) PARA GOOGLE RICH SNIPPETS -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://sollius.com.br/#website",
+        "url": "https://sollius.com.br/",
+        "name": "SOLLIUS",
+        "description": "Ecossistema de ferramentas web 100% gratuitas, privadas e ilimitadas.",
+        "inLanguage": "pt-BR"
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://sollius.com.br/#app",
+        "name": "SOLLIUS Web Suite",
+        "url": "https://sollius.com.br/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "featureList": [
+          "Removedor de Fundo com IA Local",
+          "Criador de Currículos ATS-Friendly Acessível",
+          "Criador de Cartão de Visita Artístico com QR Code",
+          "Assinador de PDF 100% Privado no Navegador",
+          "Limpador de Metadados e Localização GPS de Fotos",
+          "Conversor e Compressor em Lote WebP/PNG/JPG",
+          "PDF Studio para Mesclagem e Fotos para PDF",
+          "Gerador de Tags Virais e Click Magnet para Redes Sociais",
+          "QR Code Studio Personalizado Vitalício",
+          "Text Studio para Limpeza de Linhas e Contagem",
+          "Gravador de Tela e Áudio Sem Limites"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- CSS Autônomo e Standalone -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Bibliotecas Locais / CDN com Fallback Seguro -->
+  <!-- Bibliotecas Seguras e Robustas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -19,12 +85,12 @@
 <body>
 
   <!-- HEADER NAVEGAÇÃO -->
-  <header class="header">
+  <header class="header" role="banner">
     <div class="header-container">
       
       <!-- Logo -->
-      <div class="logo-group" onclick="switchTab('hub')">
-        <div class="logo-icon">☀️</div>
+      <div class="logo-group" onclick="switchTab('hub')" role="button" aria-label="Voltar para a página inicial do SOLLIUS">
+        <div class="logo-icon" aria-hidden="true">☀️</div>
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <span class="logo-text">SOLLIUS</span>
           <span class="badge-ecosystem">ECOSYSTEM</span>
@@ -32,37 +98,57 @@
       </div>
 
       <!-- Menu Principal de Ferramentas -->
-      <nav class="nav-menu">
-        <button onclick="switchTab('remover')" class="nav-item" data-tab="remover">
+      <nav class="nav-menu" role="navigation" aria-label="Ferramentas do Ecossistema">
+        <button onclick="switchTab('remover')" class="nav-item" data-tab="remover" aria-label="Removedor de Fundo com IA">
           <span>✨</span>
           <span>Removedor IA</span>
         </button>
-        <button onclick="switchTab('converter')" class="nav-item" data-tab="converter">
+        <button onclick="switchTab('curriculo')" class="nav-item" data-tab="curriculo" aria-label="Criador de Currículos Profissionais">
+          <span>📄</span>
+          <span>Currículo ATS</span>
+        </button>
+        <button onclick="switchTab('cartao')" class="nav-item" data-tab="cartao" aria-label="Criador de Cartão de Visita">
+          <span>💳</span>
+          <span>Cartão Arte</span>
+        </button>
+        <button onclick="switchTab('assinar-pdf')" class="nav-item" data-tab="assinar-pdf" aria-label="Assinador de PDF Privado">
+          <span>✍️</span>
+          <span>Assinar PDF</span>
+        </button>
+        <button onclick="switchTab('limpar-gps')" class="nav-item" data-tab="limpar-gps" aria-label="Limpador de Metadados e Localização GPS">
+          <span>📍</span>
+          <span>Limpar GPS</span>
+        </button>
+        <button onclick="switchTab('converter')" class="nav-item" data-tab="converter" aria-label="Conversor e Compressor de Imagens">
           <span>🖼️</span>
           <span>Imagens</span>
         </button>
-        <button onclick="switchTab('pdf')" class="nav-item" data-tab="pdf">
-          <span>📄</span>
+        <button onclick="switchTab('pdf')" class="nav-item" data-tab="pdf" aria-label="PDF Studio Mesclagem">
+          <span>📑</span>
           <span>PDF Studio</span>
         </button>
-        <button onclick="switchTab('tags')" class="nav-item" data-tab="tags">
+        <button onclick="switchTab('tags')" class="nav-item" data-tab="tags" aria-label="Gerador de Tags Virais">
           <span>📈</span>
           <span>Tags & Viral</span>
         </button>
-        <button onclick="switchTab('qrcode')" class="nav-item" data-tab="qrcode">
+        <button onclick="switchTab('qrcode')" class="nav-item" data-tab="qrcode" aria-label="Gerador de QR Code">
           <span>📱</span>
           <span>QR Code</span>
         </button>
-        <button onclick="switchTab('recorder')" class="nav-item" data-tab="recorder">
+        <button onclick="switchTab('texto')" class="nav-item" data-tab="texto" aria-label="Formatador de Texto e Linhas">
+          <span>📝</span>
+          <span>Texto</span>
+        </button>
+        <button onclick="switchTab('recorder')" class="nav-item" data-tab="recorder" aria-label="Gravador de Tela">
           <span>🎥</span>
           <span>Gravador</span>
         </button>
       </nav>
 
       <!-- Badge de Segurança -->
-      <div class="shield-badge">
+      <div class="shield-badge" title="Todos os dados são processados localmente na memória RAM do seu aparelho">
         <span>🛡️</span>
-        <span>100% Local no Navegador</span>
+        <span>100% Local • Zero Nuvem</span>
       </div>
 
     </div>
@@ -111,7 +197,7 @@
       <div class="tools-grid">
         
         <!-- 1. Removedor -->
-        <div onclick="switchTab('remover')" class="tool-card">
+        <div onclick="switchTab('remover')" class="tool-card" role="button" tabindex="0">
           <div class="tool-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #C084FC;">✨</div>
           <div class="tool-header">
             <h3 class="tool-title">Removedor de Fundo IA</h3>
@@ -121,8 +207,52 @@
           <div class="tool-link" style="color: #C084FC;">Abrir Ferramenta →</div>
         </div>
 
-        <!-- 2. Conversor -->
-        <div onclick="switchTab('converter')" class="tool-card">
+        <!-- 2. Criador de Currículo ATS -->
+        <div onclick="switchTab('curriculo')" class="tool-card" role="button" tabindex="0">
+          <div class="tool-icon-wrapper" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA;">📄</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Criador de Currículos ATS</h3>
+            <span class="tool-badge" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3);">Aprovado RH</span>
+          </div>
+          <p class="tool-desc">Templates modernos com acessibilidade visual e formato 100% legível por robôs de triagem (ATS). Baixe em PDF A4.</p>
+          <div class="tool-link" style="color: #60A5FA;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 3. Cartão de Visita de Arte -->
+        <div onclick="switchTab('cartao')" class="tool-card" role="button" tabindex="0">
+          <div class="tool-icon-wrapper" style="background: rgba(212, 175, 55, 0.15); color: #FACC15;">💳</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Cartão de Visita de Elite</h3>
+            <span class="tool-badge" style="background: rgba(212, 175, 55, 0.15); color: #FACC15; border: 1px solid rgba(212, 175, 55, 0.3);">Arte 3D</span>
+          </div>
+          <p class="tool-desc">Crie artes de frente e verso com temas de luxo (Gold, Cyber, Holographic) e QR Code integrado para impressão HD.</p>
+          <div class="tool-link" style="color: #FACC15;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 4. Assinador de PDF Privado -->
+        <div onclick="switchTab('assinar-pdf')" class="tool-card" role="button" tabindex="0">
+          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">✍️</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Assinar PDF no Navegador</h3>
+            <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">Sem Nuvem</span>
+          </div>
+          <p class="tool-desc">Desenhe sua rubrica na tela e carimbe qualquer documento sigiloso sem que ele saia do seu computador.</p>
+          <div class="tool-link" style="color: #34D399;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 5. Limpador de GPS & Metadados -->
+        <div onclick="switchTab('limpar-gps')" class="tool-card" role="button" tabindex="0">
+          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">📍</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Limpador de GPS & EXIF</h3>
+            <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Privacy Shield</span>
+          </div>
+          <p class="tool-desc">Remova as coordenadas de onde você mora e metadados de câmera antes de postar fotos na internet.</p>
+          <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 6. Conversor & Compressor -->
+        <div onclick="switchTab('converter')" class="tool-card" role="button" tabindex="0">
           <div class="tool-icon-wrapper" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24;">🖼️</div>
           <div class="tool-header">
             <h3 class="tool-title">Conversor & Compressor</h3>
@@ -132,8 +262,8 @@
           <div class="tool-link" style="color: #FBBF24;">Abrir Ferramenta →</div>
         </div>
 
-        <!-- 3. PDF Studio -->
-        <div onclick="switchTab('pdf')" class="tool-card">
+        <!-- 7. PDF Studio -->
+        <div onclick="switchTab('pdf')" class="tool-card" role="button" tabindex="0">
           <div class="tool-icon-wrapper" style="background: rgba(244, 63, 94, 0.15); color: #FB7185;">📄</div>
           <div class="tool-header">
             <h3 class="tool-title">PDF Studio</h3>
@@ -143,8 +273,8 @@
           <div class="tool-link" style="color: #FB7185;">Abrir Ferramenta →</div>
         </div>
 
-        <!-- 4. Tags Virais -->
-        <div onclick="switchTab('tags')" class="tool-card">
+        <!-- 8. Tags Virais -->
+        <div onclick="switchTab('tags')" class="tool-card" role="button" tabindex="0">
           <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">📈</div>
           <div class="tool-header">
             <h3 class="tool-title">Tags & Click Magnet</h3>
@@ -154,24 +284,40 @@
           <div class="tool-link" style="color: #34D399;">Abrir Ferramenta →</div>
         </div>
 
-        <!-- 5. QR Code Pro -->
-        <div onclick="switchTab('qrcode')" class="tool-card">
+        <!-- 9. QR Code Pro -->
+        <div onclick="switchTab('qrcode')" class="tool-card" role="button" tabindex="0">
           <div class="tool-icon-wrapper" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE;">📱</div>
           <div class="tool-header">
             <h3 class="tool-title">QR Code Pro</h3>
-            <span class="tool-badge" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">Custom</span>
+            <span class="tool-badge" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">Vitalício</span>
           </div>
-          <p class="tool-desc">Crie QR Codes estilizados com cores neon para links, Pix, Wi-Fi e WhatsApp.</p>
+          <p class="tool-desc">Crie QR Codes estilizados com cores e links diretos que nunca expiram.</p>
           <div class="tool-link" style="color: #22D3EE;">Abrir Ferramenta →</div>
         </div>
 
-        <!-- 6. Gravador de Tela -->
-        <div onclick="switchTab('recorder')" class="tool-card">
+        <!-- 10. Text Studio -->
+        <div onclick="switchTab('texto')" class="tool-card" role="button" tabindex="0">
+          <div class="tool-icon-wrapper" style="background: rgba(168, 85, 247, 0.15); color: #C084FC;">📝</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Formatador de Texto</h3>
+            <span class="tool-badge" style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3);">Produtividade</span>
+          </div>
+          <p class="tool-desc">Limpe duplicatas, corrija quebras de linha e conte caracteres e palavras em tempo real.</p>
+          <div class="tool-link" style="color: #C084FC;">Abrir Ferramenta →</div>
+        </div>
+
+        <!-- 11. Gravador de Tela -->
+        <div onclick="switchTab('recorder')" class="tool-card" role="button" tabindex="0">
           <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">🎥</div>
           <div class="tool-header">
             <h3 class="tool-title">Gravador de Tela & Áudio</h3>
             <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Sem Limite</span>
           </div>
+          <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador.</p>
+          <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
+        </div>
+
+      </div>
           <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador.</p>
           <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
         </div>
@@ -559,6 +705,444 @@
 
 
     <!-- ======================================================== -->
+    <!-- TAB: CRIADOR DE CURRÍCULOS ATS-FRIENDLY -->
+    <!-- ======================================================== -->
+    <div id="tab-curriculo" class="tab-content hidden">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📄</span>
+              <span>Criador de Currículos Profissionais (Padrão ATS)</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Modelos modernos otimizados para aprovação em triagens de RH e robôs de recrutamento. 100% gratuito e sem cadastro.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button onclick="loadResumeSample()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>✨</span>
+              <span>Carregar Exemplo</span>
+            </button>
+            <button onclick="printResume()" class="btn-primary" style="font-size: 0.85rem;">
+              <span>🖨️</span>
+              <span>Imprimir / Salvar PDF A4</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seletor de Templates -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Estilo de Modelo:</span>
+            <button class="btn-secondary theme-btn active" data-theme="executive" onclick="setResumeTheme('executive')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Minimalista Executivo</button>
+            <button class="btn-secondary theme-btn" data-theme="tech" onclick="setResumeTheme('tech')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Tech & Moderno</button>
+            <button class="btn-secondary theme-btn" data-theme="creative" onclick="setResumeTheme('creative')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Criativo Editorial</button>
+          </div>
+          <span style="font-size: 0.75rem; color: #10B981; font-weight: 600;">✓ Formato A4 Milimétrico • 100% Acessível</span>
+        </div>
+
+        <div class="resume-layout">
+          
+          <!-- Formulário de Edição -->
+          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Dados Pessoais</h3>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <input type="text" id="res-input-name" class="form-input" placeholder="Nome Completo" oninput="updateResumePreview()">
+                <input type="text" id="res-input-title" class="form-input" placeholder="Cargo Desejado (ex: Especialista de TI)" oninput="updateResumePreview()">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                  <input type="email" id="res-input-email" class="form-input" placeholder="E-mail" oninput="updateResumePreview()">
+                  <input type="tel" id="res-input-phone" class="form-input" placeholder="Telefone / WhatsApp" oninput="updateResumePreview()">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                  <input type="text" id="res-input-loc" class="form-input" placeholder="Cidade / Estado" oninput="updateResumePreview()">
+                  <input type="text" id="res-input-site" class="form-input" placeholder="LinkedIn ou Portfólio" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Resumo Profissional</h3>
+              <textarea id="res-input-summary" class="form-input" rows="3" placeholder="Apresente sua trajetória de forma sucinta com foco em resultados..." oninput="updateResumePreview()"></textarea>
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Habilidades Principais</h3>
+              <input type="text" id="res-input-skills" class="form-input" placeholder="Separe por vírgulas (ex: Gestão, Python, Figma)" oninput="updateResumePreview()">
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <div class="flex-between" style="margin-bottom: 0.85rem;">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary);">Experiências Profissionais</h3>
+                <button type="button" onclick="addExperienceField()" class="btn-secondary" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">+ Adicionar</button>
+              </div>
+              <div id="res-exp-inputs-container">
+                <!-- Blocos dinâmicos inseridos aqui -->
+              </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Formação Acadêmica</h3>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <input type="text" id="res-input-edu-degree" class="form-input" placeholder="Curso / Formação" oninput="updateResumePreview()">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem;">
+                  <input type="text" id="res-input-edu-inst" class="form-input" placeholder="Instituição de Ensino" oninput="updateResumePreview()">
+                  <input type="text" id="res-input-edu-year" class="form-input" placeholder="Ano (ex: 2021-2024)" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Pré-visualização A4 ao Vivo -->
+          <div>
+            <div style="position: sticky; top: 5rem;">
+              <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Visualização A4 em Tempo Real</span>
+                <span style="font-size: 0.75rem; color: var(--amber-primary);">Design Responsivo • Sem Quebras</span>
+              </div>
+              
+              <div id="resume-printable-area">
+                <div id="resume-paper" class="resume-paper theme-executive">
+                  <header class="res-header">
+                    <h1 id="res-view-name" class="res-name">Seu Nome Completo</h1>
+                    <div id="res-view-title" class="res-title">Seu Cargo / Especialidade</div>
+                    <div id="res-view-contacts" class="res-contacts">
+                      <span>📧 email@exemplo.com</span>
+                      <span>📱 (11) 99999-9999</span>
+                      <span>📍 São Paulo, SP</span>
+                      <span>🔗 linkedin.com/in/perfil</span>
+                    </div>
+                  </header>
+
+                  <section>
+                    <h2 class="res-sec-title">Resumo Profissional</h2>
+                    <p id="res-view-summary" style="font-size: 0.86rem; color: #334155;">Profissional com sólida experiência em resolução de problemas, foco em resultados mensuráveis e inovação contínua.</p>
+                  </section>
+
+                  <section>
+                    <h2 class="res-sec-title">Competências & Habilidades</h2>
+                    <div id="res-view-skills" class="res-tags-container">
+                      <span class="res-tag-badge">Liderança</span>
+                      <span class="res-tag-badge">Comunicação</span>
+                      <span class="res-tag-badge">Gestão de Projetos</span>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 class="res-sec-title">Experiência Profissional</h2>
+                    <div id="res-view-experience">
+                      <div class="res-item">
+                        <div class="res-item-header">
+                          <strong>Cargo Atual</strong>
+                          <span style="font-size: 0.8rem; color: #64748b;">2022 - Atual</span>
+                        </div>
+                        <div class="res-item-sub">Empresa Líder de Mercado</div>
+                        <p style="font-size: 0.84rem; color: #334155;">Principais entregas e resultados alcançados no cargo.</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 class="res-sec-title">Formação Acadêmica</h2>
+                    <div id="res-view-education">
+                      <div class="res-item">
+                        <div class="res-item-header">
+                          <strong>Graduação / Especialização</strong>
+                          <span style="font-size: 0.8rem; color: #64748b;">2020 - 2024</span>
+                        </div>
+                        <div class="res-item-sub">Universidade / Faculdade</div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: CRIADOR DE CARTÃO DE VISITA ARTÍSTICO -->
+    <!-- ======================================================== -->
+    <div id="tab-cartao" class="tab-content hidden">
+      <div style="max-width: 1080px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>💳</span>
+              <span>Criador de Cartão de Visita de Elite</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Design profissional frente e verso com temas de arte visual (Gold, Cyber, Holographic) e QR Code automático integrado.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button onclick="downloadCardAsImage('card-preview-front', 'cartao-frente-sollius.png')" class="btn-primary" style="font-size: 0.85rem;">
+              <span>⬇️</span>
+              <span>Baixar Frente (HD)</span>
+            </button>
+            <button onclick="downloadCardAsImage('card-preview-back', 'cartao-verso-sollius.png')" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>⬇️</span>
+              <span>Baixar Verso (HD)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seleção de Estilos Artísticos -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Estilo de Arte:</span>
+          <button class="btn-secondary card-theme-btn active" data-theme="gold" onclick="setCardTheme('gold')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">✨ Ouro Imperial (Black & Gold)</button>
+          <button class="btn-secondary card-theme-btn" data-theme="cyber" onclick="setCardTheme('cyber')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">⚡ Cyber Dark (Neon Violet)</button>
+          <button class="btn-secondary card-theme-btn" data-theme="holographic" onclick="setCardTheme('holographic')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">🌈 Holographic Glow</button>
+          <button class="btn-secondary card-theme-btn" data-theme="minimal" onclick="setCardTheme('minimal')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">📐 Suíço Minimalista</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+          
+          <!-- Formulário -->
+          <div class="glass-panel" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--amber-primary);">Informações do Cartão</h3>
+            <input type="text" id="card-input-name" class="form-input" placeholder="Seu Nome" value="Carlos Eduardo" oninput="updateCardPreview()">
+            <input type="text" id="card-input-role" class="form-input" placeholder="Cargo / Título" value="Arquiteto de Soluções" oninput="updateCardPreview()">
+            <input type="text" id="card-input-company" class="form-input" placeholder="Nome da Empresa / Marca" value="SOLLIUS STUDIO" oninput="updateCardPreview()">
+            <input type="text" id="card-input-phone" class="form-input" placeholder="Telefone / WhatsApp" value="+55 (11) 98888-7777" oninput="updateCardPreview()">
+            <input type="email" id="card-input-email" class="form-input" placeholder="E-mail" value="carlos@sollius.com.br" oninput="updateCardPreview()">
+            <input type="text" id="card-input-site" class="form-input" placeholder="Site ou Link (Gera QR Code)" value="sollius.com.br" oninput="updateCardPreview()">
+          </div>
+
+          <!-- Preview Frente e Verso -->
+          <div>
+            <div class="card-preview-stage">
+              
+              <!-- Frente -->
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; display: block; text-align: center;">Frente da Arte</span>
+                <div id="card-preview-front" class="business-card bc-theme-gold">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="card-front-company" class="bc-accent" style="font-size: 0.85rem; font-weight: 800; letter-spacing: 0.15em;">SOLLIUS STUDIO</span>
+                    <span style="font-size: 1.2rem;">☀️</span>
+                  </div>
+                  <div>
+                    <h3 id="card-front-name" style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.15rem;">Carlos Eduardo</h3>
+                    <p id="card-front-role" class="bc-sub" style="font-size: 0.85rem; font-weight: 500;">Arquiteto de Soluções</p>
+                  </div>
+                  <div style="height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.1);"></div>
+                </div>
+              </div>
+
+              <!-- Verso -->
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; display: block; text-align: center;">Verso com QR Code</span>
+                <div id="card-preview-back" class="business-card bc-theme-gold">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="card-back-company" class="bc-accent" style="font-size: 0.9rem; font-weight: 800;">SOLLIUS STUDIO</span>
+                    <span style="font-size: 0.72rem; color: #94a3b8; letter-spacing: 0.05em;">SCANEIE O CONTATO</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.78rem;">
+                      <div id="card-back-phone">📱 +55 (11) 98888-7777</div>
+                      <div id="card-back-email">📧 carlos@sollius.com.br</div>
+                      <div id="card-back-site">🌐 sollius.com.br</div>
+                    </div>
+                    <div id="card-qr-box" style="padding: 0.35rem; background: rgba(255,255,255,0.08); border-radius: 8px;"></div>
+                  </div>
+                  <div style="font-size: 0.65rem; color: #64748b; text-align: right;">300 DPI Export Ready</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: ASSINADOR DE PDF 100% PRIVADO -->
+    <!-- ======================================================== -->
+    <div id="tab-assinar-pdf" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>✍️</span>
+              <span>Assinador de PDF 100% Privado no Navegador</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Assine contratos e documentos sem enviar nenhum dado para a nuvem. Processamento criptograficamente isolado.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; font-size: 0.75rem; font-weight: 700;">
+            🛡️ Zero Vazamento • Sem Servidor
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <!-- Dropzone do PDF -->
+          <div class="dropzone" onclick="document.getElementById('pdf-sign-file-input').click()" style="margin-bottom: 1.5rem;">
+            <input type="file" id="pdf-sign-file-input" accept="application/pdf" style="display: none;" onchange="handlePdfToSign(this.files[0])">
+            <div class="dropzone-icon" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">📄</div>
+            <h4 class="dropzone-title">Clique ou arraste o PDF para assinar</h4>
+            <p class="dropzone-subtitle" id="pdf-sign-info">Contratos, procurações, recibos e documentos confidenciais</p>
+          </div>
+
+          <!-- Pad de Assinatura -->
+          <div style="margin-bottom: 1.5rem;">
+            <div class="flex-between" style="margin-bottom: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Desenhe sua Assinatura / Rubrica com o mouse ou dedo:</span>
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="ink-palette">
+                  <button type="button" class="ink-btn active" data-color="#0f172a" style="background: #0f172a;" onclick="setPenColor('#0f172a')" title="Preto Clássico"></button>
+                  <button type="button" class="ink-btn" data-color="#1d4ed8" style="background: #1d4ed8;" onclick="setPenColor('#1d4ed8')" title="Azul Caneta"></button>
+                  <button type="button" class="ink-btn" data-color="#dc2626" style="background: #dc2626;" onclick="setPenColor('#dc2626')" title="Vermelho"></button>
+                </div>
+                <button type="button" onclick="clearSignaturePad()" class="btn-secondary" style="padding: 0.3rem 0.65rem; font-size: 0.75rem;">Limpar</button>
+              </div>
+            </div>
+            
+            <div class="signature-pad-wrapper">
+              <canvas id="signature-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Botão de Ação -->
+          <div id="pdf-sign-action-area" class="hidden" style="text-align: center;">
+            <button onclick="stampSignatureOnPdf()" class="btn-primary" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); font-size: 1rem; padding: 0.85rem 2rem;">
+              <span>✍️</span>
+              <span>Carimbar e Baixar PDF Assinado</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: LIMPADOR DE LOCALIZAÇÃO GPS & METADADOS EXIF -->
+    <!-- ======================================================== -->
+    <div id="tab-limpar-gps" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📍</span>
+              <span>Limpador de Localização GPS & Metadados EXIF</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Elimine as coordenadas exatas da sua casa, modelo do celular e dados de exposição antes de compartilhar fotos.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; font-size: 0.75rem; font-weight: 700;">
+            🛡️ Privacy Shield 100%
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <div class="dropzone" onclick="document.getElementById('gps-file-input').click()">
+            <input type="file" id="gps-file-input" multiple accept="image/*" style="display: none;" onchange="handleGpsCleanFiles(this.files)">
+            <div class="dropzone-icon" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">🛡️</div>
+            <h4 class="dropzone-title">Selecione ou arraste fotos para sanitizar</h4>
+            <p class="dropzone-subtitle">Remove latitude, longitude, altitude, modelo do aparelho e timestamps</p>
+          </div>
+
+          <div id="gps-results-area" class="hidden" style="margin-top: 1.5rem;">
+            <div class="flex-between" style="margin-bottom: 1rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff;">Fotos Sanitizadas & Seguras:</h3>
+              <button onclick="downloadAllCleanedPhotos()" class="btn-primary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
+                Baixar Todas (.ZIP)
+              </button>
+            </div>
+            <div id="gps-results-list"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: TEXT STUDIO & FORMATADOR -->
+    <!-- ======================================================== -->
+    <div id="tab-texto" class="tab-content hidden">
+      <div style="max-width: 960px; margin: 0 auto;">
+        
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📝</span>
+              <span>Text Studio & Limpador de Linhas</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Estatísticas de leitura em tempo real, conversor de maiúsculas/minúsculas e eliminação de linhas duplicadas.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button onclick="copyTextStudio()" class="btn-primary" style="font-size: 0.85rem;">
+              <span>📋</span>
+              <span>Copiar Texto</span>
+            </button>
+            <button onclick="clearTextStudio()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>🗑️</span>
+              <span>Limpar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Badges de Estatísticas ao Vivo -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="text-stat-badge">
+            <span id="stat-chars" class="text-stat-number">0</span>
+            <span class="text-stat-label">Caracteres</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-chars-nospace" class="text-stat-number">0</span>
+            <span class="text-stat-label">Sem Espaços</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-words" class="text-stat-number">0</span>
+            <span class="text-stat-label">Palavras</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-lines" class="text-stat-number">0</span>
+            <span class="text-stat-label">Linhas</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-readtime" class="text-stat-number">0 min</span>
+            <span class="text-stat-label">Tempo Leitura</span>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.5rem;">
+          
+          <!-- Botões de Ações Rápidas -->
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+            <button onclick="transformText('upper')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">MAIÚSCULAS</button>
+            <button onclick="transformText('lower')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">minúsculas</button>
+            <button onclick="transformText('capitalize')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Primeira Letra</button>
+            <button onclick="transformText('remove-empty')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Remover Linhas Vazias</button>
+            <button onclick="transformText('remove-duplicates')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Remover Duplicadas</button>
+            <button onclick="transformText('trim')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Limpar Espaços</button>
+            <button onclick="transformText('fix-breaks')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Unir Quebras de Linha</button>
+          </div>
+
+          <textarea id="text-studio-input" class="form-input" rows="12" placeholder="Cole ou digite seu texto aqui..." oninput="updateTextStats()" style="font-size: 0.92rem; line-height: 1.6;"></textarea>
+          
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
     <!-- TAB: GRAVADOR DE TELA -->
     <!-- ======================================================== -->
     <div id="tab-recorder" class="tab-content hidden">
@@ -617,16 +1201,22 @@
 
 
   <!-- FOOTER -->
-  <footer class="footer">
+  <footer class="footer" role="contentinfo">
     <div class="footer-content">
       <div>
-        <strong style="color: #fff;">SOLLIUS</strong> • Todos os direitos reservados. Processamento 100% no cliente.
+        <strong style="color: #fff;">SOLLIUS</strong> • Todos os direitos reservados. Ecossistema 100% Processado no Navegador.
       </div>
       <div class="footer-links">
-        <span onclick="switchTab('remover')">Removedor</span>
-        <span onclick="switchTab('converter')">Conversor</span>
-        <span onclick="switchTab('pdf')">PDF</span>
+        <span onclick="switchTab('remover')">Removedor IA</span>
+        <span onclick="switchTab('curriculo')">Currículo ATS</span>
+        <span onclick="switchTab('cartao')">Cartão de Visita</span>
+        <span onclick="switchTab('assinar-pdf')">Assinar PDF</span>
+        <span onclick="switchTab('limpar-gps')">Limpar GPS</span>
+        <span onclick="switchTab('converter')">Conversores</span>
+        <span onclick="switchTab('pdf')">PDF Studio</span>
         <span onclick="switchTab('tags')">Tags Virais</span>
+        <span onclick="switchTab('qrcode')">QR Code</span>
+        <span onclick="switchTab('texto')">Text Studio</span>
       </div>
     </div>
   </footer>

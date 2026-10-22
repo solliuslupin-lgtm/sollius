@@ -525,3 +525,323 @@ input[type="range"] {
   align-items: center;
   justify-content: space-between;
 }
+
+/* ========================================================
+   CURRÍCULO STUDIO (ATS-FRIENDLY & ACCESSIBLE)
+   ======================================================== */
+.resume-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media (min-width: 1024px) {
+  .resume-layout {
+    grid-template-columns: 460px 1fr;
+  }
+}
+
+.resume-paper {
+  background: #ffffff;
+  color: #1e293b;
+  min-height: 842px;
+  width: 100%;
+  max-width: 595px;
+  margin: 0 auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  padding: 2.5rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Template: Minimalista Executivo */
+.resume-paper.theme-executive {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  border-top: 6px solid #0f172a;
+}
+.resume-paper.theme-executive .res-header {
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.resume-paper.theme-executive .res-name {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+.resume-paper.theme-executive .res-title {
+  font-size: 1.05rem;
+  color: #2563eb;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+.resume-paper.theme-executive .res-sec-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 1.25rem;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 0.25rem;
+}
+
+/* Template: Tech & Moderno */
+.resume-paper.theme-tech {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  border-left: 6px solid #8b5cf6;
+}
+.resume-paper.theme-tech .res-name {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #4c1d95;
+}
+.resume-paper.theme-tech .res-title {
+  color: #7c3aed;
+  font-weight: 600;
+}
+.resume-paper.theme-tech .res-sec-title {
+  color: #6d28d9;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-bottom: 2px dashed #ddd6fe;
+  padding-bottom: 0.25rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Template: Criativo & Elegante */
+.resume-paper.theme-creative {
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.resume-paper.theme-creative .res-header {
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.resume-paper.theme-creative .res-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+.resume-paper.theme-creative .res-sec-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  border-bottom: 1px solid #111827;
+  padding-bottom: 0.25rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.res-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 0.6rem;
+}
+.res-item {
+  margin-bottom: 0.85rem;
+}
+.res-item-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #334155;
+}
+.res-item-sub {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+.res-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.res-tag-badge {
+  background: #f1f5f9;
+  color: #334155;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Print CSS para Currículo A4 Perfeito */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #resume-printable-area, #resume-printable-area * {
+    visibility: visible;
+  }
+  #resume-printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+}
+
+/* ========================================================
+   CARTÃO DE VISITA STUDIO (FRENTE E VERSO DE ARTE)
+   ======================================================== */
+.card-preview-stage {
+  perspective: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem 0;
+}
+@media (min-width: 768px) {
+  .card-preview-stage {
+    flex-direction: row;
+    justify-content: center;
+    gap: 2.5rem;
+  }
+}
+
+.business-card {
+  width: 360px;
+  height: 210px;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.business-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+/* Temas de Arte do Cartão */
+.bc-theme-gold {
+  background: radial-gradient(circle at 100% 0%, #2a2515 0%, #0d0d0f 65%);
+  color: #f8fafc;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.bc-theme-gold .bc-accent {
+  color: #E6C665;
+  background: linear-gradient(135deg, #FFF1B0 0%, #D4AF37 50%, #AA771C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.bc-theme-gold .bc-sub { color: #94a3b8; }
+
+.bc-theme-cyber {
+  background: linear-gradient(135deg, #090A10 0%, #17112E 100%);
+  color: #f8fafc;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+.bc-theme-cyber .bc-accent {
+  background: linear-gradient(135deg, #00F5FF 0%, #A855F7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.bc-theme-cyber .bc-sub { color: #a78bfa; }
+
+.bc-theme-holographic {
+  background: linear-gradient(135deg, #181E34 0%, #2D143D 50%, #0C2330 100%);
+  color: #f8fafc;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+.bc-theme-holographic .bc-accent {
+  background: linear-gradient(135deg, #FB7185 0%, #38BDF8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bc-theme-minimal {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+.bc-theme-minimal .bc-accent { color: #0f172a; }
+.bc-theme-minimal .bc-sub { color: #64748b; }
+
+/* ========================================================
+   CANVAS DE ASSINATURA & PDF SIGNER
+   ======================================================== */
+.signature-pad-wrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 2px dashed rgba(255,255,255,0.2);
+  position: relative;
+  touch-action: none;
+}
+#signature-canvas {
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
+  display: block;
+  cursor: crosshair;
+}
+.ink-palette {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.ink-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.ink-btn.active {
+  transform: scale(1.2);
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* ========================================================
+   TEXT STUDIO & PRIVACY BADGES
+   ======================================================== */
+.text-stat-badge {
+  background: rgba(255,255,255,0.06);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+}
+.text-stat-number {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--amber-primary);
+}
+.text-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
