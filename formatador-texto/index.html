@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="pt-BR" prefix="og: https://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO PRIMÁRIO 100/100 -->
+  <title>Text Studio: Contador e Limpador de Linhas | SOLLIUS</title>
+  <meta name="description" content="Remova linhas duplicadas, conte caracteres e palavras e formate textos online com 1 clique.">
+  <meta name="keywords" content="removedor de fundo gratis, criador de curriculo ats, criar cartao de visita online, assinar pdf gratis, limpar gps foto, juntar pdf, conversor webp, gerador de tags youtube, qr code permanente">
+  <meta name="author" content="SOLLIUS Ecosystem">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#07090E">
+  <link rel="canonical" href="https://sollius.com.br/formatador-texto">
+
+  <!-- OPEN GRAPH / FACEBOOK / WHATSAPP / LINKEDIN -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:url" content="https://sollius.com.br/formatador-texto">
+  <meta property="og:site_name" content="SOLLIUS">
+  <meta property="og:title" content="Text Studio: Contador e Limpador de Linhas | SOLLIUS">
+  <meta property="og:description" content="Sem cadastros, sem limites diários e 100% no seu navegador. Removedor de fundo IA, criador de currículo ATS, cartão de visita de luxo, assinador de PDF e conversores.">
+  <meta property="og:image" content="https://sollius.com.br/og-banner.png">
+
+  <!-- TWITTER CARDS -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SOLLIUS | Ferramentas Web Gratuitas & Ilimitadas">
+  <meta name="twitter:description" content="Removedor IA, Currículo ATS, Cartão de Visita, Assinador de PDF e Conversores 100% no cliente.">
+  <meta name="twitter:image" content="https://sollius.com.br/og-banner.png">
+
+  <!-- SCHEMA.ORG DADOS ESTRUTURADOS (JSON-LD) PARA GOOGLE RICH SNIPPETS -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://sollius.com.br/#website",
+        "url": "https://sollius.com.br/",
+        "name": "SOLLIUS",
+        "description": "Ecossistema de ferramentas web 100% gratuitas, privadas e ilimitadas.",
+        "inLanguage": "pt-BR"
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://sollius.com.br/#app",
+        "name": "SOLLIUS Web Suite",
+        "url": "https://sollius.com.br/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "featureList": [
+          "Removedor de Fundo com IA Local",
+          "Criador de Currículos ATS-Friendly Acessível",
+          "Criador de Cartão de Visita Artístico com QR Code",
+          "Assinador de PDF 100% Privado no Navegador",
+          "Limpador de Metadados e Localização GPS de Fotos",
+          "Conversor e Compressor em Lote WebP/PNG/JPG",
+          "PDF Studio para Mesclagem e Fotos para PDF",
+          "Gerador de Tags Virais e Click Magnet para Redes Sociais",
+          "QR Code Studio Personalizado Vitalício",
+          "Text Studio para Limpeza de Linhas e Contagem",
+          "Gravador de Tela e Áudio Sem Limites"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- Base URL para Resolução Universal de Ativos -->
+  <base href="/">
+
+  <!-- CSS Autônomo e Standalone com Cache-Busting -->
+  <link rel="stylesheet" href="style.css?v=5.0.0">
+
+  <!-- Bibliotecas Seguras e Robustas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body data-initial-tab="texto">
+
+  <!-- HEADER NAVEGAÇÃO -->
+  <header class="header" role="banner">
+    <div class="header-container">
+      
+      <!-- Logo -->
+      <a href="/" onclick="switchTab('hub'); return false;" class="logo-group" role="button" aria-label="Página inicial do SOLLIUS" style="text-decoration:none;">
+        <div class="logo-icon" aria-hidden="true">☀️</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="logo-text">SOLLIUS</span>
+          <span class="badge-ecosystem">ECOSYSTEM</span>
+        </div>
+      </a>
+
+      <!-- Barra de Busca Rápida no Topo -->
+      <div class="header-search-bar">
+        <span class="header-search-icon">🔍</span>
+        <input type="text" class="header-search-input" placeholder="Buscar ferramenta (ex: currículo, fundo, assinar...)" oninput="filterTools(this.value)">
+      </div>
+
+      <!-- Navegação Principal -->
+      <nav class="header-nav" role="navigation" aria-label="Navegação Superior">
+        <a href="/" onclick="switchTab('hub'); filterCategory('all'); return false;" class="header-nav-btn active" data-tab="hub" style="text-decoration:none;">
+          <span>⚡</span>
+          <span>Todas as Ferramentas</span>
+        </a>
+        <a href="/#design" onclick="filterCategory('design'); return false;" class="header-nav-btn" style="text-decoration:none;">
+          <span>🎨</span>
+          <span>Design</span>
+        </a>
+        <a href="/#documentos" onclick="filterCategory('documentos'); return false;" class="header-nav-btn" style="text-decoration:none;">
+          <span>📄</span>
+          <span>Documentos</span>
+        </a>
+        <a href="/#viral" onclick="filterCategory('viral'); return false;" class="header-nav-btn" style="text-decoration:none;">
+          <span>🚀</span>
+          <span>Viral & Mídia</span>
+        </a>
+        <a href="/#utilitarios" onclick="filterCategory('utilitarios'); return false;" class="header-nav-btn" style="text-decoration:none;">
+          <span>🛠️</span>
+          <span>Utilitários</span>
+        </a>
+      </nav>
+
+      <!-- Status Badge -->
+      <div class="shield-badge" title="Processamento 100% isolado na memória do seu aparelho">
+        <span class="pulse-dot"></span>
+        <span>100% Local</span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="main-wrapper">
+
+    <!-- ======================================================== -->
+    <!-- TAB: HUB / DASHBOARD -->
+    <!-- ======================================================== -->
+    <div id="tab-hub" class="tab-content">
+      
+      <!-- Hero Banner Redesenhado -->
+      <div class="hero-card glass-panel">
+        <div class="hero-pill">
+          <span>⚡</span>
+          <span>Zero Nuvem • Zero Cadastro • 100% no seu Navegador</span>
+        </div>
+        <h1 class="hero-title">
+          O Ecossistema Completo de Ferramentas Web <span class="hero-gradient">Sem Custos</span>.
+        </h1>
+        <p class="hero-desc">
+          Crie currículos padrão ATS, assine PDFs sem enviar para a internet, remova fundos com IA, gere cartões de arte e converta arquivos em lote com total privacidade.
+        </p>
+        
+        <!-- Campo de Busca em Destaque no Hero -->
+        <div style="max-width: 620px; position: relative; margin-bottom: 1.5rem;">
+          <span style="position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.6;">🔍</span>
+          <input type="text" id="hero-search-input" placeholder="O que você precisa fazer hoje? (ex: 'remover fundo', 'currículo', 'assinar pdf')..." oninput="filterTools(this.value)" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1rem 1.25rem 1rem 3rem; color: #fff; font-size: 1rem; outline: none; box-shadow: 0 8px 30px rgba(0,0,0,0.4); transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--amber-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.18)'">
+        </div>
+
+        <!-- Atalhos Rápidos -->
+        <div class="hero-actions" style="gap: 0.6rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); align-self: center; margin-right: 0.35rem;">Acesso Rápido:</span>
+          <a href="/curriculo-ats" onclick="switchTab('curriculo'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">📄 Criar Currículo</a>
+          <a href="/remover-fundo" onclick="switchTab('remover'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">✨ Remover Fundo</a>
+          <a href="/assinar-pdf" onclick="switchTab('assinar-pdf'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">✍️ Assinar PDF</a>
+          <a href="/cartao-de-visita" onclick="switchTab('cartao'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">💳 Cartão de Visita</a>
+          <a href="/compressor-imagem" onclick="switchTab('converter'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">🖼️ Compressor</a>
+          <a href="/limpar-gps" onclick="switchTab('limpar-gps'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">📍 Limpar GPS</a>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros por Categoria -->
+      <div class="category-filter-bar">
+        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (11)</button>
+        <button class="cat-pill" onclick="filterCategory('design', this)">🎨 Design & Imagens (3)</button>
+        <button class="cat-pill" onclick="filterCategory('documentos', this)">📄 Documentos & PDF (3)</button>
+        <button class="cat-pill" onclick="filterCategory('viral', this)">🚀 Marketing & Viral (3)</button>
+        <button class="cat-pill" onclick="filterCategory('utilitarios', this)">🛠️ Utilitários & Privacidade (2)</button>
+      </div>
+
+      <!-- Grid de Módulos (Bento Cards com Filtragem Dinâmica e Links SEO Reais) -->
+      <div class="tools-grid" id="main-tools-grid">
+        
+        <!-- 1. Removedor -->
+        <a href="/remover-fundo" onclick="switchTab('remover'); return false;" class="tool-card" role="button" tabindex="0" data-category="design" data-keywords="fundo imagem foto recortar remover background png transparente ia inteligência artificial">
+          <div class="tool-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.3);">✨</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Removedor de Fundo IA</h3>
+            <span class="tool-badge" style="background: rgba(139, 92, 246, 0.15); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.3);">Ilimitado</span>
+          </div>
+          <p class="tool-desc">Remova o fundo de qualquer imagem automaticamente com IA sem enviar fotos para servidores terceiros.</p>
+          <div class="tool-link" style="color: #C084FC;">Abrir Removedor →</div>
+        </a>
+
+        <!-- 2. Criador de Currículo ATS -->
+        <a href="/curriculo-ats" onclick="switchTab('curriculo'); return false;" class="tool-card" role="button" tabindex="0" data-category="documentos" data-keywords="curriculo cv ats modelo template profissional emprego vaga rh carta apresentacao pdf a4">
+          <div class="tool-icon-wrapper" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3);">📄</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Criador de Currículos ATS</h3>
+            <span class="tool-badge" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3);">Padrão RH</span>
+          </div>
+          <p class="tool-desc">Templates modernos com acessibilidade visual e formato 100% legível por robôs de recrutamento. Exportação A4 perfeita.</p>
+          <div class="tool-link" style="color: #60A5FA;">Criar Meu Currículo →</div>
+        </a>
+
+        <!-- 3. Cartão de Visita de Arte -->
+        <a href="/cartao-de-visita" onclick="switchTab('cartao'); return false;" class="tool-card" role="button" tabindex="0" data-category="design" data-keywords="cartao de visita arte grafica mockup frente verso print impressao 300dpi qr code gold luxo cyber">
+          <div class="tool-icon-wrapper" style="background: rgba(212, 175, 55, 0.15); color: #FACC15; border: 1px solid rgba(212, 175, 55, 0.3);">💳</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Cartão de Visita de Elite</h3>
+            <span class="tool-badge" style="background: rgba(212, 175, 55, 0.15); color: #FACC15; border: 1px solid rgba(212, 175, 55, 0.3);">Arte 3D</span>
+          </div>
+          <p class="tool-desc">Crie artes de frente e verso com temas de luxo (Gold, Cyber, Holographic) e QR Code integrado para impressão em 300 DPI.</p>
+          <div class="tool-link" style="color: #FACC15;">Criar Cartão →</div>
+        </a>
+
+        <!-- 4. Assinador de PDF Privado -->
+        <a href="/assinar-pdf" onclick="switchTab('assinar-pdf'); return false;" class="tool-card" role="button" tabindex="0" data-category="documentos" data-keywords="assinar pdf rubrica contrato assinatura digital privado sem nuvem documento carimbo">
+          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">✍️</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Assinar PDF no Navegador</h3>
+            <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">Sem Nuvem</span>
+          </div>
+          <p class="tool-desc">Desenhe sua rubrica na tela e carimbe qualquer documento sigiloso sem que ele saia do seu computador.</p>
+          <div class="tool-link" style="color: #34D399;">Assinar Documento →</div>
+        </a>
+
+        <!-- 5. Limpador de GPS & Metadados -->
+        <a href="/limpar-gps" onclick="switchTab('limpar-gps'); return false;" class="tool-card" role="button" tabindex="0" data-category="utilitarios" data-keywords="gps localizacao foto privacidade exif sanitizar camera modelo endereco seguranca meta">
+          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">📍</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Limpador de GPS & EXIF</h3>
+            <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Privacy Shield</span>
+          </div>
+          <p class="tool-desc">Remova as coordenadas de onde você mora e metadados de câmera antes de postar fotos na internet.</p>
+          <div class="tool-link" style="color: #F87171;">Sanitizar Fotos →</div>
+        </a>
+
+        <!-- 6. Conversor & Compressor -->
+        <a href="/compressor-imagem" onclick="switchTab('converter'); return false;" class="tool-card" role="button" tabindex="0" data-category="design" data-keywords="converter imagem comprimir webp png jpg lote fotos reduzir tamanho otimizar zip">
+          <div class="tool-icon-wrapper" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24; border: 1px solid rgba(255, 153, 0, 0.3);">🖼️</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Conversor & Compressor</h3>
+            <span class="tool-badge" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24; border: 1px solid rgba(255, 153, 0, 0.3);">Em Lote</span>
+          </div>
+          <p class="tool-desc">Converta entre WebP, PNG e JPG reduzindo até 90% do tamanho com download em lote em formato ZIP.</p>
+          <div class="tool-link" style="color: #FBBF24;">Converter Imagens →</div>
+        </a>
+
+        <!-- 7. PDF Studio -->
+        <a href="/pdf-studio" onclick="switchTab('pdf'); return false;" class="tool-card" role="button" tabindex="0" data-category="documentos" data-keywords="pdf juntar mesclar unir fotos para pdf converter split merge documentos">
+          <div class="tool-icon-wrapper" style="background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3);">📑</div>
+          <div class="tool-header">
+            <h3 class="tool-title">PDF Studio</h3>
+            <span class="tool-badge" style="background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3);">Client-Side</span>
+          </div>
+          <p class="tool-desc">Junte múltiplos PDFs ou transforme fotos em PDF único com privacidade total e sem limite de páginas.</p>
+          <div class="tool-link" style="color: #FB7185;">Mesclar PDFs →</div>
+        </a>
+
+        <!-- 8. Tags Virais -->
+        <a href="/gerador-tags-virais" onclick="switchTab('tags'); return false;" class="tool-card" role="button" tabindex="0" data-category="viral" data-keywords="tags youtube viral tiktok reels hashtags titulos clickbait views inscritos seo magnet">
+          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">📈</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Tags & Click Magnet</h3>
+            <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">SEO Viral</span>
+          </div>
+          <p class="tool-desc">Gere tags para o YouTube Studio, hashtags para TikTok/Reels e fórmulas de títulos de alta conversão.</p>
+          <div class="tool-link" style="color: #34D399;">Gerar Tags Virais →</div>
+        </a>
+
+        <!-- 9. QR Code Pro -->
+        <a href="/gerador-qrcode" onclick="switchTab('qrcode'); return false;" class="tool-card" role="button" tabindex="0" data-category="viral" data-keywords="qr code qrcode pix link whatsapp wifi vitalicio permanente customizado cor logo">
+          <div class="tool-icon-wrapper" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">📱</div>
+          <div class="tool-header">
+            <h3 class="tool-title">QR Code Pro</h3>
+            <span class="tool-badge" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">Vitalício</span>
+          </div>
+          <p class="tool-desc">Crie QR Codes estilizados com cores neon e links diretos que nunca expiram nem pedem assinatura.</p>
+          <div class="tool-link" style="color: #22D3EE;">Criar QR Code →</div>
+        </a>
+
+        <!-- 10. Text Studio -->
+        <a href="/formatador-texto" onclick="switchTab('texto'); return false;" class="tool-card" role="button" tabindex="0" data-category="utilitarios" data-keywords="texto maiusculas minusculas duplicadas quebras contagem caracteres palavras formatar">
+          <div class="tool-icon-wrapper" style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3);">📝</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Formatador de Texto</h3>
+            <span class="tool-badge" style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3);">Produtividade</span>
+          </div>
+          <p class="tool-desc">Limpe linhas duplicadas, corrija quebras e conte caracteres e palavras em tempo real.</p>
+          <div class="tool-link" style="color: #C084FC;">Abrir Text Studio →</div>
+        </a>
+
+        <!-- 11. Gravador de Tela -->
+        <a href="/gravador-de-tela" onclick="switchTab('recorder'); return false;" class="tool-card" role="button" tabindex="0" data-category="viral" data-keywords="gravar tela gravador video audio microfone gameplay tutorial capturar">
+          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">🎥</div>
+          <div class="tool-header">
+            <h3 class="tool-title">Gravador de Tela & Áudio</h3>
+            <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Sem Limite</span>
+          </div>
+          <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador sem instalar apps.</p>
+          <div class="tool-link" style="color: #F87171;">Iniciar Gravação →</div>
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: REMOVEDOR DE FUNDO -->
+    <!-- ======================================================== -->
+    <div id="tab-remover" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>✨</span>
+              <span>Removedor de Fundo Inteligente</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Recorte fotos no seu navegador sem limite de uploads e sem enviar arquivos à nuvem.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #C084FC; font-size: 0.75rem; font-weight: 700;">
+            100% Grátis & Privado
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <!-- Drop Area -->
+          <div id="remover-dropzone" class="dropzone" onclick="document.getElementById('remover-file-input').click()">
+            <input type="file" id="remover-file-input" accept="image/*" style="display: none;" onchange="handleRemoverFile(this.files[0])">
+            <div class="dropzone-icon" style="background: rgba(139, 92, 246, 0.15); color: #C084FC;">📁</div>
+            <h4 class="dropzone-title">Arraste uma foto ou clique para selecionar</h4>
+            <p class="dropzone-subtitle">Suporta PNG, JPG, JPEG e WebP</p>
+          </div>
+
+          <!-- Loading State -->
+          <div id="remover-loading" class="hidden" style="text-align: center; margin: 2rem 0;">
+            <div style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; border-radius: 14px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #C084FC; font-weight: 600;">
+              <span>⏳</span>
+              <span>Processando recorte no navegador...</span>
+            </div>
+          </div>
+
+          <!-- Result Area -->
+          <div id="remover-result" class="hidden" style="margin-top: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+              
+              <!-- Original -->
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; display: block;">Original</span>
+                <div style="height: 300px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0.5rem;">
+                  <img id="remover-orig-img" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;">
+                </div>
+              </div>
+
+              <!-- Recortada -->
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #C084FC; text-transform: uppercase; margin-bottom: 0.5rem; display: block;">Recorte Sem Fundo</span>
+                <div id="remover-bg-preview" style="height: 300px; border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0.5rem; background-image: repeating-linear-gradient(45deg, #181b26 0, #181b26 10px, #10131d 0, #10131d 20px);">
+                  <canvas id="remover-canvas" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;"></canvas>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Controles de Fundo e Tolerância -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem; border-radius: 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 0.8rem; font-weight: 600;">Trocar Fundo:</span>
+                <button onclick="changeRemoverBg('transparent')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid #666; background: repeating-linear-gradient(45deg, #333 0, #333 3px, #555 0, #555 6px); cursor: pointer;" title="Transparente"></button>
+                <button onclick="changeRemoverBg('#ffffff')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid #fff; background: #fff; cursor: pointer;" title="Branco"></button>
+                <button onclick="changeRemoverBg('#000000')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid #444; background: #000; cursor: pointer;" title="Preto"></button>
+                <button onclick="changeRemoverBg('#FF9900')" style="width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--amber-primary); background: var(--amber-primary); cursor: pointer;" title="Solar Amber"></button>
+                <input type="color" onchange="changeRemoverBg(this.value)" style="width: 26px; height: 26px; border-radius: 6px; background: transparent; cursor: pointer; border: 1px solid #666;" title="Cor Personalizada">
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Sensibilidade:</span>
+                <input type="range" id="remover-tolerance" min="10" max="90" value="35" oninput="reprocessRemover()" style="width: 120px;">
+              </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+              <button onclick="document.getElementById('remover-file-input').click()" class="btn-secondary">
+                <span>🔄</span>
+                <span>Trocar Foto</span>
+              </button>
+              <button onclick="downloadRemoverResult()" class="btn-purple">
+                <span>⬇️</span>
+                <span>Baixar Imagem PNG</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: CONVERSOR & COMPRESSOR -->
+    <!-- ======================================================== -->
+    <div id="tab-converter" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🖼️</span>
+              <span>Conversor & Compressor em Lote</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Comprima imagens para WebP, PNG ou JPG reduzindo até 90% do peso.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(255, 153, 0, 0.15); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--amber-primary); font-size: 0.75rem; font-weight: 700;">
+            Até -90% Menos Peso
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <div id="converter-dropzone" class="dropzone" onclick="document.getElementById('converter-file-input').click()">
+            <input type="file" id="converter-file-input" multiple accept="image/*" style="display: none;" onchange="handleConverterFiles(this.files)">
+            <div class="dropzone-icon" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24;">📦</div>
+            <h4 class="dropzone-title">Selecione uma ou mais imagens para converter</h4>
+            <p class="dropzone-subtitle">Suporta PNG, JPG, JPEG, WebP, GIF, BMP</p>
+          </div>
+
+          <!-- Controles de Conversão -->
+          <div class="controls-grid">
+            <div class="control-group">
+              <label>Formato de Saída:</label>
+              <select id="converter-target-format" class="custom-select">
+                <option value="webp" selected>WEBP (Mais Rápido & Leve)</option>
+                <option value="jpeg">JPG / JPEG (Universal)</option>
+                <option value="png">PNG (Sem perda)</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <div class="flex-between" style="margin-bottom: 0.5rem;">
+                <label style="margin: 0;">Qualidade:</label>
+                <span id="converter-quality-val" style="color: var(--amber-primary); font-weight: 700; font-size: 0.8rem;">82%</span>
+              </div>
+              <input type="range" id="converter-quality" min="20" max="100" value="82" oninput="document.getElementById('converter-quality-val').innerText = this.value + '%'">
+            </div>
+
+            <div class="control-group">
+              <label>Redimensionar Largura:</label>
+              <select id="converter-max-width" class="custom-select">
+                <option value="original" selected>Tamanho Original</option>
+                <option value="1920">1920px (Full HD)</option>
+                <option value="1080">1080px (Instagram / Post)</option>
+                <option value="800">800px (Blog / Loja)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Lista de Imagens Convertidas -->
+          <div id="converter-queue-container" class="hidden" style="margin-top: 2rem;">
+            <div class="flex-between" style="margin-bottom: 0.85rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Arquivos Processados (<span id="converter-queue-count">0</span>)</span>
+              <button onclick="downloadAllConverted()" style="background: none; border: none; color: var(--amber-primary); font-size: 0.85rem; font-weight: 700; cursor: pointer;">
+                ⬇️ Baixar Todos em ZIP
+              </button>
+            </div>
+
+            <div id="converter-queue-list" style="display: flex; flex-direction: column; gap: 0.65rem; max-height: 320px; overflow-y: auto;"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: PDF STUDIO -->
+    <!-- ======================================================== -->
+    <div id="tab-pdf" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📄</span>
+              <span>PDF Studio (Juntar & Criar PDFs)</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Una múltiplos documentos e boletos em ordem ou transforme fotos em PDF único.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: #FB7185; font-size: 0.75rem; font-weight: 700;">
+            100% no Navegador
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <!-- Mode Switcher -->
+          <div style="display: flex; gap: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.85rem; margin-bottom: 1.5rem;">
+            <button onclick="setPdfMode('merge')" id="pdf-btn-merge" style="background: none; border: none; border-bottom: 2px solid #F43F5E; color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; padding-bottom: 0.5rem;">
+              📑 Juntar Múltiplos PDFs
+            </button>
+            <button onclick="setPdfMode('img2pdf')" id="pdf-btn-img2pdf" style="background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; cursor: pointer; padding-bottom: 0.5rem;">
+              📷 Fotos para PDF
+            </button>
+          </div>
+
+          <!-- Drop Area -->
+          <div id="pdf-dropzone" class="dropzone" onclick="document.getElementById('pdf-file-input').click()">
+            <input type="file" id="pdf-file-input" multiple accept=".pdf" style="display: none;" onchange="handlePdfFiles(this.files)">
+            <div class="dropzone-icon" style="background: rgba(244, 63, 94, 0.15); color: #FB7185;">📑</div>
+            <h4 id="pdf-drop-title" class="dropzone-title">Selecione arquivos PDF para unir</h4>
+            <p id="pdf-drop-desc" class="dropzone-subtitle">Arraste seus documentos PDF na ordem desejada</p>
+          </div>
+
+          <!-- Lista de Arquivos -->
+          <div id="pdf-files-container" class="hidden" style="margin-top: 1.5rem;">
+            <div class="flex-between" style="margin-bottom: 0.75rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Arquivos Adicionados (<span id="pdf-count">0</span>)</span>
+              <button onclick="clearPdfList()" style="background: none; border: none; color: #FB7185; font-size: 0.8rem; cursor: pointer;">Limpar Lista</button>
+            </div>
+            
+            <div id="pdf-files-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; margin-bottom: 1.5rem;"></div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button onclick="processPdfAction()" id="pdf-action-btn" class="btn-primary" style="background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); color: #fff;">
+                <span>⚡</span>
+                <span id="pdf-action-label">Gerar e Baixar PDF Unificado</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: TAGS VIRAIS & CLICK MAGNET -->
+    <!-- ======================================================== -->
+    <div id="tab-tags" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📈</span>
+              <span>Tags Virais & Click Magnet Studio</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Gere tags para o YouTube Studio, hashtags virais para TikTok/Reels e títulos de alta conversão.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; font-size: 0.75rem; font-weight: 700;">
+            SEO & Retenção
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Tema / Assunto do Vídeo ou Post:</label>
+              <input type="text" id="tag-input-keyword" placeholder="Ex: criar jogo na godot, doceria lucrativa, finanças..." class="custom-input">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Nicho:</label>
+              <select id="tag-input-niche" class="custom-select">
+                <option value="youtube">YouTube (Tags Otimizadas)</option>
+                <option value="tiktok">TikTok / Reels (Hashtags)</option>
+                <option value="gaming">Games & Devlogs</option>
+                <option value="business">Negócios & Curiosidades</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="generateViralTags()" class="btn-emerald">
+            <span>⚡</span>
+            <span>Gerar Tags & Títulos de Alta Conversão</span>
+          </button>
+
+          <!-- Resultados -->
+          <div id="tags-result-container" class="hidden" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem;">
+            
+            <!-- Box Tags YouTube -->
+            <div style="padding: 1.25rem; border-radius: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(16, 185, 129, 0.3);">
+              <div class="flex-between" style="margin-bottom: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #34D399; text-transform: uppercase;">Tags Prontas para a Caixa do YouTube Studio:</span>
+                <button onclick="copyToClipboard('tags-youtube-text')" class="btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">Copiar Todas</button>
+              </div>
+              <p id="tags-youtube-text" style="font-family: monospace; font-size: 0.85rem; color: #E2E8F0; line-height: 1.6; word-break: break-all; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 10px;"></p>
+            </div>
+
+            <!-- Box Títulos Click Magnet -->
+            <div style="padding: 1.25rem; border-radius: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255, 153, 0, 0.3);">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary); text-transform: uppercase; display: block; margin-bottom: 0.75rem;">Fórmulas de Títulos com Alto Clique (CTR):</span>
+              <ul id="titles-list" style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;"></ul>
+            </div>
+
+            <!-- Box Hashtags -->
+            <div style="padding: 1.25rem; border-radius: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(6, 182, 212, 0.3);">
+              <div class="flex-between" style="margin-bottom: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #22D3EE; text-transform: uppercase;">Hashtags para Descrição & TikTok/Reels:</span>
+                <button onclick="copyToClipboard('tags-hashtag-text')" class="btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">Copiar Hashtags</button>
+              </div>
+              <p id="tags-hashtag-text" style="font-family: monospace; font-size: 0.85rem; color: #E2E8F0; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 10px;"></p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: QR CODE PRO -->
+    <!-- ======================================================== -->
+    <div id="tab-qrcode" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📱</span>
+              <span>Gerador de QR Code Pro</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Crie QR Codes customizados para links, Pix, Wi-Fi e WhatsApp sem limites.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); color: #22D3EE; font-size: 0.75rem; font-weight: 700;">
+            Download Alta Definição
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; align-items: center;">
+          
+          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Link ou Conteúdo:</label>
+              <input type="text" id="qr-input-text" value="https://sollius.com" class="custom-input" oninput="renderQrCode()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Cor do Código:</label>
+                <input type="color" id="qr-color-dark" value="#000000" style="width: 100%; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; cursor: pointer;" onchange="renderQrCode()">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Cor do Fundo:</label>
+                <input type="color" id="qr-color-light" value="#ffffff" style="width: 100%; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; cursor: pointer;" onchange="renderQrCode()">
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-dim); display: block; margin-bottom: 0.4rem;">Temas Pré-definidos:</span>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button onclick="setQrPreset('#000000', '#ffffff')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">Clássico</button>
+                <button onclick="setQrPreset('#FF9900', '#08090E')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--amber-primary);">Solar Amber</button>
+                <button onclick="setQrPreset('#8B5CF6', '#08090E')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--violet-primary);">Violet Neon</button>
+                <button onclick="setQrPreset('#06B6D4', '#08090E')" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--cyan-primary);">Cyan Tech</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">
+            <div id="qrcode-canvas-container" style="padding: 1rem; border-radius: 16px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 1.25rem;">
+              <div id="qrcode-box"></div>
+            </div>
+
+            <button onclick="downloadQrCode()" class="btn-primary" style="background: linear-gradient(135deg, #06B6D4 0%, #2563EB 100%); color: #fff; width: 100%; justify-content: center;">
+              <span>⬇️</span>
+              <span>Baixar Imagem PNG</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: CRIADOR DE CURRÍCULOS ATS-FRIENDLY -->
+    <!-- ======================================================== -->
+    <div id="tab-curriculo" class="tab-content hidden">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📄</span>
+              <span>Criador de Currículos Profissionais (Padrão ATS)</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Modelos modernos otimizados para aprovação em triagens de RH e robôs de recrutamento (Gupy, Workday, LinkedIn). 100% gratuito e sem cadastro.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button onclick="saveResumeDraft()" class="btn-secondary" style="font-size: 0.85rem;" title="Salva os dados no navegador">
+              <span>💾</span>
+              <span>Salvar Rascunho</span>
+            </button>
+            <button onclick="printResume()" class="btn-primary" style="font-size: 0.85rem;">
+              <span>🖨️</span>
+              <span>Imprimir / Salvar PDF A4</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner Explicativo de Inteligência ATS -->
+        <div class="ats-guide-banner">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+              <span style="font-size: 1.1rem;">🎯</span>
+              <strong style="color: #fff; font-size: 0.95rem;">O que é o Formato ATS e por que ele é indispensável?</strong>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 760px; line-height: 1.5;">
+              Mais de 90% das empresas usam robôs ATS (Applicant Tracking Systems) para escanear currículos. Designs com colunas complexas, gráficos e tabelas são descartados automaticamente por falha de leitura. Nossos modelos utilizam <strong>hierarquia limpa, OCR otimizado e tipografia semântica</strong> garantindo que suas qualificações sejam 100% captadas pelos recrutadores.
+            </p>
+          </div>
+          <div class="ats-score-badge">
+            <div class="ats-score-circle">98%</div>
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #34D399; text-transform: uppercase;">Score ATS</div>
+              <div style="font-size: 0.78rem; color: #E2E8F0;">Máxima Legibilidade</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Perfis de Carreira Prontos (1-Clique) -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-right: 0.35rem;">⚡ Carregar Modelo por Área:</span>
+            <button class="preset-pill" onclick="loadCareerPreset('tech')">💻 Tecnologia & Dev</button>
+            <button class="preset-pill" onclick="loadCareerPreset('growth')">📈 Marketing & Growth</button>
+            <button class="preset-pill" onclick="loadCareerPreset('sales')">🤝 Vendas & Comercial</button>
+            <button class="preset-pill" onclick="loadCareerPreset('finance')">📊 Finanças & Gestão</button>
+            <button class="preset-pill" onclick="loadCareerPreset('intern')">🎓 Estágio / 1º Emprego</button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Estilo:</span>
+            <button class="btn-secondary theme-btn active" data-theme="executive" onclick="setResumeTheme('executive')" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Executivo</button>
+            <button class="btn-secondary theme-btn" data-theme="tech" onclick="setResumeTheme('tech')" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Tech</button>
+            <button class="btn-secondary theme-btn" data-theme="creative" onclick="setResumeTheme('creative')" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Editorial</button>
+          </div>
+        </div>
+
+        <div class="resume-layout">
+          
+          <!-- Formulário de Edição -->
+          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Dados Pessoais</h3>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <input type="text" id="res-input-name" class="form-input" placeholder="Nome Completo" oninput="updateResumePreview()">
+                <input type="text" id="res-input-title" class="form-input" placeholder="Cargo Desejado (ex: Especialista de TI)" oninput="updateResumePreview()">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                  <input type="email" id="res-input-email" class="form-input" placeholder="E-mail" oninput="updateResumePreview()">
+                  <input type="tel" id="res-input-phone" class="form-input" placeholder="Telefone / WhatsApp" oninput="updateResumePreview()">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                  <input type="text" id="res-input-loc" class="form-input" placeholder="Cidade / Estado" oninput="updateResumePreview()">
+                  <input type="text" id="res-input-site" class="form-input" placeholder="LinkedIn ou Portfólio" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Resumo Profissional (Keywords Relevantes)</h3>
+              <textarea id="res-input-summary" class="form-input" rows="3" placeholder="Apresente sua trajetória com foco em conquistas numéricas e tecnologias dominadas..." oninput="updateResumePreview()"></textarea>
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Competências & Habilidades (Separadas por vírgula)</h3>
+              <input type="text" id="res-input-skills" class="form-input" placeholder="Ex: Gestão de Projetos, Python, SQL, Metodologia Ágil, Comunicação" oninput="updateResumePreview()">
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <div class="flex-between" style="margin-bottom: 0.85rem;">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary);">Experiências Profissionais</h3>
+                <button type="button" onclick="addExperienceField()" class="btn-secondary" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">+ Adicionar</button>
+              </div>
+              <div id="res-exp-inputs-container">
+                <!-- Blocos dinâmicos inseridos aqui -->
+              </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Formação Acadêmica</h3>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <input type="text" id="res-input-edu-degree" class="form-input" placeholder="Curso / Formação" oninput="updateResumePreview()">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem;">
+                  <input type="text" id="res-input-edu-inst" class="form-input" placeholder="Instituição de Ensino" oninput="updateResumePreview()">
+                  <input type="text" id="res-input-edu-year" class="form-input" placeholder="Ano (ex: 2021-2024)" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Pré-visualização A4 ao Vivo -->
+          <div>
+            <div style="position: sticky; top: 5rem;">
+              <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Visualização A4 Milimétrica</span>
+                <span style="font-size: 0.75rem; color: #10B981; font-weight: 600;">✓ Pronto para Impressão e PDF</span>
+              </div>
+              
+              <div id="resume-printable-area">
+                <div id="resume-paper" class="resume-paper theme-executive">
+                  <header class="res-header">
+                    <h1 id="res-view-name" class="res-name">Seu Nome Completo</h1>
+                    <div id="res-view-title" class="res-title">Seu Cargo / Especialidade</div>
+                    <div id="res-view-contacts" class="res-contacts">
+                      <span>📧 email@exemplo.com</span>
+                      <span>📱 (11) 99999-9999</span>
+                      <span>📍 São Paulo, SP</span>
+                      <span>🔗 linkedin.com/in/perfil</span>
+                    </div>
+                  </header>
+
+                  <section>
+                    <h2 class="res-sec-title">Resumo Profissional</h2>
+                    <p id="res-view-summary" style="font-size: 0.86rem; color: #334155;">Profissional com sólida experiência em resolução de problemas, foco em resultados mensuráveis e inovação contínua.</p>
+                  </section>
+
+                  <section>
+                    <h2 class="res-sec-title">Competências & Habilidades</h2>
+                    <div id="res-view-skills" class="res-tags-container">
+                      <span class="res-tag-badge">Liderança</span>
+                      <span class="res-tag-badge">Comunicação</span>
+                      <span class="res-tag-badge">Gestão de Projetos</span>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 class="res-sec-title">Experiência Profissional</h2>
+                    <div id="res-view-experience">
+                      <div class="res-item">
+                        <div class="res-item-header">
+                          <strong>Cargo Atual</strong>
+                          <span style="font-size: 0.8rem; color: #64748b;">2022 - Atual</span>
+                        </div>
+                        <div class="res-item-sub">Empresa Líder de Mercado</div>
+                        <p style="font-size: 0.84rem; color: #334155;">Principais entregas e resultados alcançados no cargo.</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 class="res-sec-title">Formação Acadêmica</h2>
+                    <div id="res-view-education">
+                      <div class="res-item">
+                        <div class="res-item-header">
+                          <strong>Graduação / Especialização</strong>
+                          <span style="font-size: 0.8rem; color: #64748b;">2020 - 2024</span>
+                        </div>
+                        <div class="res-item-sub">Universidade / Faculdade</div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: CRIADOR DE CARTÃO DE VISITA ARTÍSTICO -->
+    <!-- ======================================================== -->
+    <div id="tab-cartao" class="tab-content hidden">
+      <div style="max-width: 1140px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>💳</span>
+              <span>Criador de Cartão de Visita de Elite</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Design profissional frente e verso com temas de arte visual luxuosa (Obsidian 24K, Cyber Matrix, Swiss Minimalist, Holographic, Emerald) e QR Code automático integrado.</p>
+          </div>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button onclick="saveCardDraft()" class="btn-secondary" style="font-size: 0.84rem;">
+              <span>💾</span>
+              <span>Salvar Cartão</span>
+            </button>
+            <button onclick="downloadCardAsImage('card-face-front', 'cartao-frente-300dpi.png')" class="btn-primary" style="font-size: 0.84rem;">
+              <span>⬇️</span>
+              <span>Baixar Frente (300 DPI)</span>
+            </button>
+            <button onclick="downloadCardAsImage('card-face-back', 'cartao-verso-300dpi.png')" class="btn-secondary" style="font-size: 0.84rem;">
+              <span>⬇️</span>
+              <span>Baixar Verso com QR</span>
+            </button>
+            <button onclick="printCardSheet()" class="btn-secondary" style="font-size: 0.84rem;" title="Gera folha A4 com 10 cartões prontos para recortar">
+              <span>🖨️</span>
+              <span>Folha A4 Impressão</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seleção de Estilos Artísticos de Luxo -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-right: 0.5rem;">Temas Gráficos:</span>
+          <button class="btn-secondary card-theme-btn active" data-theme="obsidian" onclick="setCardTheme('obsidian')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">👑 Obsidian & Ouro 24K</button>
+          <button class="btn-secondary card-theme-btn" data-theme="cyber" onclick="setCardTheme('cyber')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">⚡ Cyberpunk Matrix 2077</button>
+          <button class="btn-secondary card-theme-btn" data-theme="swiss" onclick="setCardTheme('swiss')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">📐 Editorial Suíço Clean</button>
+          <button class="btn-secondary card-theme-btn" data-theme="holographic" onclick="setCardTheme('holographic')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">🌈 Holographic Liquid</button>
+          <button class="btn-secondary card-theme-btn" data-theme="emerald" onclick="setCardTheme('emerald')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">💎 Esmeralda Prestige</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: start;">
+          
+          <!-- Formulário Completo -->
+          <div class="glass-panel" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="flex-between">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--amber-primary);">Dados do Cartão</h3>
+              <span style="font-size: 0.72rem; color: #10B981; font-weight: 600;">✓ Auto-Save Local</span>
+            </div>
+            
+            <input type="text" id="card-input-name" class="form-input" placeholder="Seu Nome Completo" value="Carlos Eduardo Silva" oninput="updateCardPreview()">
+            <input type="text" id="card-input-role" class="form-input" placeholder="Cargo / Especialidade (ex: Arquiteto de Software)" value="Arquiteto de Soluções & IA" oninput="updateCardPreview()">
+            <input type="text" id="card-input-company" class="form-input" placeholder="Nome da Empresa / Marca" value="SOLLIUS STUDIO" oninput="updateCardPreview()">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <input type="text" id="card-input-phone" class="form-input" placeholder="WhatsApp / Telefone" value="+55 (11) 98888-7777" oninput="updateCardPreview()">
+              <input type="email" id="card-input-email" class="form-input" placeholder="E-mail Profissional" value="carlos@sollius.com.br" oninput="updateCardPreview()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <input type="text" id="card-input-site" class="form-input" placeholder="Site / Link (QR Code)" value="sollius.com.br" oninput="updateCardPreview()">
+              <input type="text" id="card-input-loc" class="form-input" placeholder="Cidade / Estado" value="São Paulo - SP" oninput="updateCardPreview()">
+            </div>
+
+            <!-- Upload de Logo Opcional -->
+            <div style="margin-top: 0.5rem; padding: 0.85rem; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <div style="font-size: 0.82rem;">
+                <strong style="color: #fff; display: block;">Logotipo ou Ícone da Marca:</strong>
+                <span style="color: var(--text-dim); font-size: 0.75rem;">PNG transparente recomendado</span>
+              </div>
+              <input type="file" id="card-logo-input" accept="image/*" style="display: none;" onchange="handleCardLogoUpload(this.files[0])">
+              <button type="button" onclick="document.getElementById('card-logo-input').click()" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                Subir Logo
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview 3D Interativo (Gira com 1 Clique) -->
+          <div>
+            <div style="text-align: center; margin-bottom: 0.75rem;">
+              <button onclick="toggleCardFlip()" class="btn-secondary" style="padding: 0.45rem 1.15rem; font-size: 0.85rem; border-color: rgba(255,153,0,0.3);">
+                <span>🔄</span>
+                <span>Clique para Girar o Cartão (Frente / Verso)</span>
+              </button>
+            </div>
+
+            <!-- Palco 3D -->
+            <div class="card-flipper-container">
+              <div id="card-3d-box" class="card-3d-wrapper" onclick="toggleCardFlip()" title="Clique para virar o cartão">
+                
+                <!-- Frente da Arte -->
+                <div id="card-face-front" class="card-face theme-obsidian">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="card-front-company" class="card-metallic-brand">SOLLIUS STUDIO</span>
+                    <div id="card-logo-preview-box">
+                      <span style="font-size: 1.4rem;">☀️</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 id="card-front-name" style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.2rem; letter-spacing: -0.01em;">Carlos Eduardo Silva</h3>
+                    <p id="card-front-role" style="font-size: 0.88rem; font-weight: 500; opacity: 0.85;">Arquiteto de Soluções & IA</p>
+                  </div>
+                  <div class="card-gold-line"></div>
+                </div>
+
+                <!-- Verso com QR Code -->
+                <div id="card-face-back" class="card-face face-back theme-obsidian">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="card-back-company" class="card-metallic-brand" style="font-size: 0.85rem;">SOLLIUS STUDIO</span>
+                    <span style="font-size: 0.65rem; opacity: 0.7; letter-spacing: 0.1em;">DIGITAL NFC & QR</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.78rem;">
+                      <div id="card-back-phone">📱 +55 (11) 98888-7777</div>
+                      <div id="card-back-email">📧 carlos@sollius.com.br</div>
+                      <div id="card-back-site">🌐 sollius.com.br</div>
+                      <div id="card-back-loc" style="opacity: 0.7; font-size: 0.72rem;">📍 São Paulo - SP</div>
+                    </div>
+                    <div id="card-qr-box" style="padding: 0.35rem; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; opacity: 0.6;">
+                    <span>300 DPI CMYK READY</span>
+                    <span>SOLLIUS PRO</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Visualização Lado a Lado Rápida -->
+            <div style="text-align: center; margin-top: 1rem;">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Dica: O QR Code do verso é gerado automaticamente com o link do seu site ou WhatsApp.</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: ASSINADOR DE PDF 100% PRIVADO -->
+    <!-- ======================================================== -->
+    <div id="tab-assinar-pdf" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>✍️</span>
+              <span>Assinador de PDF 100% Privado no Navegador</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Assine contratos e documentos sem enviar nenhum dado para a nuvem. Processamento criptograficamente isolado.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399; font-size: 0.75rem; font-weight: 700;">
+            🛡️ Zero Vazamento • Sem Servidor
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <!-- Dropzone do PDF -->
+          <div class="dropzone" onclick="document.getElementById('pdf-sign-file-input').click()" style="margin-bottom: 1.5rem;">
+            <input type="file" id="pdf-sign-file-input" accept="application/pdf" style="display: none;" onchange="handlePdfToSign(this.files[0])">
+            <div class="dropzone-icon" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">📄</div>
+            <h4 class="dropzone-title">Clique ou arraste o PDF para assinar</h4>
+            <p class="dropzone-subtitle" id="pdf-sign-info">Contratos, procurações, recibos e documentos confidenciais</p>
+          </div>
+
+          <!-- Pad de Assinatura -->
+          <div style="margin-bottom: 1.5rem;">
+            <div class="flex-between" style="margin-bottom: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Desenhe sua Assinatura / Rubrica com o mouse ou dedo:</span>
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="ink-palette">
+                  <button type="button" class="ink-btn active" data-color="#0f172a" style="background: #0f172a;" onclick="setPenColor('#0f172a')" title="Preto Clássico"></button>
+                  <button type="button" class="ink-btn" data-color="#1d4ed8" style="background: #1d4ed8;" onclick="setPenColor('#1d4ed8')" title="Azul Caneta"></button>
+                  <button type="button" class="ink-btn" data-color="#dc2626" style="background: #dc2626;" onclick="setPenColor('#dc2626')" title="Vermelho"></button>
+                </div>
+                <button type="button" onclick="clearSignaturePad()" class="btn-secondary" style="padding: 0.3rem 0.65rem; font-size: 0.75rem;">Limpar</button>
+              </div>
+            </div>
+            
+            <div class="signature-pad-wrapper">
+              <canvas id="signature-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Botão de Ação -->
+          <div id="pdf-sign-action-area" class="hidden" style="text-align: center;">
+            <button onclick="stampSignatureOnPdf()" class="btn-primary" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); font-size: 1rem; padding: 0.85rem 2rem;">
+              <span>✍️</span>
+              <span>Carimbar e Baixar PDF Assinado</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: LIMPADOR DE LOCALIZAÇÃO GPS & METADADOS EXIF -->
+    <!-- ======================================================== -->
+    <div id="tab-limpar-gps" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📍</span>
+              <span>Limpador de Localização GPS & Metadados EXIF</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Elimine as coordenadas exatas da sua casa, modelo do celular e dados de exposição antes de compartilhar fotos.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; font-size: 0.75rem; font-weight: 700;">
+            🛡️ Privacy Shield 100%
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+          
+          <div class="dropzone" onclick="document.getElementById('gps-file-input').click()">
+            <input type="file" id="gps-file-input" multiple accept="image/*" style="display: none;" onchange="handleGpsCleanFiles(this.files)">
+            <div class="dropzone-icon" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">🛡️</div>
+            <h4 class="dropzone-title">Selecione ou arraste fotos para sanitizar</h4>
+            <p class="dropzone-subtitle">Remove latitude, longitude, altitude, modelo do aparelho e timestamps</p>
+          </div>
+
+          <div id="gps-results-area" class="hidden" style="margin-top: 1.5rem;">
+            <div class="flex-between" style="margin-bottom: 1rem;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff;">Fotos Sanitizadas & Seguras:</h3>
+              <button onclick="downloadAllCleanedPhotos()" class="btn-primary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
+                Baixar Todas (.ZIP)
+              </button>
+            </div>
+            <div id="gps-results-list"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: TEXT STUDIO & FORMATADOR -->
+    <!-- ======================================================== -->
+    <div id="tab-texto" class="tab-content hidden">
+      <div style="max-width: 960px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📝</span>
+              <span>Text Studio & Limpador de Linhas</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Estatísticas de leitura em tempo real, conversor de maiúsculas/minúsculas e eliminação de linhas duplicadas.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button onclick="copyTextStudio()" class="btn-primary" style="font-size: 0.85rem;">
+              <span>📋</span>
+              <span>Copiar Texto</span>
+            </button>
+            <button onclick="clearTextStudio()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>🗑️</span>
+              <span>Limpar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Badges de Estatísticas ao Vivo -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="text-stat-badge">
+            <span id="stat-chars" class="text-stat-number">0</span>
+            <span class="text-stat-label">Caracteres</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-chars-nospace" class="text-stat-number">0</span>
+            <span class="text-stat-label">Sem Espaços</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-words" class="text-stat-number">0</span>
+            <span class="text-stat-label">Palavras</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-lines" class="text-stat-number">0</span>
+            <span class="text-stat-label">Linhas</span>
+          </div>
+          <div class="text-stat-badge">
+            <span id="stat-readtime" class="text-stat-number">0 min</span>
+            <span class="text-stat-label">Tempo Leitura</span>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.5rem;">
+          
+          <!-- Botões de Ações Rápidas -->
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+            <button onclick="transformText('upper')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">MAIÚSCULAS</button>
+            <button onclick="transformText('lower')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">minúsculas</button>
+            <button onclick="transformText('capitalize')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Primeira Letra</button>
+            <button onclick="transformText('remove-empty')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Remover Linhas Vazias</button>
+            <button onclick="transformText('remove-duplicates')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Remover Duplicadas</button>
+            <button onclick="transformText('trim')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Limpar Espaços</button>
+            <button onclick="transformText('fix-breaks')" class="btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">Unir Quebras de Linha</button>
+          </div>
+
+          <textarea id="text-studio-input" class="form-input" rows="12" placeholder="Cole ou digite seu texto aqui..." oninput="updateTextStats()" style="font-size: 0.92rem; line-height: 1.6;"></textarea>
+          
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: GRAVADOR DE TELA -->
+    <!-- ======================================================== -->
+    <div id="tab-recorder" class="tab-content hidden">
+      <div style="max-width: 860px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🎥</span>
+              <span>Gravador de Tela & Áudio Local</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Grave sua tela, gameplay ou tutoriais com som do sistema e microfone sem instalar nenhum programa.</p>
+          </div>
+          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; font-size: 0.75rem; font-weight: 700;">
+            Zero Instalação • Ilimitado
+          </span>
+        </div>
+
+        <div class="glass-panel" style="padding: 2.5rem; text-align: center;">
+          
+          <div style="height: 320px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; margin-bottom: 2rem;">
+            <video id="recorder-video-preview" style="width: 100%; height: 100%; object-fit: contain;" class="hidden" autoplay muted></video>
+            
+            <div id="recorder-idle-state">
+              <div style="width: 64px; height: 64px; border-radius: 18px; background: rgba(239, 68, 68, 0.15); color: #F87171; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem auto;">
+                🔴
+              </div>
+              <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">Pronto para Gravar</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Você poderá escolher uma janela de jogo, aba ou sua tela cheia.</p>
+            </div>
+
+            <!-- Timer Badge -->
+            <div id="recorder-timer-badge" class="hidden" style="position: absolute; top: 1rem; left: 1rem; padding: 0.4rem 0.85rem; border-radius: 9999px; background: rgba(220, 38, 38, 0.9); color: #fff; font-family: monospace; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="width: 8px; height: 8px; background: #fff; border-radius: 50%;"></span>
+              <span id="recorder-timer-text">00:00</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button id="recorder-start-btn" onclick="startScreenRecording()" class="btn-primary" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #fff;">
+              <span>🔴</span>
+              <span>Iniciar Gravação</span>
+            </button>
+            <button id="recorder-stop-btn" onclick="stopScreenRecording()" class="hidden btn-secondary">
+              <span>⏹️</span>
+              <span>Parar e Baixar Vídeo</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <div>
+        <strong style="color: #fff;">SOLLIUS</strong> • Todos os direitos reservados. Ecossistema 100% Processado no Navegador.
+      </div>
+      <div class="footer-links">
+        <a href="/remover-fundo" onclick="switchTab('remover'); return false;" style="color: inherit; text-decoration: none;">Removedor IA</a>
+        <a href="/curriculo-ats" onclick="switchTab('curriculo'); return false;" style="color: inherit; text-decoration: none;">Currículo ATS</a>
+        <a href="/cartao-de-visita" onclick="switchTab('cartao'); return false;" style="color: inherit; text-decoration: none;">Cartão de Visita</a>
+        <a href="/assinar-pdf" onclick="switchTab('assinar-pdf'); return false;" style="color: inherit; text-decoration: none;">Assinar PDF</a>
+        <a href="/limpar-gps" onclick="switchTab('limpar-gps'); return false;" style="color: inherit; text-decoration: none;">Limpar GPS</a>
+        <a href="/compressor-imagem" onclick="switchTab('converter'); return false;" style="color: inherit; text-decoration: none;">Conversores</a>
+        <a href="/pdf-studio" onclick="switchTab('pdf'); return false;" style="color: inherit; text-decoration: none;">PDF Studio</a>
+        <a href="/gerador-tags-virais" onclick="switchTab('tags'); return false;" style="color: inherit; text-decoration: none;">Tags Virais</a>
+        <a href="/gerador-qrcode" onclick="switchTab('qrcode'); return false;" style="color: inherit; text-decoration: none;">QR Code</a>
+        <a href="/formatador-texto" onclick="switchTab('texto'); return false;" style="color: inherit; text-decoration: none;">Text Studio</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js?v=5.0.0"></script>
+</body>
+</html>

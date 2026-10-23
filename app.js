@@ -129,22 +129,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Resolução de Rota na Abertura da Página
 function resolveInitialRoute() {
-  const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-  const currentHash = window.location.hash.replace('#', '').toLowerCase();
+  // 0. Prioridade se pré-configurado no body da página estática dedicada
+  if (document.body && document.body.dataset && document.body.dataset.initialTab) {
+    const staticTab = document.body.dataset.initialTab;
+    if (ROUTE_MAP[staticTab]) {
+      switchTab(staticTab, false);
+      return;
+    }
+  }
 
-  // Verifica se o caminho bate com algum alias
+  // 1. Prioridade: sessionStorage (caso redirecionado por pasta estática)
+  try {
+    const storedTab = sessionStorage.getItem('sollius_target_tab');
+    if (storedTab && ROUTE_MAP[storedTab]) {
+      sessionStorage.removeItem('sollius_target_tab');
+      switchTab(storedTab, false);
+      return;
+    }
+  } catch (err) {}
+
+  // 2. Query params (ex: ?tool=curriculo ou ?tab=converter)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const queryTool = params.get('tool') || params.get('tab') || params.get('app');
+    if (queryTool && ROUTE_MAP[queryTool]) {
+      switchTab(queryTool, false);
+      return;
+    }
+    if (queryTool && PATH_TO_TAB['/' + queryTool]) {
+      switchTab(PATH_TO_TAB['/' + queryTool], false);
+      return;
+    }
+  } catch (err) {}
+
+  // 3. Caminho da URL limpa (ex: /compressor-imagem ou /curriculo-ats)
+  let currentPath = window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/+$/, '') || '/';
   if (PATH_TO_TAB[currentPath]) {
     switchTab(PATH_TO_TAB[currentPath], false);
     return;
   }
 
-  // Verifica pelo hash (ex: #compressor ou #curriculo)
+  // 4. Hash da URL (ex: #compressor-imagem ou #curriculo-ats)
+  const currentHash = window.location.hash.replace('#', '').toLowerCase();
   if (currentHash) {
+    if (ROUTE_MAP[currentHash]) {
+      switchTab(currentHash, false);
+      return;
+    }
     for (const [tabKey, routeInfo] of Object.entries(ROUTE_MAP)) {
       if (routeInfo.hash === `#${currentHash}` || tabKey === currentHash) {
         switchTab(tabKey, false);
         return;
       }
+    }
+    if (PATH_TO_TAB['/' + currentHash]) {
+      switchTab(PATH_TO_TAB['/' + currentHash], false);
+      return;
     }
   }
 
@@ -202,6 +242,9 @@ function switchTab(tabId, pushHistory = true) {
   const activeContent = document.getElementById(`tab-${tabId}`);
   if (activeContent) {
     activeContent.classList.remove('hidden');
+    if (pushHistory) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   // Atualização Dinâmica da URL, Título e SEO
@@ -210,6 +253,12 @@ function switchTab(tabId, pushHistory = true) {
 
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.setAttribute('content', route.desc);
+
+  const canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (canonicalLink) {
+    const cleanPath = route.path === '/' ? '' : route.path;
+    canonicalLink.setAttribute('href', `https://sollius.com.br${cleanPath}`);
+  }
 
   if (pushHistory) {
     try {
