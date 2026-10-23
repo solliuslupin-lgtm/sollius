@@ -2,23 +2,167 @@
 // SOLLIUS ECOSYSTEM ENGINE - 100% CLIENT-SIDE JAVASCRIPT
 // ========================================================
 
+// Mapa de Rotas Amigáveis (URLs Limpas & SEO Dedicado)
+const ROUTE_MAP = {
+  'hub': {
+    path: '/',
+    hash: '#hub',
+    title: 'SOLLIUS | O Maior Ecossistema de Ferramentas Web Gratuitas & Privadas',
+    desc: 'Sem cadastros, sem limites diários e 100% no seu navegador. Removedor de fundo IA, currículo ATS, cartão de visita, assinador de PDF e conversores.'
+  },
+  'remover': {
+    path: '/remover-fundo',
+    hash: '#remover-fundo',
+    title: 'Removedor de Fundo com IA Grátis e Ilimitado | SOLLIUS',
+    desc: 'Remova o fundo de qualquer imagem automaticamente sem enviar fotos para servidores. Processamento 100% local e gratuito.'
+  },
+  'curriculo': {
+    path: '/curriculo-ats',
+    hash: '#curriculo-ats',
+    title: 'Criador de Currículos Padrão ATS Gratuito | SOLLIUS',
+    desc: 'Crie currículos modernos aprovados por robôs de RH com formatação A4 perfeita e acessibilidade visual.'
+  },
+  'cartao': {
+    path: '/cartao-de-visita',
+    hash: '#cartao-de-visita',
+    title: 'Criador de Cartão de Visita de Elite com QR Code | SOLLIUS',
+    desc: 'Crie artes gráficas de frente e verso com temas de luxo em 300 DPI e QR Code automático integrado.'
+  },
+  'assinar-pdf': {
+    path: '/assinar-pdf',
+    hash: '#assinar-pdf',
+    title: 'Assinar PDF no Navegador 100% Privado | SOLLIUS',
+    desc: 'Assine contratos e procurações diretamente no seu computador sem enviar documentos para a nuvem.'
+  },
+  'limpar-gps': {
+    path: '/limpar-gps',
+    hash: '#limpar-gps',
+    title: 'Limpador de GPS & Metadados EXIF de Fotos | SOLLIUS',
+    desc: 'Elimine coordenadas de GPS e dados de identificação da câmera de suas fotos antes de publicar na web.'
+  },
+  'converter': {
+    path: '/compressor-imagem',
+    hash: '#compressor-imagem',
+    title: 'Compressor & Conversor de Imagens em Lote WebP | SOLLIUS',
+    desc: 'Comprima e converta imagens para WebP, PNG e JPG reduzindo até 90% do tamanho com download em ZIP.'
+  },
+  'pdf': {
+    path: '/pdf-studio',
+    hash: '#pdf-studio',
+    title: 'PDF Studio: Juntar PDFs e Fotos para PDF | SOLLIUS',
+    desc: 'Mescle múltiplos PDFs e boletos em ordem ou transforme imagens em PDF único de graça sem filas.'
+  },
+  'tags': {
+    path: '/gerador-tags-virais',
+    hash: '#gerador-tags-virais',
+    title: 'Gerador de Tags Virais & Click Magnet para YouTube e TikTok | SOLLIUS',
+    desc: 'Gere tags otimizadas para o YouTube Studio, fórmulas de títulos de alto clique e hashtags para TikTok.'
+  },
+  'qrcode': {
+    path: '/gerador-qrcode',
+    hash: '#gerador-qrcode',
+    title: 'Gerador de QR Code Pro Vitalício sem Expiração | SOLLIUS',
+    desc: 'Crie QR Codes personalizados para Pix, links, WhatsApp e Wi-Fi que nunca expiram e sem mensalidade.'
+  },
+  'texto': {
+    path: '/formatador-texto',
+    hash: '#formatador-texto',
+    title: 'Text Studio: Contador e Limpador de Linhas | SOLLIUS',
+    desc: 'Remova linhas duplicadas, conte caracteres e palavras e formate textos online com 1 clique.'
+  },
+  'recorder': {
+    path: '/gravador-de-tela',
+    hash: '#gravador-de-tela',
+    title: 'Gravador de Tela e Áudio Gratuito sem Instalação | SOLLIUS',
+    desc: 'Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto pelo navegador.'
+  }
+};
+
+// Aliases para suportar múltiplos formatos de URL (ex: /compressor ou /compressor-imagem)
+const PATH_TO_TAB = {
+  '/': 'hub',
+  '/hub': 'hub',
+  '/remover-fundo': 'remover',
+  '/remover': 'remover',
+  '/fundo': 'remover',
+  '/curriculo-ats': 'curriculo',
+  '/curriculo': 'curriculo',
+  '/cv': 'curriculo',
+  '/cartao-de-visita': 'cartao',
+  '/cartao': 'cartao',
+  '/assinar-pdf': 'assinar-pdf',
+  '/assinar': 'assinar-pdf',
+  '/limpar-gps': 'limpar-gps',
+  '/gps': 'limpar-gps',
+  '/exif': 'limpar-gps',
+  '/compressor-imagem': 'converter',
+  '/compressor': 'converter',
+  '/converter': 'converter',
+  '/imagens': 'converter',
+  '/pdf-studio': 'pdf',
+  '/pdf': 'pdf',
+  '/juntar-pdf': 'pdf',
+  '/gerador-tags-virais': 'tags',
+  '/tags': 'tags',
+  '/gerador-qrcode': 'qrcode',
+  '/qrcode': 'qrcode',
+  '/formatador-texto': 'texto',
+  '/texto': 'texto',
+  '/gravador-de-tela': 'recorder',
+  '/gravador': 'recorder',
+  '/recorder': 'recorder'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializa Lucide Icons
   if (window.lucide) {
     lucide.createIcons();
   }
-  // Inicializa QR Code padrão
   renderQrCode();
   
-  // Inicializa Pré-visualizações
   if (typeof loadResumeSample === 'function') loadResumeSample();
   if (typeof updateCardPreview === 'function') updateCardPreview();
   if (typeof initSignaturePad === 'function') initSignaturePad();
+
+  // Roteador Inicial: Determina qual ferramenta abrir pela URL atual
+  resolveInitialRoute();
+});
+
+// Resolução de Rota na Abertura da Página
+function resolveInitialRoute() {
+  const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+  const currentHash = window.location.hash.replace('#', '').toLowerCase();
+
+  // Verifica se o caminho bate com algum alias
+  if (PATH_TO_TAB[currentPath]) {
+    switchTab(PATH_TO_TAB[currentPath], false);
+    return;
+  }
+
+  // Verifica pelo hash (ex: #compressor ou #curriculo)
+  if (currentHash) {
+    for (const [tabKey, routeInfo] of Object.entries(ROUTE_MAP)) {
+      if (routeInfo.hash === `#${currentHash}` || tabKey === currentHash) {
+        switchTab(tabKey, false);
+        return;
+      }
+    }
+  }
+
+  // Padrão: Hub inicial
+  switchTab('hub', false);
+}
+
+// Histórico do Navegador (Botões Voltar e Avançar)
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.tab) {
+    switchTab(e.state.tab, false);
+  } else {
+    resolveInitialRoute();
+  }
 });
 
 // Filtro de Ferramentas por Categoria
 function filterCategory(category, buttonEl) {
-  // Se estiver em outra aba, volta pro hub
   switchTab('hub');
 
   const cards = document.querySelectorAll('.tool-card');
@@ -30,7 +174,6 @@ function filterCategory(category, buttonEl) {
     }
   });
 
-  // Atualiza classe ativa dos botões de categoria
   document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
   if (buttonEl) buttonEl.classList.add('active');
 }
@@ -51,8 +194,8 @@ function filterTools(query) {
   });
 }
 
-// Navegação entre abas
-function switchTab(tabId) {
+// Navegação entre abas com Histórico e URLs Próprias
+function switchTab(tabId, pushHistory = true) {
   const contents = document.querySelectorAll('.tab-content');
   contents.forEach(el => el.classList.add('hidden'));
 
@@ -61,7 +204,23 @@ function switchTab(tabId) {
     activeContent.classList.remove('hidden');
   }
 
-  // Se abrir assinatura, recalibra canvas
+  // Atualização Dinâmica da URL, Título e SEO
+  const route = ROUTE_MAP[tabId] || ROUTE_MAP['hub'];
+  document.title = route.title;
+
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute('content', route.desc);
+
+  if (pushHistory) {
+    try {
+      window.history.pushState({ tab: tabId }, route.title, route.path);
+    } catch (e) {
+      // Fallback para hash se executando localmente por file://
+      window.location.hash = route.hash;
+    }
+  }
+
+  // Calibrações específicas por ferramenta
   if (tabId === 'assinar-pdf' && typeof initSignaturePad === 'function') {
     setTimeout(initSignaturePad, 50);
   }
@@ -81,7 +240,6 @@ function switchTab(tabId) {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Recria ícones
   setTimeout(() => {
     if (window.lucide) lucide.createIcons();
   }, 50);
