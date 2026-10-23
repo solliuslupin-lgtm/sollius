@@ -11,10 +11,45 @@ document.addEventListener('DOMContentLoaded', () => {
   renderQrCode();
   
   // Inicializa Pré-visualizações
-  if (typeof updateResumePreview === 'function') updateResumePreview();
+  if (typeof loadResumeSample === 'function') loadResumeSample();
   if (typeof updateCardPreview === 'function') updateCardPreview();
   if (typeof initSignaturePad === 'function') initSignaturePad();
 });
+
+// Filtro de Ferramentas por Categoria
+function filterCategory(category, buttonEl) {
+  // Se estiver em outra aba, volta pro hub
+  switchTab('hub');
+
+  const cards = document.querySelectorAll('.tool-card');
+  cards.forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.classList.remove('hidden-by-filter');
+    } else {
+      card.classList.add('hidden-by-filter');
+    }
+  });
+
+  // Atualiza classe ativa dos botões de categoria
+  document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
+  if (buttonEl) buttonEl.classList.add('active');
+}
+
+// Filtro de Busca Universal em Tempo Real
+function filterTools(query) {
+  switchTab('hub');
+  const cleanQuery = query.toLowerCase().trim();
+  const cards = document.querySelectorAll('.tool-card');
+
+  cards.forEach(card => {
+    const text = (card.innerText + ' ' + (card.dataset.keywords || '')).toLowerCase();
+    if (!cleanQuery || text.includes(cleanQuery)) {
+      card.classList.remove('hidden-by-filter');
+    } else {
+      card.classList.add('hidden-by-filter');
+    }
+  });
+}
 
 // Navegação entre abas
 function switchTab(tabId) {
@@ -33,11 +68,9 @@ function switchTab(tabId) {
   if (tabId === 'cartao' && typeof updateCardPreview === 'function') {
     setTimeout(updateCardPreview, 50);
   }
-    activeContent.classList.remove('hidden');
-  }
 
   // Atualiza botões
-  const buttons = document.querySelectorAll('.nav-item');
+  const buttons = document.querySelectorAll('.nav-item, .header-nav-btn');
   buttons.forEach(btn => {
     if (btn.dataset.tab === tabId) {
       btn.classList.add('active');
@@ -1032,18 +1065,29 @@ let currentPenWidth = 3;
 let uploadedPdfBytes = null;
 let uploadedPdfDoc = null;
 
+let signatureEventsAttached = false;
+
 function initSignaturePad() {
   signatureCanvas = document.getElementById('signature-canvas');
   if (!signatureCanvas) return;
   signatureCtx = signatureCanvas.getContext('2d');
   
-  // Set real pixel resolution
+  // Set real pixel resolution, handling cases when tab was initially hidden
   const rect = signatureCanvas.getBoundingClientRect();
-  signatureCanvas.width = rect.width * 2;
-  signatureCanvas.height = rect.height * 2;
-  signatureCtx.scale(2, 2);
-  signatureCtx.lineCap = 'round';
-  signatureCtx.lineJoin = 'round';
+  const parentWidth = signatureCanvas.parentElement ? signatureCanvas.parentElement.clientWidth : 760;
+  const w = rect.width > 50 ? rect.width : (parentWidth > 50 ? parentWidth : 760);
+  const h = 180;
+  
+  if (signatureCanvas.width !== w * 2) {
+    signatureCanvas.width = w * 2;
+    signatureCanvas.height = h * 2;
+    signatureCtx.scale(2, 2);
+    signatureCtx.lineCap = 'round';
+    signatureCtx.lineJoin = 'round';
+  }
+
+  if (signatureEventsAttached) return;
+  signatureEventsAttached = true;
 
   function getPos(e) {
     const r = signatureCanvas.getBoundingClientRect();
@@ -1055,27 +1099,34 @@ function initSignaturePad() {
     };
   }
 
-  signatureCanvas.addEventListener('pointerdown', (e) => {
+  const startDraw = (e) => {
     isDrawingSignature = true;
     const pos = getPos(e);
     signatureCtx.beginPath();
     signatureCtx.moveTo(pos.x, pos.y);
     signatureCtx.strokeStyle = currentPenColor;
     signatureCtx.lineWidth = currentPenWidth;
-  });
+  };
 
-  signatureCanvas.addEventListener('pointermove', (e) => {
+  const moveDraw = (e) => {
     if (!isDrawingSignature) return;
+    if (e.cancelable) e.preventDefault();
     const pos = getPos(e);
     signatureCtx.lineTo(pos.x, pos.y);
     signatureCtx.stroke();
-  });
+  };
 
-  window.addEventListener('pointerup', () => {
-    if (isDrawingSignature) {
-      isDrawingSignature = false;
-    }
-  });
+  const stopDraw = () => {
+    isDrawingSignature = false;
+  };
+
+  signatureCanvas.addEventListener('mousedown', startDraw);
+  signatureCanvas.addEventListener('mousemove', moveDraw);
+  window.addEventListener('mouseup', stopDraw);
+
+  signatureCanvas.addEventListener('touchstart', startDraw, { passive: true });
+  signatureCanvas.addEventListener('touchmove', moveDraw, { passive: false });
+  window.addEventListener('touchend', stopDraw);
 }
 
 function clearSignaturePad() {
@@ -1099,7 +1150,9 @@ async function handlePdfToSign(file) {
     
     const pageCount = uploadedPdfDoc.getPageCount();
     document.getElementById('pdf-sign-info').innerText = `📄 Documento Carregado: ${file.name} (${pageCount} página${pageCount > 1 ? 's' : ''}) - 100% no seu dispositivo`;
-    document.getElementById('pdf-sign-action-area').classList.remove('hidden');
+    
+    const actionArea = document.getElementById('pdf-sign-action-area');
+    if (actionArea) actionArea.classList.remove('hidden');
     
     if (window.confetti) confetti({ particleCount: 20 });
   } catch (err) {
@@ -1109,7 +1162,7 @@ async function handlePdfToSign(file) {
 
 async function stampSignatureOnPdf() {
   if (!uploadedPdfBytes || !uploadedPdfDoc) {
-    alert('Por favor, carregue um arquivo PDF primeiro.');
+    alert('Por favor, clique acima e selecione o seu arquivo PDF primeiro.');
     return;
   }
   if (!signatureCanvas) return;

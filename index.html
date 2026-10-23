@@ -89,7 +89,7 @@
     <div class="header-container">
       
       <!-- Logo -->
-      <div class="logo-group" onclick="switchTab('hub')" role="button" aria-label="Voltar para a página inicial do SOLLIUS">
+      <div class="logo-group" onclick="switchTab('hub')" role="button" aria-label="Página inicial do SOLLIUS">
         <div class="logo-icon" aria-hidden="true">☀️</div>
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <span class="logo-text">SOLLIUS</span>
@@ -97,58 +97,40 @@
         </div>
       </div>
 
-      <!-- Menu Principal de Ferramentas -->
-      <nav class="nav-menu" role="navigation" aria-label="Ferramentas do Ecossistema">
-        <button onclick="switchTab('remover')" class="nav-item" data-tab="remover" aria-label="Removedor de Fundo com IA">
-          <span>✨</span>
-          <span>Removedor IA</span>
+      <!-- Barra de Busca Rápida no Topo -->
+      <div class="header-search-bar">
+        <span class="header-search-icon">🔍</span>
+        <input type="text" class="header-search-input" placeholder="Buscar ferramenta (ex: currículo, fundo, assinar...)" oninput="filterTools(this.value)">
+      </div>
+
+      <!-- Navegação Principal -->
+      <nav class="header-nav" role="navigation" aria-label="Navegação Superior">
+        <button onclick="switchTab('hub'); filterCategory('all')" class="header-nav-btn active" data-tab="hub">
+          <span>⚡</span>
+          <span>Todas as Ferramentas</span>
         </button>
-        <button onclick="switchTab('curriculo')" class="nav-item" data-tab="curriculo" aria-label="Criador de Currículos Profissionais">
+        <button onclick="filterCategory('design')" class="header-nav-btn">
+          <span>🎨</span>
+          <span>Design</span>
+        </button>
+        <button onclick="filterCategory('documentos')" class="header-nav-btn">
           <span>📄</span>
-          <span>Currículo ATS</span>
+          <span>Documentos</span>
         </button>
-        <button onclick="switchTab('cartao')" class="nav-item" data-tab="cartao" aria-label="Criador de Cartão de Visita">
-          <span>💳</span>
-          <span>Cartão Arte</span>
+        <button onclick="filterCategory('viral')" class="header-nav-btn">
+          <span>🚀</span>
+          <span>Viral & Mídia</span>
         </button>
-        <button onclick="switchTab('assinar-pdf')" class="nav-item" data-tab="assinar-pdf" aria-label="Assinador de PDF Privado">
-          <span>✍️</span>
-          <span>Assinar PDF</span>
-        </button>
-        <button onclick="switchTab('limpar-gps')" class="nav-item" data-tab="limpar-gps" aria-label="Limpador de Metadados e Localização GPS">
-          <span>📍</span>
-          <span>Limpar GPS</span>
-        </button>
-        <button onclick="switchTab('converter')" class="nav-item" data-tab="converter" aria-label="Conversor e Compressor de Imagens">
-          <span>🖼️</span>
-          <span>Imagens</span>
-        </button>
-        <button onclick="switchTab('pdf')" class="nav-item" data-tab="pdf" aria-label="PDF Studio Mesclagem">
-          <span>📑</span>
-          <span>PDF Studio</span>
-        </button>
-        <button onclick="switchTab('tags')" class="nav-item" data-tab="tags" aria-label="Gerador de Tags Virais">
-          <span>📈</span>
-          <span>Tags & Viral</span>
-        </button>
-        <button onclick="switchTab('qrcode')" class="nav-item" data-tab="qrcode" aria-label="Gerador de QR Code">
-          <span>📱</span>
-          <span>QR Code</span>
-        </button>
-        <button onclick="switchTab('texto')" class="nav-item" data-tab="texto" aria-label="Formatador de Texto e Linhas">
-          <span>📝</span>
-          <span>Texto</span>
-        </button>
-        <button onclick="switchTab('recorder')" class="nav-item" data-tab="recorder" aria-label="Gravador de Tela">
-          <span>🎥</span>
-          <span>Gravador</span>
+        <button onclick="filterCategory('utilitarios')" class="header-nav-btn">
+          <span>🛠️</span>
+          <span>Utilitários</span>
         </button>
       </nav>
 
-      <!-- Badge de Segurança -->
-      <div class="shield-badge" title="Todos os dados são processados localmente na memória RAM do seu aparelho">
-        <span>🛡️</span>
-        <span>100% Local • Zero Nuvem</span>
+      <!-- Status Badge -->
+      <div class="shield-badge" title="Processamento 100% isolado na memória do seu aparelho">
+        <span class="pulse-dot"></span>
+        <span>100% Local</span>
       </div>
 
     </div>
@@ -163,166 +145,172 @@
     <!-- ======================================================== -->
     <div id="tab-hub" class="tab-content">
       
-      <!-- Hero Banner -->
+      <!-- Hero Banner Redesenhado -->
       <div class="hero-card glass-panel">
         <div class="hero-pill">
           <span>⚡</span>
-          <span>Processamento Local Ultra Rápido • Custo Zero de Nuvem</span>
+          <span>Zero Nuvem • Zero Cadastro • 100% no seu Navegador</span>
         </div>
         <h1 class="hero-title">
-          Todas as ferramentas essenciais em um <span class="hero-gradient">único ecossistema</span>.
+          O Ecossistema Completo de Ferramentas Web <span class="hero-gradient">Sem Custos</span>.
         </h1>
         <p class="hero-desc">
-          Sem limites de upload, sem servidores gravando seus arquivos e sem filas. O processamento roda direto na memória do seu dispositivo.
+          Crie currículos padrão ATS, assine PDFs sem enviar para a internet, remova fundos com IA, gere cartões de arte e converta arquivos em lote com total privacidade.
         </p>
-        <div class="hero-actions">
-          <button onclick="switchTab('remover')" class="btn-primary">
-            <span>✨</span>
-            <span>Testar Removedor IA</span>
-          </button>
-          <button onclick="switchTab('tags')" class="btn-secondary">
-            <span>📈</span>
-            <span>Gerador de Tags Virais</span>
-          </button>
+        
+        <!-- Campo de Busca em Destaque no Hero -->
+        <div style="max-width: 620px; position: relative; margin-bottom: 1.5rem;">
+          <span style="position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.6;">🔍</span>
+          <input type="text" id="hero-search-input" placeholder="O que você precisa fazer hoje? (ex: 'remover fundo', 'currículo', 'assinar pdf')..." oninput="filterTools(this.value)" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1rem 1.25rem 1rem 3rem; color: #fff; font-size: 1rem; outline: none; box-shadow: 0 8px 30px rgba(0,0,0,0.4); transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--amber-primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.18)'">
+        </div>
+
+        <!-- Atalhos Rápidos -->
+        <div class="hero-actions" style="gap: 0.6rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); align-self: center; margin-right: 0.35rem;">Acesso Rápido:</span>
+          <button onclick="switchTab('curriculo')" class="cat-pill" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">📄 Criar Currículo</button>
+          <button onclick="switchTab('remover')" class="cat-pill" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">✨ Remover Fundo</button>
+          <button onclick="switchTab('assinar-pdf')" class="cat-pill" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">✍️ Assinar PDF</button>
+          <button onclick="switchTab('cartao')" class="cat-pill" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">💳 Cartão de Visita</button>
+          <button onclick="switchTab('limpar-gps')" class="cat-pill" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">📍 Limpar GPS</button>
         </div>
       </div>
 
-      <!-- Título de Seção -->
-      <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-        <span>🚀</span>
-        <span>Ferramentas Prontas para Uso</span>
-      </h2>
+      <!-- Barra de Filtros por Categoria -->
+      <div class="category-filter-bar">
+        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (11)</button>
+        <button class="cat-pill" onclick="filterCategory('design', this)">🎨 Design & Imagens (3)</button>
+        <button class="cat-pill" onclick="filterCategory('documentos', this)">📄 Documentos & PDF (3)</button>
+        <button class="cat-pill" onclick="filterCategory('viral', this)">🚀 Marketing & Viral (3)</button>
+        <button class="cat-pill" onclick="filterCategory('utilitarios', this)">🛠️ Utilitários & Privacidade (2)</button>
+      </div>
 
-      <!-- Grid de Módulos -->
-      <div class="tools-grid">
+      <!-- Grid de Módulos (Bento Cards com Filtragem Dinâmica) -->
+      <div class="tools-grid" id="main-tools-grid">
         
         <!-- 1. Removedor -->
-        <div onclick="switchTab('remover')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #C084FC;">✨</div>
+        <div onclick="switchTab('remover')" class="tool-card" role="button" tabindex="0" data-category="design" data-keywords="fundo imagem foto recortar remover background png transparente ia inteligência artificial">
+          <div class="tool-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.3);">✨</div>
           <div class="tool-header">
             <h3 class="tool-title">Removedor de Fundo IA</h3>
             <span class="tool-badge" style="background: rgba(139, 92, 246, 0.15); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.3);">Ilimitado</span>
           </div>
-          <p class="tool-desc">Remova o fundo de qualquer imagem automaticamente sem enviar fotos para servidores.</p>
-          <div class="tool-link" style="color: #C084FC;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Remova o fundo de qualquer imagem automaticamente com IA sem enviar fotos para servidores terceiros.</p>
+          <div class="tool-link" style="color: #C084FC;">Abrir Removedor →</div>
         </div>
 
         <!-- 2. Criador de Currículo ATS -->
-        <div onclick="switchTab('curriculo')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA;">📄</div>
+        <div onclick="switchTab('curriculo')" class="tool-card" role="button" tabindex="0" data-category="documentos" data-keywords="curriculo cv ats modelo template profissional emprego vaga rh carta apresentacao pdf a4">
+          <div class="tool-icon-wrapper" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3);">📄</div>
           <div class="tool-header">
             <h3 class="tool-title">Criador de Currículos ATS</h3>
-            <span class="tool-badge" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3);">Aprovado RH</span>
+            <span class="tool-badge" style="background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3);">Padrão RH</span>
           </div>
-          <p class="tool-desc">Templates modernos com acessibilidade visual e formato 100% legível por robôs de triagem (ATS). Baixe em PDF A4.</p>
-          <div class="tool-link" style="color: #60A5FA;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Templates modernos com acessibilidade visual e formato 100% legível por robôs de recrutamento. Exportação A4 perfeita.</p>
+          <div class="tool-link" style="color: #60A5FA;">Criar Meu Currículo →</div>
         </div>
 
         <!-- 3. Cartão de Visita de Arte -->
-        <div onclick="switchTab('cartao')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(212, 175, 55, 0.15); color: #FACC15;">💳</div>
+        <div onclick="switchTab('cartao')" class="tool-card" role="button" tabindex="0" data-category="design" data-keywords="cartao de visita arte grafica mockup frente verso print impressao 300dpi qr code gold luxo cyber">
+          <div class="tool-icon-wrapper" style="background: rgba(212, 175, 55, 0.15); color: #FACC15; border: 1px solid rgba(212, 175, 55, 0.3);">💳</div>
           <div class="tool-header">
             <h3 class="tool-title">Cartão de Visita de Elite</h3>
             <span class="tool-badge" style="background: rgba(212, 175, 55, 0.15); color: #FACC15; border: 1px solid rgba(212, 175, 55, 0.3);">Arte 3D</span>
           </div>
-          <p class="tool-desc">Crie artes de frente e verso com temas de luxo (Gold, Cyber, Holographic) e QR Code integrado para impressão HD.</p>
-          <div class="tool-link" style="color: #FACC15;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Crie artes de frente e verso com temas de luxo (Gold, Cyber, Holographic) e QR Code integrado para impressão em 300 DPI.</p>
+          <div class="tool-link" style="color: #FACC15;">Criar Cartão →</div>
         </div>
 
         <!-- 4. Assinador de PDF Privado -->
-        <div onclick="switchTab('assinar-pdf')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">✍️</div>
+        <div onclick="switchTab('assinar-pdf')" class="tool-card" role="button" tabindex="0" data-category="documentos" data-keywords="assinar pdf rubrica contrato assinatura digital privado sem nuvem documento carimbo">
+          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">✍️</div>
           <div class="tool-header">
             <h3 class="tool-title">Assinar PDF no Navegador</h3>
             <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">Sem Nuvem</span>
           </div>
           <p class="tool-desc">Desenhe sua rubrica na tela e carimbe qualquer documento sigiloso sem que ele saia do seu computador.</p>
-          <div class="tool-link" style="color: #34D399;">Abrir Ferramenta →</div>
+          <div class="tool-link" style="color: #34D399;">Assinar Documento →</div>
         </div>
 
         <!-- 5. Limpador de GPS & Metadados -->
-        <div onclick="switchTab('limpar-gps')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">📍</div>
+        <div onclick="switchTab('limpar-gps')" class="tool-card" role="button" tabindex="0" data-category="utilitarios" data-keywords="gps localizacao foto privacidade exif sanitizar camera modelo endereco seguranca meta">
+          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">📍</div>
           <div class="tool-header">
             <h3 class="tool-title">Limpador de GPS & EXIF</h3>
             <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Privacy Shield</span>
           </div>
           <p class="tool-desc">Remova as coordenadas de onde você mora e metadados de câmera antes de postar fotos na internet.</p>
-          <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
+          <div class="tool-link" style="color: #F87171;">Sanitizar Fotos →</div>
         </div>
 
         <!-- 6. Conversor & Compressor -->
-        <div onclick="switchTab('converter')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24;">🖼️</div>
+        <div onclick="switchTab('converter')" class="tool-card" role="button" tabindex="0" data-category="design" data-keywords="converter imagem comprimir webp png jpg lote fotos reduzir tamanho otimizar zip">
+          <div class="tool-icon-wrapper" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24; border: 1px solid rgba(255, 153, 0, 0.3);">🖼️</div>
           <div class="tool-header">
             <h3 class="tool-title">Conversor & Compressor</h3>
             <span class="tool-badge" style="background: rgba(255, 153, 0, 0.15); color: #FBBF24; border: 1px solid rgba(255, 153, 0, 0.3);">Em Lote</span>
           </div>
-          <p class="tool-desc">Converta entre WebP, PNG e JPG reduzindo até 90% do tamanho com download em ZIP.</p>
-          <div class="tool-link" style="color: #FBBF24;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Converta entre WebP, PNG e JPG reduzindo até 90% do tamanho com download em lote em formato ZIP.</p>
+          <div class="tool-link" style="color: #FBBF24;">Converter Imagens →</div>
         </div>
 
         <!-- 7. PDF Studio -->
-        <div onclick="switchTab('pdf')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(244, 63, 94, 0.15); color: #FB7185;">📄</div>
+        <div onclick="switchTab('pdf')" class="tool-card" role="button" tabindex="0" data-category="documentos" data-keywords="pdf juntar mesclar unir fotos para pdf converter split merge documentos">
+          <div class="tool-icon-wrapper" style="background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3);">📑</div>
           <div class="tool-header">
             <h3 class="tool-title">PDF Studio</h3>
             <span class="tool-badge" style="background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3);">Client-Side</span>
           </div>
-          <p class="tool-desc">Junte múltiplos PDFs ou transforme fotos em PDF único com privacidade total.</p>
-          <div class="tool-link" style="color: #FB7185;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Junte múltiplos PDFs ou transforme fotos em PDF único com privacidade total e sem limite de páginas.</p>
+          <div class="tool-link" style="color: #FB7185;">Mesclar PDFs →</div>
         </div>
 
         <!-- 8. Tags Virais -->
-        <div onclick="switchTab('tags')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">📈</div>
+        <div onclick="switchTab('tags')" class="tool-card" role="button" tabindex="0" data-category="viral" data-keywords="tags youtube viral tiktok reels hashtags titulos clickbait views inscritos seo magnet">
+          <div class="tool-icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">📈</div>
           <div class="tool-header">
             <h3 class="tool-title">Tags & Click Magnet</h3>
             <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">SEO Viral</span>
           </div>
           <p class="tool-desc">Gere tags para o YouTube Studio, hashtags para TikTok/Reels e fórmulas de títulos de alta conversão.</p>
-          <div class="tool-link" style="color: #34D399;">Abrir Ferramenta →</div>
+          <div class="tool-link" style="color: #34D399;">Gerar Tags Virais →</div>
         </div>
 
         <!-- 9. QR Code Pro -->
-        <div onclick="switchTab('qrcode')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE;">📱</div>
+        <div onclick="switchTab('qrcode')" class="tool-card" role="button" tabindex="0" data-category="viral" data-keywords="qr code qrcode pix link whatsapp wifi vitalicio permanente customizado cor logo">
+          <div class="tool-icon-wrapper" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">📱</div>
           <div class="tool-header">
             <h3 class="tool-title">QR Code Pro</h3>
             <span class="tool-badge" style="background: rgba(6, 182, 212, 0.15); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.3);">Vitalício</span>
           </div>
-          <p class="tool-desc">Crie QR Codes estilizados com cores e links diretos que nunca expiram.</p>
-          <div class="tool-link" style="color: #22D3EE;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Crie QR Codes estilizados com cores neon e links diretos que nunca expiram nem pedem assinatura.</p>
+          <div class="tool-link" style="color: #22D3EE;">Criar QR Code →</div>
         </div>
 
         <!-- 10. Text Studio -->
-        <div onclick="switchTab('texto')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(168, 85, 247, 0.15); color: #C084FC;">📝</div>
+        <div onclick="switchTab('texto')" class="tool-card" role="button" tabindex="0" data-category="utilitarios" data-keywords="texto maiusculas minusculas duplicadas quebras contagem caracteres palavras formatar">
+          <div class="tool-icon-wrapper" style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3);">📝</div>
           <div class="tool-header">
             <h3 class="tool-title">Formatador de Texto</h3>
             <span class="tool-badge" style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.3);">Produtividade</span>
           </div>
-          <p class="tool-desc">Limpe duplicatas, corrija quebras de linha e conte caracteres e palavras em tempo real.</p>
-          <div class="tool-link" style="color: #C084FC;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Limpe linhas duplicadas, corrija quebras e conte caracteres e palavras em tempo real.</p>
+          <div class="tool-link" style="color: #C084FC;">Abrir Text Studio →</div>
         </div>
 
         <!-- 11. Gravador de Tela -->
-        <div onclick="switchTab('recorder')" class="tool-card" role="button" tabindex="0">
-          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171;">🎥</div>
+        <div onclick="switchTab('recorder')" class="tool-card" role="button" tabindex="0" data-category="viral" data-keywords="gravar tela gravador video audio microfone gameplay tutorial capturar">
+          <div class="tool-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">🎥</div>
           <div class="tool-header">
             <h3 class="tool-title">Gravador de Tela & Áudio</h3>
             <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);">Sem Limite</span>
           </div>
-          <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador.</p>
-          <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
+          <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador sem instalar apps.</p>
+          <div class="tool-link" style="color: #F87171;">Iniciar Gravação →</div>
         </div>
 
       </div>
-          <p class="tool-desc">Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto no navegador.</p>
-          <div class="tool-link" style="color: #F87171;">Abrir Ferramenta →</div>
-        </div>
 
-      </div>
+    </div>
 
     </div>
 
@@ -333,6 +321,11 @@
     <div id="tab-remover" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -429,6 +422,11 @@
     <div id="tab-converter" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -505,6 +503,11 @@
     <div id="tab-pdf" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -567,6 +570,11 @@
     <div id="tab-tags" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -644,6 +652,11 @@
     <div id="tab-qrcode" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -710,6 +723,11 @@
     <div id="tab-curriculo" class="tab-content hidden">
       <div style="max-width: 1240px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -874,6 +892,11 @@
     <div id="tab-cartao" class="tab-content hidden">
       <div style="max-width: 1080px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -971,6 +994,11 @@
     <div id="tab-assinar-pdf" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -1033,6 +1061,11 @@
     <div id="tab-limpar-gps" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -1077,6 +1110,11 @@
     <div id="tab-texto" class="tab-content hidden">
       <div style="max-width: 960px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
@@ -1148,6 +1186,11 @@
     <div id="tab-recorder" class="tab-content hidden">
       <div style="max-width: 860px; margin: 0 auto;">
         
+        <div class="tool-back-bar">
+          <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
+        </div>
+
         <div class="flex-between" style="margin-bottom: 1.5rem;">
           <div>
             <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
