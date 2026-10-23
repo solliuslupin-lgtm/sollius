@@ -734,12 +734,12 @@
               <span>📄</span>
               <span>Criador de Currículos Profissionais (Padrão ATS)</span>
             </h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Modelos modernos otimizados para aprovação em triagens de RH e robôs de recrutamento. 100% gratuito e sem cadastro.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Modelos modernos otimizados para aprovação em triagens de RH e robôs de recrutamento (Gupy, Workday, LinkedIn). 100% gratuito e sem cadastro.</p>
           </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <button onclick="loadResumeSample()" class="btn-secondary" style="font-size: 0.85rem;">
-              <span>✨</span>
-              <span>Carregar Exemplo</span>
+            <button onclick="saveResumeDraft()" class="btn-secondary" style="font-size: 0.85rem;" title="Salva os dados no navegador">
+              <span>💾</span>
+              <span>Salvar Rascunho</span>
             </button>
             <button onclick="printResume()" class="btn-primary" style="font-size: 0.85rem;">
               <span>🖨️</span>
@@ -748,15 +748,43 @@
           </div>
         </div>
 
-        <!-- Seletor de Templates -->
-        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Estilo de Modelo:</span>
-            <button class="btn-secondary theme-btn active" data-theme="executive" onclick="setResumeTheme('executive')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Minimalista Executivo</button>
-            <button class="btn-secondary theme-btn" data-theme="tech" onclick="setResumeTheme('tech')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Tech & Moderno</button>
-            <button class="btn-secondary theme-btn" data-theme="creative" onclick="setResumeTheme('creative')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Criativo Editorial</button>
+        <!-- Banner Explicativo de Inteligência ATS -->
+        <div class="ats-guide-banner">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+              <span style="font-size: 1.1rem;">🎯</span>
+              <strong style="color: #fff; font-size: 0.95rem;">O que é o Formato ATS e por que ele é indispensável?</strong>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 760px; line-height: 1.5;">
+              Mais de 90% das empresas usam robôs ATS (Applicant Tracking Systems) para escanear currículos. Designs com colunas complexas, gráficos e tabelas são descartados automaticamente por falha de leitura. Nossos modelos utilizam <strong>hierarquia limpa, OCR otimizado e tipografia semântica</strong> garantindo que suas qualificações sejam 100% captadas pelos recrutadores.
+            </p>
           </div>
-          <span style="font-size: 0.75rem; color: #10B981; font-weight: 600;">✓ Formato A4 Milimétrico • 100% Acessível</span>
+          <div class="ats-score-badge">
+            <div class="ats-score-circle">98%</div>
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #34D399; text-transform: uppercase;">Score ATS</div>
+              <div style="font-size: 0.78rem; color: #E2E8F0;">Máxima Legibilidade</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Perfis de Carreira Prontos (1-Clique) -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-right: 0.35rem;">⚡ Carregar Modelo por Área:</span>
+            <button class="preset-pill" onclick="loadCareerPreset('tech')">💻 Tecnologia & Dev</button>
+            <button class="preset-pill" onclick="loadCareerPreset('growth')">📈 Marketing & Growth</button>
+            <button class="preset-pill" onclick="loadCareerPreset('sales')">🤝 Vendas & Comercial</button>
+            <button class="preset-pill" onclick="loadCareerPreset('finance')">📊 Finanças & Gestão</button>
+            <button class="preset-pill" onclick="loadCareerPreset('intern')">🎓 Estágio / 1º Emprego</button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Estilo:</span>
+            <button class="btn-secondary theme-btn active" data-theme="executive" onclick="setResumeTheme('executive')" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Executivo</button>
+            <button class="btn-secondary theme-btn" data-theme="tech" onclick="setResumeTheme('tech')" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Tech</button>
+            <button class="btn-secondary theme-btn" data-theme="creative" onclick="setResumeTheme('creative')" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Editorial</button>
+          </div>
         </div>
 
         <div class="resume-layout">
@@ -781,13 +809,13 @@
             </div>
 
             <div class="glass-panel" style="padding: 1.25rem;">
-              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Resumo Profissional</h3>
-              <textarea id="res-input-summary" class="form-input" rows="3" placeholder="Apresente sua trajetória de forma sucinta com foco em resultados..." oninput="updateResumePreview()"></textarea>
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Resumo Profissional (Keywords Relevantes)</h3>
+              <textarea id="res-input-summary" class="form-input" rows="3" placeholder="Apresente sua trajetória com foco em conquistas numéricas e tecnologias dominadas..." oninput="updateResumePreview()"></textarea>
             </div>
 
             <div class="glass-panel" style="padding: 1.25rem;">
-              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Habilidades Principais</h3>
-              <input type="text" id="res-input-skills" class="form-input" placeholder="Separe por vírgulas (ex: Gestão, Python, Figma)" oninput="updateResumePreview()">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-primary); margin-bottom: 0.85rem;">Competências & Habilidades (Separadas por vírgula)</h3>
+              <input type="text" id="res-input-skills" class="form-input" placeholder="Ex: Gestão de Projetos, Python, SQL, Metodologia Ágil, Comunicação" oninput="updateResumePreview()">
             </div>
 
             <div class="glass-panel" style="padding: 1.25rem;">
@@ -817,8 +845,8 @@
           <div>
             <div style="position: sticky; top: 5rem;">
               <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Visualização A4 em Tempo Real</span>
-                <span style="font-size: 0.75rem; color: var(--amber-primary);">Design Responsivo • Sem Quebras</span>
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Visualização A4 Milimétrica</span>
+                <span style="font-size: 0.75rem; color: #10B981; font-weight: 600;">✓ Pronto para Impressão e PDF</span>
               </div>
               
               <div id="resume-printable-area">
@@ -890,7 +918,7 @@
     <!-- TAB: CRIADOR DE CARTÃO DE VISITA ARTÍSTICO -->
     <!-- ======================================================== -->
     <div id="tab-cartao" class="tab-content hidden">
-      <div style="max-width: 1080px; margin: 0 auto;">
+      <div style="max-width: 1140px; margin: 0 auto;">
         
         <div class="tool-back-bar">
           <button onclick="switchTab('hub')" class="btn-back">← Voltar para Todas as Ferramentas</button>
@@ -903,83 +931,131 @@
               <span>💳</span>
               <span>Criador de Cartão de Visita de Elite</span>
             </h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Design profissional frente e verso com temas de arte visual (Gold, Cyber, Holographic) e QR Code automático integrado.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Design profissional frente e verso com temas de arte visual luxuosa (Obsidian 24K, Cyber Matrix, Swiss Minimalist, Holographic, Emerald) e QR Code automático integrado.</p>
           </div>
-          <div style="display: flex; gap: 0.75rem;">
-            <button onclick="downloadCardAsImage('card-preview-front', 'cartao-frente-sollius.png')" class="btn-primary" style="font-size: 0.85rem;">
-              <span>⬇️</span>
-              <span>Baixar Frente (HD)</span>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button onclick="saveCardDraft()" class="btn-secondary" style="font-size: 0.84rem;">
+              <span>💾</span>
+              <span>Salvar Cartão</span>
             </button>
-            <button onclick="downloadCardAsImage('card-preview-back', 'cartao-verso-sollius.png')" class="btn-secondary" style="font-size: 0.85rem;">
+            <button onclick="downloadCardAsImage('card-face-front', 'cartao-frente-300dpi.png')" class="btn-primary" style="font-size: 0.84rem;">
               <span>⬇️</span>
-              <span>Baixar Verso (HD)</span>
+              <span>Baixar Frente (300 DPI)</span>
+            </button>
+            <button onclick="downloadCardAsImage('card-face-back', 'cartao-verso-300dpi.png')" class="btn-secondary" style="font-size: 0.84rem;">
+              <span>⬇️</span>
+              <span>Baixar Verso com QR</span>
+            </button>
+            <button onclick="printCardSheet()" class="btn-secondary" style="font-size: 0.84rem;" title="Gera folha A4 com 10 cartões prontos para recortar">
+              <span>🖨️</span>
+              <span>Folha A4 Impressão</span>
             </button>
           </div>
         </div>
 
-        <!-- Seleção de Estilos Artísticos -->
-        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Estilo de Arte:</span>
-          <button class="btn-secondary card-theme-btn active" data-theme="gold" onclick="setCardTheme('gold')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">✨ Ouro Imperial (Black & Gold)</button>
-          <button class="btn-secondary card-theme-btn" data-theme="cyber" onclick="setCardTheme('cyber')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">⚡ Cyber Dark (Neon Violet)</button>
-          <button class="btn-secondary card-theme-btn" data-theme="holographic" onclick="setCardTheme('holographic')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">🌈 Holographic Glow</button>
-          <button class="btn-secondary card-theme-btn" data-theme="minimal" onclick="setCardTheme('minimal')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">📐 Suíço Minimalista</button>
+        <!-- Seleção de Estilos Artísticos de Luxo -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-right: 0.5rem;">Temas Gráficos:</span>
+          <button class="btn-secondary card-theme-btn active" data-theme="obsidian" onclick="setCardTheme('obsidian')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">👑 Obsidian & Ouro 24K</button>
+          <button class="btn-secondary card-theme-btn" data-theme="cyber" onclick="setCardTheme('cyber')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">⚡ Cyberpunk Matrix 2077</button>
+          <button class="btn-secondary card-theme-btn" data-theme="swiss" onclick="setCardTheme('swiss')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">📐 Editorial Suíço Clean</button>
+          <button class="btn-secondary card-theme-btn" data-theme="holographic" onclick="setCardTheme('holographic')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">🌈 Holographic Liquid</button>
+          <button class="btn-secondary card-theme-btn" data-theme="emerald" onclick="setCardTheme('emerald')" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">💎 Esmeralda Prestige</button>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: start;">
           
-          <!-- Formulário -->
+          <!-- Formulário Completo -->
           <div class="glass-panel" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
-            <h3 style="font-size: 1rem; font-weight: 700; color: var(--amber-primary);">Informações do Cartão</h3>
-            <input type="text" id="card-input-name" class="form-input" placeholder="Seu Nome" value="Carlos Eduardo" oninput="updateCardPreview()">
-            <input type="text" id="card-input-role" class="form-input" placeholder="Cargo / Título" value="Arquiteto de Soluções" oninput="updateCardPreview()">
+            <div class="flex-between">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--amber-primary);">Dados do Cartão</h3>
+              <span style="font-size: 0.72rem; color: #10B981; font-weight: 600;">✓ Auto-Save Local</span>
+            </div>
+            
+            <input type="text" id="card-input-name" class="form-input" placeholder="Seu Nome Completo" value="Carlos Eduardo Silva" oninput="updateCardPreview()">
+            <input type="text" id="card-input-role" class="form-input" placeholder="Cargo / Especialidade (ex: Arquiteto de Software)" value="Arquiteto de Soluções & IA" oninput="updateCardPreview()">
             <input type="text" id="card-input-company" class="form-input" placeholder="Nome da Empresa / Marca" value="SOLLIUS STUDIO" oninput="updateCardPreview()">
-            <input type="text" id="card-input-phone" class="form-input" placeholder="Telefone / WhatsApp" value="+55 (11) 98888-7777" oninput="updateCardPreview()">
-            <input type="email" id="card-input-email" class="form-input" placeholder="E-mail" value="carlos@sollius.com.br" oninput="updateCardPreview()">
-            <input type="text" id="card-input-site" class="form-input" placeholder="Site ou Link (Gera QR Code)" value="sollius.com.br" oninput="updateCardPreview()">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <input type="text" id="card-input-phone" class="form-input" placeholder="WhatsApp / Telefone" value="+55 (11) 98888-7777" oninput="updateCardPreview()">
+              <input type="email" id="card-input-email" class="form-input" placeholder="E-mail Profissional" value="carlos@sollius.com.br" oninput="updateCardPreview()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <input type="text" id="card-input-site" class="form-input" placeholder="Site / Link (QR Code)" value="sollius.com.br" oninput="updateCardPreview()">
+              <input type="text" id="card-input-loc" class="form-input" placeholder="Cidade / Estado" value="São Paulo - SP" oninput="updateCardPreview()">
+            </div>
+
+            <!-- Upload de Logo Opcional -->
+            <div style="margin-top: 0.5rem; padding: 0.85rem; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <div style="font-size: 0.82rem;">
+                <strong style="color: #fff; display: block;">Logotipo ou Ícone da Marca:</strong>
+                <span style="color: var(--text-dim); font-size: 0.75rem;">PNG transparente recomendado</span>
+              </div>
+              <input type="file" id="card-logo-input" accept="image/*" style="display: none;" onchange="handleCardLogoUpload(this.files[0])">
+              <button type="button" onclick="document.getElementById('card-logo-input').click()" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                Subir Logo
+              </button>
+            </div>
           </div>
 
-          <!-- Preview Frente e Verso -->
+          <!-- Preview 3D Interativo (Gira com 1 Clique) -->
           <div>
-            <div class="card-preview-stage">
-              
-              <!-- Frente -->
-              <div>
-                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; display: block; text-align: center;">Frente da Arte</span>
-                <div id="card-preview-front" class="business-card bc-theme-gold">
+            <div style="text-align: center; margin-bottom: 0.75rem;">
+              <button onclick="toggleCardFlip()" class="btn-secondary" style="padding: 0.45rem 1.15rem; font-size: 0.85rem; border-color: rgba(255,153,0,0.3);">
+                <span>🔄</span>
+                <span>Clique para Girar o Cartão (Frente / Verso)</span>
+              </button>
+            </div>
+
+            <!-- Palco 3D -->
+            <div class="card-flipper-container">
+              <div id="card-3d-box" class="card-3d-wrapper" onclick="toggleCardFlip()" title="Clique para virar o cartão">
+                
+                <!-- Frente da Arte -->
+                <div id="card-face-front" class="card-face theme-obsidian">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="card-front-company" class="bc-accent" style="font-size: 0.85rem; font-weight: 800; letter-spacing: 0.15em;">SOLLIUS STUDIO</span>
-                    <span style="font-size: 1.2rem;">☀️</span>
+                    <span id="card-front-company" class="card-metallic-brand">SOLLIUS STUDIO</span>
+                    <div id="card-logo-preview-box">
+                      <span style="font-size: 1.4rem;">☀️</span>
+                    </div>
                   </div>
                   <div>
-                    <h3 id="card-front-name" style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.15rem;">Carlos Eduardo</h3>
-                    <p id="card-front-role" class="bc-sub" style="font-size: 0.85rem; font-weight: 500;">Arquiteto de Soluções</p>
+                    <h3 id="card-front-name" style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.2rem; letter-spacing: -0.01em;">Carlos Eduardo Silva</h3>
+                    <p id="card-front-role" style="font-size: 0.88rem; font-weight: 500; opacity: 0.85;">Arquiteto de Soluções & IA</p>
                   </div>
-                  <div style="height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.1);"></div>
+                  <div class="card-gold-line"></div>
                 </div>
-              </div>
 
-              <!-- Verso -->
-              <div>
-                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; display: block; text-align: center;">Verso com QR Code</span>
-                <div id="card-preview-back" class="business-card bc-theme-gold">
+                <!-- Verso com QR Code -->
+                <div id="card-face-back" class="card-face face-back theme-obsidian">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="card-back-company" class="bc-accent" style="font-size: 0.9rem; font-weight: 800;">SOLLIUS STUDIO</span>
-                    <span style="font-size: 0.72rem; color: #94a3b8; letter-spacing: 0.05em;">SCANEIE O CONTATO</span>
+                    <span id="card-back-company" class="card-metallic-brand" style="font-size: 0.85rem;">SOLLIUS STUDIO</span>
+                    <span style="font-size: 0.65rem; opacity: 0.7; letter-spacing: 0.1em;">DIGITAL NFC & QR</span>
                   </div>
                   <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
                     <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.78rem;">
                       <div id="card-back-phone">📱 +55 (11) 98888-7777</div>
                       <div id="card-back-email">📧 carlos@sollius.com.br</div>
                       <div id="card-back-site">🌐 sollius.com.br</div>
+                      <div id="card-back-loc" style="opacity: 0.7; font-size: 0.72rem;">📍 São Paulo - SP</div>
                     </div>
-                    <div id="card-qr-box" style="padding: 0.35rem; background: rgba(255,255,255,0.08); border-radius: 8px;"></div>
+                    <div id="card-qr-box" style="padding: 0.35rem; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);"></div>
                   </div>
-                  <div style="font-size: 0.65rem; color: #64748b; text-align: right;">300 DPI Export Ready</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; opacity: 0.6;">
+                    <span>300 DPI CMYK READY</span>
+                    <span>SOLLIUS PRO</span>
+                  </div>
                 </div>
-              </div>
 
+              </div>
             </div>
+
+            <!-- Visualização Lado a Lado Rápida -->
+            <div style="text-align: center; margin-top: 1rem;">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Dica: O QR Code do verso é gerado automaticamente com o link do seu site ou WhatsApp.</span>
+            </div>
+
           </div>
 
         </div>

@@ -390,22 +390,22 @@ async function handleConverterFiles(files) {
     const file = files[i];
     const itemId = `conv-${Date.now()}-${i}`;
     
-    // Renderiza placeholder na lista
+    // Renderiza placeholder elegante na lista
     const itemEl = document.createElement('div');
     itemEl.id = itemId;
-    itemEl.className = 'flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 text-xs';
+    itemEl.className = 'file-queue-card';
     itemEl.innerHTML = `
-      <div class="flex items-center space-x-3 overflow-hidden">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
-          ${file.name.split('.').pop().toUpperCase().slice(0, 3)}
+      <div class="file-info-group">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(255, 153, 0, 0.15); color: #FBBF24; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; border: 1px solid rgba(255, 153, 0, 0.3);">
+          ${file.name.split('.').pop().toUpperCase().slice(0, 4)}
         </div>
-        <div class="truncate max-w-[200px] sm:max-w-xs">
-          <p class="font-semibold text-white truncate">${file.name}</p>
-          <p class="text-slate-400">${formatFileSize(file.size)} • Processando...</p>
+        <div class="file-details">
+          <span class="file-title-text">${file.name}</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">${formatFileSize(file.size)} • Otimizando no navegador...</span>
         </div>
       </div>
-      <div class="flex items-center space-x-2">
-        <div class="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 0.8rem; color: #FBBF24; font-weight: 600;">⏳ Processando...</span>
       </div>
     `;
     queueList.appendChild(itemEl);
@@ -417,28 +417,34 @@ async function handleConverterFiles(files) {
       
       const reduction = Math.round(((file.size - result.blob.size) / file.size) * 100);
       const isLighter = reduction > 0;
+      const thumbUrl = URL.createObjectURL(result.blob);
 
       itemEl.innerHTML = `
-        <div class="flex items-center space-x-3 overflow-hidden">
-          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
-            ${targetFormat.toUpperCase()}
-          </div>
-          <div class="truncate max-w-[180px] sm:max-w-xs">
-            <p class="font-semibold text-white truncate">${result.filename}</p>
-            <div class="flex items-center space-x-2 text-slate-400">
-              <span>${formatFileSize(file.size)} → <strong class="text-emerald-400">${formatFileSize(result.blob.size)}</strong></span>
-              ${isLighter ? `<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">-${reduction}%</span>` : ''}
+        <div class="file-info-group">
+          <img src="${thumbUrl}" class="file-thumb-preview" alt="Preview da Imagem Convertida">
+          <div class="file-details">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="file-title-text" title="${result.filename}">${result.filename}</span>
+              <span class="file-format-badge ${targetFormat}">${targetFormat.toUpperCase()}</span>
+            </div>
+            <div class="file-size-comparison">
+              <span>${formatFileSize(file.size)} → <strong style="color: #34D399;">${formatFileSize(result.blob.size)}</strong></span>
+              ${isLighter ? `<span class="savings-pill">🔥 -${reduction}%</span>` : ''}
             </div>
           </div>
         </div>
-        <button onclick="downloadSingleConverted('${result.id}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-semibold transition flex items-center space-x-1">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Baixar</span>
+        <button onclick="downloadSingleConverted('${result.id}')" class="btn-download-single">
+          <span>⬇️</span>
+          <span>Baixar ${targetFormat.toUpperCase()}</span>
         </button>
       `;
-      if (window.lucide) lucide.createIcons();
     } catch (err) {
-      itemEl.innerHTML = `<span class="text-red-400 font-semibold">Erro ao converter ${file.name}</span>`;
+      itemEl.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.75rem; color: #F87171;">
+          <span>❌</span>
+          <span style="font-weight: 600;">Erro ao converter ${file.name}</span>
+        </div>
+      `;
     }
   }
 
@@ -589,14 +595,20 @@ function renderPdfFilesList() {
 
   pdfFilesList.forEach((file, idx) => {
     const row = document.createElement('div');
-    row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-white/5 text-xs';
+    row.className = 'file-queue-card';
     row.innerHTML = `
-      <div class="flex items-center space-x-2.5 truncate">
-        <span class="w-5 h-5 rounded-md bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-[10px]">${idx + 1}</span>
-        <span class="font-medium text-white truncate max-w-xs">${file.name}</span>
-        <span class="text-slate-400">(${formatFileSize(file.size)})</span>
+      <div class="file-info-group">
+        <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(244, 63, 94, 0.15); color: #FB7185; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; border: 1px solid rgba(244, 63, 94, 0.3);">
+          #${idx + 1}
+        </div>
+        <div class="file-details">
+          <span class="file-title-text">${file.name}</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">${formatFileSize(file.size)}</span>
+        </div>
       </div>
-      <button onclick="removePdfFile(${idx})" class="text-slate-400 hover:text-rose-400 p-1">&times;</button>
+      <button onclick="removePdfFile(${idx})" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; color: #F87171;" title="Remover este arquivo">
+        Remover ✕
+      </button>
     `;
     listEl.appendChild(row);
   });
@@ -921,8 +933,10 @@ function updateResumePreview() {
   const summary = document.getElementById('res-input-summary')?.value || 'Profissional com sólida experiência em resolução de problemas, foco em resultados mensuráveis e inovação contínua.';
 
   // Header
-  document.getElementById('res-view-name').innerText = name;
-  document.getElementById('res-view-title').innerText = title;
+  const vName = document.getElementById('res-view-name');
+  if (vName) vName.innerText = name;
+  const vTitle = document.getElementById('res-view-title');
+  if (vTitle) vTitle.innerText = title;
   
   // Contacts
   const contactsContainer = document.getElementById('res-view-contacts');
@@ -991,7 +1005,7 @@ function updateResumePreview() {
   }
 }
 
-function addExperienceField() {
+function addExperienceField(roleVal = '', companyVal = '', periodVal = '', descVal = '') {
   const container = document.getElementById('res-exp-inputs-container');
   if (!container) return;
   const block = document.createElement('div');
@@ -1005,57 +1019,190 @@ function addExperienceField() {
       <button type="button" onclick="this.parentElement.parentElement.remove(); updateResumePreview();" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem;">Remover ✕</button>
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
-      <input type="text" class="exp-role form-input" placeholder="Cargo (ex: Gerente de Projetos)" oninput="updateResumePreview()">
-      <input type="text" class="exp-company form-input" placeholder="Empresa" oninput="updateResumePreview()">
+      <input type="text" class="exp-role form-input" placeholder="Cargo (ex: Gerente de Projetos)" value="${roleVal}" oninput="updateResumePreview()">
+      <input type="text" class="exp-company form-input" placeholder="Empresa" value="${companyVal}" oninput="updateResumePreview()">
     </div>
-    <input type="text" class="exp-period form-input" placeholder="Período (ex: 2022 - Atual)" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
-    <textarea class="exp-desc form-input" rows="2" placeholder="Descreva conquistas mensuráveis..." oninput="updateResumePreview()"></textarea>
+    <input type="text" class="exp-period form-input" placeholder="Período (ex: 2022 - Atual)" value="${periodVal}" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
+    <textarea class="exp-desc form-input" rows="2" placeholder="Descreva conquistas mensuráveis..." oninput="updateResumePreview()">${descVal}</textarea>
   `;
   container.appendChild(block);
   updateResumePreview();
 }
 
-function loadResumeSample() {
-  document.getElementById('res-input-name').value = 'Mariana Silva Alencar';
-  document.getElementById('res-input-title').value = 'Especialista em Marketing Digital & Growth';
-  document.getElementById('res-input-email').value = 'mariana.alencar@email.com';
-  document.getElementById('res-input-phone').value = '(11) 98765-4321';
-  document.getElementById('res-input-loc').value = 'São Paulo, Brasil';
-  document.getElementById('res-input-site').value = 'linkedin.com/in/mariana-growth';
-  document.getElementById('res-input-summary').value = 'Especialista em Growth e Estratégia de Conteúdo com 6+ anos de experiência liderando campanhas digitais de alta conversão, gestão de tráfego pago e automação de marketing com ROAS médio de 4.8x.';
-  document.getElementById('res-input-skills').value = 'SEO Avançado, Google Ads, Meta Ads, Análise de Dados, Growth Hacking, Copywriting, Liderança de Equipes, Automação de E-mail';
-  document.getElementById('res-input-edu-degree').value = 'Pós-Graduação em Marketing Estratégico & Data Science';
-  document.getElementById('res-input-edu-inst').value = 'Fundação Getulio Vargas (FGV)';
-  document.getElementById('res-input-edu-year').value = '2022 - 2023';
+// Perfis Pré-configurados de Carreira ATS (1-Clique)
+function loadCareerPreset(area) {
+  const presets = {
+    tech: {
+      name: 'Lucas Martins Ferreira',
+      title: 'Engenheiro de Software Full Stack Sênior',
+      email: 'lucas.martins@dev.io',
+      phone: '(11) 98111-2233',
+      loc: 'São Paulo, SP (Remoto)',
+      site: 'github.com/lucasmartins • linkedin.com/in/lucas-tech',
+      summary: 'Engenheiro de Software com 7+ anos construindo microsserviços escaláveis em Node.js, Go e React. Histórico comprovado de redução de 40% em latência de APIs e arquitetura de sistemas em nuvem para mais de 1.2M de usuários ativos diários.',
+      skills: 'TypeScript, React.js, Node.js, Go, Docker, Kubernetes, AWS, PostgreSQL, Redis, CI/CD, Testes Unitários, Arquitetura Hexagonal',
+      degree: 'Bacharelado em Engenharia de Software',
+      inst: 'Universidade de São Paulo (USP)',
+      year: '2016 - 2020',
+      experiences: [
+        { role: 'Staff Software Engineer', company: 'CloudScale Global Systems', period: '2022 - Presente', desc: 'Liderança técnica de 12 desenvolvedores. Migração de monólito para arquitetura orientada a eventos com Kafka, resultando em 99.99% de uptime e redução de R$ 180k/ano em infraestrutura.' },
+        { role: 'Senior Frontend Engineer', company: 'Fintech Vanguard', period: '2019 - 2022', desc: 'Desenvolvimento do core bancário digital em React Native e Web. Otimização do Core Web Vitals atingindo pontuação máxima de 98/100 e conversão de onboarding ampliada em 24%.' }
+      ]
+    },
+    growth: {
+      name: 'Mariana Silva Alencar',
+      title: 'Head de Growth & Marketing de Performance',
+      email: 'mariana.alencar@growth.com',
+      phone: '(11) 98765-4321',
+      loc: 'São Paulo, Brasil',
+      site: 'linkedin.com/in/mariana-growth',
+      summary: 'Especialista em Growth e Estratégia de Mídia com 6+ anos de experiência liderando campanhas de alta conversão, gestão de tráfego pago e automação com ROAS médio comprovado de 4.8x em escala de R$ 2M/mês.',
+      skills: 'Google Ads, Meta Ads, TikTok Ads, CRO, Google Analytics 4, SQL Básico, Testes A/B, Copywriting de Conversão, Gestão de Equipes',
+      degree: 'Pós-Graduação em Marketing Estratégico & Data Science',
+      inst: 'Fundação Getulio Vargas (FGV)',
+      year: '2021 - 2023',
+      experiences: [
+        { role: 'Head de Growth & Performance', company: 'Nexus Tech Corp', period: '2023 - Presente', desc: 'Escala de faturamento de R$ 400k para R$ 1.9M/mês através de otimização contínua de funil e retenção de LTV.' },
+        { role: 'Coordenadora de Mídia Paga', company: 'Vanguard Digital', period: '2020 - 2023', desc: 'Gestão de R$ 600k mensais em mídia de performance, redução do CAC em 34% e reestruturação da atribuição multi-touch.' }
+      ]
+    },
+    sales: {
+      name: 'Rodrigo Mendonça Prado',
+      title: 'Executivo de Vendas Enterprise (B2B SaaS)',
+      email: 'rodrigo.prado@salesb2b.com',
+      phone: '(21) 99888-5544',
+      loc: 'Rio de Janeiro, RJ',
+      site: 'linkedin.com/in/rodrigo-enterprise-sales',
+      summary: 'Executivo de Contas com 8+ anos em prospecção e fechamento de contratos corporativos de alto valor (ACV acima de R$ 200k). Especialista em metodologia SPIN Selling, negociação C-Level e gestão de pipeline.',
+      skills: 'Vendas Enterprise, B2B SaaS, SPIN Selling, Salesforce CRM, HubSpot, Negociação C-Level, Previsibilidade de Receita, Account Mapping',
+      degree: 'Bacharelado em Administração de Empresas',
+      inst: 'Pontifícia Universidade Católica (PUC-RJ)',
+      year: '2015 - 2019',
+      experiences: [
+        { role: 'Enterprise Account Executive', company: 'Enterprise Cloud Solutions', period: '2021 - Presente', desc: 'Superação consistente de meta com 135% de atingimento anual em 2023 (R$ 4.2M em novos contratos fechados).' },
+        { role: 'Senior Sales Representative', company: 'DataCorp Tecnologia', period: '2018 - 2021', desc: 'Abertura de 28 novas contas estratégicas nos setores bancário e varejo, encurtando o ciclo de fechamento de 9 para 5 meses.' }
+      ]
+    },
+    finance: {
+      name: 'Beatriz Vasconcelos Ramos',
+      title: 'Analista de Planejamento Financeiro & Controladoria (FP&A)',
+      email: 'beatriz.ramos@financas.com',
+      phone: '(31) 98777-6655',
+      loc: 'Belo Horizonte, MG',
+      site: 'linkedin.com/in/beatriz-fpa',
+      summary: 'Analista Financeira com sólida atuação em orçamento corporativo, modelagem de DRE, fluxo de caixa e relatórios gerenciais para conselho de administração. Foco em redução de despesas e otimização de margem EBITDA.',
+      skills: 'Modelagem Financeira, FP&A, DRE, Fluxo de Caixa, Excel Avançado (VBA), Power BI, SAP ERP, Análise de Viabilidade (VPL/TIR)',
+      degree: 'Bacharelado em Ciências Contábeis',
+      inst: 'Universidade Federal de Minas Gerais (UFMG)',
+      year: '2017 - 2021',
+      experiences: [
+        { role: 'Analista Financeiro Sênior', company: 'Grupo Industrial Horizonte', period: '2022 - Presente', desc: 'Estruturação do orçamento anual de R$ 85M e condução do plano de eficiência operacional que reduziu custos fixos em 14%.' },
+        { role: 'Analista de Controladoria Pleno', company: 'Auditoria & Consultoria Alfa', period: '2019 - 2022', desc: 'Elaboração de dashboards executivos em Power BI integrados ao ERP, diminuindo o tempo de fechamento contábil de 10 para 3 dias úteis.' }
+      ]
+    },
+    intern: {
+      name: 'Gabriel Santana Souza',
+      title: 'Estudante de Engenharia / Administração',
+      email: 'gabriel.souza@estudante.ufmg.br',
+      phone: '(11) 97777-3322',
+      loc: 'Campinas, SP',
+      site: 'linkedin.com/in/gabriel-santana-estagio',
+      summary: 'Estudante do 5º semestre proativo, com premiação acadêmica em olimpíadas de exatas e domínio de análise de dados. Buscando oportunidade de estágio para contribuir com organização de processos, automação de planilhas e suporte a projetos.',
+      skills: 'Excel Intermediário/Avançado, Python Básico, Inglês Fluente (C1), Pacote Office, Trabalho em Equipe, Resolução de Problemas, Comunicação',
+      degree: 'Graduação em Engenharia de Produção',
+      inst: 'Universidade Estadual de Campinas (UNICAMP)',
+      year: '2023 - 2027 (Previsão de Conclusão)',
+      experiences: [
+        { role: 'Membro da Empresa Júnior', company: 'Consultoria Júnior UNICAMP', period: '2023 - 2024', desc: 'Participação direta na elaboração de 4 projetos de consultoria empresarial para pequenas empresas da região, com índice de 96% de satisfação dos clientes.' }
+      ]
+    }
+  };
+
+  const p = presets[area] || presets.tech;
+  document.getElementById('res-input-name').value = p.name;
+  document.getElementById('res-input-title').value = p.title;
+  document.getElementById('res-input-email').value = p.email;
+  document.getElementById('res-input-phone').value = p.phone;
+  document.getElementById('res-input-loc').value = p.loc;
+  document.getElementById('res-input-site').value = p.site;
+  document.getElementById('res-input-summary').value = p.summary;
+  document.getElementById('res-input-skills').value = p.skills;
+  document.getElementById('res-input-edu-degree').value = p.degree;
+  document.getElementById('res-input-edu-inst').value = p.inst;
+  document.getElementById('res-input-edu-year').value = p.year;
 
   const container = document.getElementById('res-exp-inputs-container');
   if (container) {
-    container.innerHTML = `
-      <div class="res-exp-block glass-panel" style="padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary);">Experiência 1</span>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
-          <input type="text" class="exp-role form-input" value="Head de Growth & Tráfego" oninput="updateResumePreview()">
-          <input type="text" class="exp-company form-input" value="Nexus Tech Corp" oninput="updateResumePreview()">
-        </div>
-        <input type="text" class="exp-period form-input" value="2023 - Presente" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
-        <textarea class="exp-desc form-input" rows="2" oninput="updateResumePreview()">Liderança de 8 profissionais, escala de faturamento de R$ 300k para R$ 1.8M/mês através de otimização de funil de vendas e testes A/B contínuos.</textarea>
-      </div>
-      <div class="res-exp-block glass-panel" style="padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-primary);">Experiência 2</span>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
-          <input type="text" class="exp-role form-input" value="Coordenadora de Performance" oninput="updateResumePreview()">
-          <input type="text" class="exp-company form-input" value="Vanguard Mídia Digital" oninput="updateResumePreview()">
-        </div>
-        <input type="text" class="exp-period form-input" value="2020 - 2023" style="margin-bottom: 0.5rem;" oninput="updateResumePreview()">
-        <textarea class="exp-desc form-input" rows="2" oninput="updateResumePreview()">Gestão de R$ 500k mensais em mídia de performance, redução do CAC em 34% e estruturação de dashboards em tempo real.</textarea>
-      </div>
-    `;
+    container.innerHTML = '';
+    p.experiences.forEach(exp => {
+      addExperienceField(exp.role, exp.company, exp.period, exp.desc);
+    });
   }
   updateResumePreview();
+  if (window.confetti) confetti({ particleCount: 30, spread: 60 });
+}
+
+function loadResumeSample() {
+  // Se houver rascunho salvo no navegador, carrega o rascunho
+  const saved = localStorage.getItem('sollius_resume_draft');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      document.getElementById('res-input-name').value = data.name || '';
+      document.getElementById('res-input-title').value = data.title || '';
+      document.getElementById('res-input-email').value = data.email || '';
+      document.getElementById('res-input-phone').value = data.phone || '';
+      document.getElementById('res-input-loc').value = data.loc || '';
+      document.getElementById('res-input-site').value = data.site || '';
+      document.getElementById('res-input-summary').value = data.summary || '';
+      document.getElementById('res-input-skills').value = data.skills || '';
+      document.getElementById('res-input-edu-degree').value = data.degree || '';
+      document.getElementById('res-input-edu-inst').value = data.inst || '';
+      document.getElementById('res-input-edu-year').value = data.year || '';
+
+      const container = document.getElementById('res-exp-inputs-container');
+      if (container && data.experiences && data.experiences.length) {
+        container.innerHTML = '';
+        data.experiences.forEach(exp => {
+          addExperienceField(exp.role, exp.company, exp.period, exp.desc);
+        });
+      }
+      updateResumePreview();
+      return;
+    } catch(e) {}
+  }
+
+  // Padrão: Carrega perfil tech de alto impacto
+  loadCareerPreset('tech');
+}
+
+function saveResumeDraft() {
+  const data = {
+    name: document.getElementById('res-input-name')?.value,
+    title: document.getElementById('res-input-title')?.value,
+    email: document.getElementById('res-input-email')?.value,
+    phone: document.getElementById('res-input-phone')?.value,
+    loc: document.getElementById('res-input-loc')?.value,
+    site: document.getElementById('res-input-site')?.value,
+    summary: document.getElementById('res-input-summary')?.value,
+    skills: document.getElementById('res-input-skills')?.value,
+    degree: document.getElementById('res-input-edu-degree')?.value,
+    inst: document.getElementById('res-input-edu-inst')?.value,
+    year: document.getElementById('res-input-edu-year')?.value,
+    experiences: []
+  };
+
+  document.querySelectorAll('.res-exp-block').forEach(item => {
+    data.experiences.push({
+      role: item.querySelector('.exp-role')?.value || '',
+      company: item.querySelector('.exp-company')?.value || '',
+      period: item.querySelector('.exp-period')?.value || '',
+      desc: item.querySelector('.exp-desc')?.value || ''
+    });
+  });
+
+  localStorage.setItem('sollius_resume_draft', JSON.stringify(data));
+  alert('✅ Rascunho do currículo salvo no seu navegador com sucesso!');
 }
 
 function printResume() {
@@ -1063,30 +1210,52 @@ function printResume() {
 }
 
 // ========================================================
-// 2. CRIADOR DE CARTÃO DE VISITA (ARTE DE ELITE FRENTE E VERSO)
+// 2. CRIADOR DE CARTÃO DE VISITA (ARTE 3D & LUXURY DESIGNS)
 // ========================================================
-let currentCardTheme = 'gold';
+let currentCardTheme = 'obsidian';
+let cardCustomLogoUrl = null;
+
+function toggleCardFlip() {
+  const box = document.getElementById('card-3d-box');
+  if (box) box.classList.toggle('flipped');
+}
 
 function setCardTheme(theme) {
   currentCardTheme = theme;
-  const front = document.getElementById('card-preview-front');
-  const back = document.getElementById('card-preview-back');
+  const front = document.getElementById('card-face-front');
+  const back = document.getElementById('card-face-back');
   if (front && back) {
-    front.className = `business-card bc-theme-${theme}`;
-    back.className = `business-card bc-theme-${theme}`;
+    front.className = `card-face theme-${theme}`;
+    back.className = `card-face face-back theme-${theme}`;
   }
   document.querySelectorAll('.card-theme-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.theme === theme);
   });
+  updateCardPreview();
+}
+
+function handleCardLogoUpload(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    cardCustomLogoUrl = e.target.result;
+    const box = document.getElementById('card-logo-preview-box');
+    if (box) {
+      box.innerHTML = `<img src="${cardCustomLogoUrl}" style="max-height: 38px; max-width: 60px; object-fit: contain;">`;
+    }
+    updateCardPreview();
+  };
+  reader.readAsDataURL(file);
 }
 
 function updateCardPreview() {
-  const name = document.getElementById('card-input-name')?.value || 'Carlos Eduardo';
-  const role = document.getElementById('card-input-role')?.value || 'Arquiteto de Soluções';
+  const name = document.getElementById('card-input-name')?.value || 'Carlos Eduardo Silva';
+  const role = document.getElementById('card-input-role')?.value || 'Arquiteto de Soluções & IA';
   const company = document.getElementById('card-input-company')?.value || 'SOLLIUS STUDIO';
   const phone = document.getElementById('card-input-phone')?.value || '+55 (11) 98888-7777';
   const email = document.getElementById('card-input-email')?.value || 'carlos@sollius.com.br';
   const site = document.getElementById('card-input-site')?.value || 'sollius.com.br';
+  const loc = document.getElementById('card-input-loc')?.value || 'São Paulo - SP';
 
   // Front
   const fName = document.getElementById('card-front-name');
@@ -1100,11 +1269,13 @@ function updateCardPreview() {
   const bCompany = document.getElementById('card-back-company');
   if (bCompany) bCompany.innerText = company;
   const bPhone = document.getElementById('card-back-phone');
-  if (bPhone) bPhone.innerText = phone;
+  if (bPhone) bPhone.innerText = `📱 ${phone}`;
   const bEmail = document.getElementById('card-back-email');
-  if (bEmail) bEmail.innerText = email;
+  if (bEmail) bEmail.innerText = `📧 ${email}`;
   const bSite = document.getElementById('card-back-site');
-  if (bSite) bSite.innerText = site;
+  if (bSite) bSite.innerText = `🌐 ${site}`;
+  const bLoc = document.getElementById('card-back-loc');
+  if (bLoc) bLoc.innerText = `📍 ${loc}`;
 
   // Render QR Code on Card Back
   const qrContainer = document.getElementById('card-qr-box');
@@ -1113,104 +1284,147 @@ function updateCardPreview() {
     const qrData = site.startsWith('http') ? site : `https://${site}`;
     new QRCode(qrContainer, {
       text: qrData,
-      width: 72,
-      height: 72,
-      colorDark: currentCardTheme === 'minimal' ? '#0f172a' : '#ffffff',
-      colorLight: 'transparent',
+      width: 64,
+      height: 64,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.M
     });
   }
 }
 
+function saveCardDraft() {
+  const data = {
+    name: document.getElementById('card-input-name')?.value,
+    role: document.getElementById('card-input-role')?.value,
+    company: document.getElementById('card-input-company')?.value,
+    phone: document.getElementById('card-input-phone')?.value,
+    email: document.getElementById('card-input-email')?.value,
+    site: document.getElementById('card-input-site')?.value,
+    loc: document.getElementById('card-input-loc')?.value,
+    theme: currentCardTheme,
+    logo: cardCustomLogoUrl
+  };
+  localStorage.setItem('sollius_card_draft', JSON.stringify(data));
+  alert('✅ Arte do Cartão de Visita salva com sucesso no seu navegador!');
+}
+
 function downloadCardAsImage(elementId, filename) {
-  const element = document.getElementById(elementId);
-  if (!element) return;
-  
-  // Render high-res canvas
   const canvas = document.createElement('canvas');
   canvas.width = 1050; // 3.5 inches at 300 DPI
   canvas.height = 600;  // 2.0 inches at 300 DPI
   const ctx = canvas.getContext('2d');
 
-  // Desenha fundo estilizado de acordo com o tema
-  if (currentCardTheme === 'gold') {
-    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    grad.addColorStop(0, '#2a2211');
-    grad.addColorStop(1, '#0a0a0c');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // Borda ouro
-    ctx.strokeStyle = '#D4AF37';
-    ctx.lineWidth = 6;
-    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-  } else if (currentCardTheme === 'cyber') {
-    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    grad.addColorStop(0, '#090A10');
-    grad.addColorStop(1, '#1A0F2E');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#8B5CF6';
-    ctx.lineWidth = 6;
-    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-  } else if (currentCardTheme === 'holographic') {
-    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    grad.addColorStop(0, '#1E1B4B');
-    grad.addColorStop(0.5, '#4C0519');
-    grad.addColorStop(1, '#082F49');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#38BDF8';
-    ctx.lineWidth = 6;
-    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-  } else {
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#E2E8F0';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-  }
-
-  const name = document.getElementById('card-input-name')?.value || 'Carlos Eduardo';
-  const role = document.getElementById('card-input-role')?.value || 'Arquiteto de Soluções';
+  const name = document.getElementById('card-input-name')?.value || 'Carlos Eduardo Silva';
+  const role = document.getElementById('card-input-role')?.value || 'Arquiteto de Soluções & IA';
   const company = document.getElementById('card-input-company')?.value || 'SOLLIUS STUDIO';
   const phone = document.getElementById('card-input-phone')?.value || '+55 (11) 98888-7777';
   const email = document.getElementById('card-input-email')?.value || 'carlos@sollius.com.br';
   const site = document.getElementById('card-input-site')?.value || 'sollius.com.br';
+  const loc = document.getElementById('card-input-loc')?.value || 'São Paulo - SP';
 
-  const isLight = currentCardTheme === 'minimal';
-  ctx.fillStyle = isLight ? '#0F172A' : '#FFFFFF';
+  // Renderiza Fundo de Luxo no Canvas
+  if (currentCardTheme === 'obsidian') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#221b0e');
+    grad.addColorStop(0.5, '#0b0c10');
+    grad.addColorStop(1, '#050608');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (elementId === 'card-preview-front') {
-    // Top tag
-    ctx.font = 'bold 24px -apple-system, sans-serif';
-    ctx.fillStyle = currentCardTheme === 'gold' ? '#D4AF37' : (isLight ? '#2563EB' : '#A855F7');
-    ctx.fillText(company.toUpperCase(), 70, 100);
+    ctx.strokeStyle = '#D4AF37';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+  } else if (currentCardTheme === 'cyber') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#06070d');
+    grad.addColorStop(1, '#150a26');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Center Name
-    ctx.font = 'bold 56px -apple-system, sans-serif';
-    ctx.fillStyle = isLight ? '#0F172A' : '#FFFFFF';
-    ctx.fillText(name, 70, 300);
+    ctx.strokeStyle = '#00F5FF';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+  } else if (currentCardTheme === 'swiss') {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#090A0F';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+  } else if (currentCardTheme === 'emerald') {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#052e1f');
+    grad.addColorStop(1, '#02130c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#10B981';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+  } else {
+    // Holographic
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0, '#1c1b3d');
+    grad.addColorStop(0.5, '#3b1842');
+    grad.addColorStop(1, '#0b2938');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#FB7185';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+  }
+
+  const isLight = currentCardTheme === 'swiss';
+
+  if (elementId === 'card-face-front') {
+    // Brand Top
+    ctx.font = 'bold 30px -apple-system, sans-serif';
+    ctx.fillStyle = currentCardTheme === 'obsidian' ? '#D4AF37' : (isLight ? '#090A0F' : '#00F5FF');
+    ctx.fillText(company.toUpperCase(), 75, 120);
+
+    // Name
+    ctx.font = 'bold 54px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? '#090A0F' : '#FFFFFF';
+    ctx.fillText(name, 75, 310);
 
     // Role
-    ctx.font = '32px -apple-system, sans-serif';
-    ctx.fillStyle = isLight ? '#64748B' : '#94A3B8';
-    ctx.fillText(role, 70, 360);
+    ctx.font = '30px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? '#475569' : '#94A3B8';
+    ctx.fillText(role, 75, 370);
+
+    // Accent Line
+    ctx.fillStyle = currentCardTheme === 'obsidian' ? '#D4AF37' : (isLight ? '#090A0F' : '#A855F7');
+    ctx.fillRect(75, 410, 240, 5);
   } else {
-    // Back side
+    // Back Side
     ctx.font = 'bold 36px -apple-system, sans-serif';
-    ctx.fillStyle = currentCardTheme === 'gold' ? '#D4AF37' : (isLight ? '#2563EB' : '#A855F7');
-    ctx.fillText(company, 70, 100);
+    ctx.fillStyle = currentCardTheme === 'obsidian' ? '#D4AF37' : (isLight ? '#090A0F' : '#00F5FF');
+    ctx.fillText(company, 75, 120);
 
     ctx.font = '28px -apple-system, sans-serif';
     ctx.fillStyle = isLight ? '#334155' : '#E2E8F0';
-    ctx.fillText(`📱  ${phone}`, 70, 220);
-    ctx.fillText(`📧  ${email}`, 70, 290);
-    ctx.fillText(`🌐  ${site}`, 70, 360);
+    ctx.fillText(`📱  ${phone}`, 75, 230);
+    ctx.fillText(`📧  ${email}`, 75, 300);
+    ctx.fillText(`🌐  ${site}`, 75, 370);
+    ctx.fillText(`📍  ${loc}`, 75, 440);
+
+    // QR Code no canto direito
+    const qrImg = document.querySelector('#card-qr-box img');
+    if (qrImg) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(740, 220, 200, 200);
+      ctx.drawImage(qrImg, 750, 230, 180, 180);
+    }
   }
 
   canvas.toBlob(blob => {
     downloadBlob(blob, filename);
   }, 'image/png');
+}
+
+function printCardSheet() {
+  window.print();
 }
 
 // ========================================================
