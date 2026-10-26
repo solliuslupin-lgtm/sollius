@@ -1765,3 +1765,12 @@ function clearTextStudio() {
   }
 }
 
+// FAQ Accordion Helper
+function toggleFaq(btn) {
+  const card = btn.closest('.faq-card');
+  if (card) {
+    card.classList.toggle('open');
+  }
+}
+
+
