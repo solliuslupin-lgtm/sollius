@@ -146,7 +146,7 @@
   <base href="/">
 
   <!-- CSS Autônomo e Standalone com Cache-Busting -->
-  <link rel="stylesheet" href="style.css?v=6.0.0">
+  <link rel="stylesheet" href="style.css?v=6.1.0">
 
   <!-- Bibliotecas Seguras e Robustas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -1584,6 +1584,22 @@
                 <option value="off">Desativado</option>
               </select>
             </div>
+            <div>
+              <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Motor de IA</label>
+              <select id="transcribe-engine" class="form-input" style="padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="toggleTranscribeEngine(this.value)">
+                <option value="whisper-local" selected>🧠 Whisper IA Local (No Navegador • 100% Privado)</option>
+                <option value="groq-turbo">⚡ Modo Turbo Groq (Áudios até 2h em 5s • Grátis)</option>
+              </select>
+            </div>
+          </div>
+          <div id="groq-turbo-panel" style="display: none; width: 100%; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+              <input type="password" id="groq-api-key" placeholder="Cole sua chave gratuita da Groq (gsk_...) para velocidade máxima" class="form-input" style="flex: 1; min-width: 270px; font-size: 0.82rem; padding: 0.45rem 0.85rem;" oninput="saveGroqKey(this.value)">
+              <a href="https://console.groq.com/keys" target="_blank" rel="noopener" style="font-size: 0.78rem; color: #FBBF24; text-decoration: underline; font-weight: 600;">🔑 Obter Chave Grátis da Groq →</a>
+            </div>
+            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 0.35rem;">
+              💡 <strong>Dica para áudios longos:</strong> A Groq transcreve até 2 horas com o modelo oficial Whisper-Large-V3 em ~5 a 10 segundos com precisão palavra por palavra sem custo.
+            </span>
           </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <button id="live-mic-btn" onclick="toggleLiveMicTranscription()" class="btn-secondary" style="font-size: 0.85rem;">
@@ -1786,6 +1802,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=6.0.0"></script>
+  <script src="app.js?v=6.1.0"></script>
 </body>
 </html>

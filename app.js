@@ -1837,6 +1837,39 @@ let audioDurationSeconds = 0;
 let liveSpeechRecognition = null;
 let isLiveTranscribing = false;
 let currentTranscriptSegments = [];
+let localWhisperPipeline = null;
+let isTranscribingActive = false;
+
+// Helpers do Motor de Transcrição
+function toggleTranscribeEngine(engine) {
+  const panel = document.getElementById('groq-turbo-panel');
+  if (panel) {
+    panel.style.display = (engine === 'groq-turbo') ? 'block' : 'none';
+  }
+}
+
+function saveGroqKey(val) {
+  try {
+    localStorage.setItem('sollius_groq_key', val.trim());
+  } catch (e) {}
+}
+
+function loadSavedGroqKey() {
+  try {
+    const key = localStorage.getItem('sollius_groq_key');
+    const input = document.getElementById('groq-api-key');
+    if (key && input) {
+      input.value = key;
+    }
+  } catch (e) {}
+}
+
+// Inicializa chave salva ao carregar
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSavedGroqKey();
+  });
+}
 
 // Base de homófonos, parônimos e dúvidas frequentes em português
 const PORTUGUESE_CONFUSION_PAIRS = {
@@ -1918,12 +1951,11 @@ function handleAudioSelect(files) {
     audioDurationSeconds = tempAudio.duration || 60;
     const durFormatted = formatAudioDuration(audioDurationSeconds);
     if (dropSubtitle) {
-      dropSubtitle.innerHTML = 'Duração: <strong style="color: #FBBF24;">' + durFormatted + '</strong> • Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Processamento 100% no navegador (Áudios até 2 horas).';
+      dropSubtitle.innerHTML = 'Duração: <strong style="color: #FBBF24;">' + durFormatted + '</strong> • Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Pronto para transcrever fala real.';
     }
     if (startBtn) startBtn.disabled = false;
   };
   tempAudio.onerror = () => {
-    // Fallback se arquivo for vídeo ou codec específico
     audioDurationSeconds = Math.max(120, Math.round(file.size / (1024 * 16)));
     if (dropSubtitle) {
       dropSubtitle.innerHTML = 'Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Arquivo pronto para transcrever.';
@@ -1989,7 +2021,10 @@ function toggleLiveMicTranscription() {
       if (finalTranscript.trim()) {
         const nowSec = currentTranscriptSegments.length * 5;
         const timeTag = formatTimestampSrt(nowSec).slice(0, 8);
-        const segmentHtml = '<p><strong>[' + timeTag + ']</strong> ' + enrichTextWithSuggestions(finalTranscript.trim()) + '</p>';
+        const segmentHtml = '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
+          '<span style="color: var(--amber-primary); font-family: monospace; font-size: 0.82rem; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.4rem; border-radius: 4px; margin-right: 0.5rem;">[' + timeTag + ']</span>' +
+          '<span>' + enrichTextWithSuggestions(finalTranscript.trim()) + '</span>' +
+          '</p>';
         output.innerHTML += segmentHtml;
         currentTranscriptSegments.push({
           time: timeTag,
@@ -2022,413 +2057,263 @@ function toggleLiveMicTranscription() {
   }
 }
 
-// Processamento de áudios de até 2 horas via fatiamento (chunking)
+// Decodificador de Áudio real para Mono Float32Array a 16.000 Hz
+async function decodeAudioFileTo16k(file, progressCallback) {
+  const arrayBuffer = await file.arrayBuffer();
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioContextClass({ sampleRate: 16000 });
+  
+  if (typeof progressCallback === 'function') {
+    progressCallback('Decodificando frequências de áudio nativas...');
+  }
+  
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  const numChannels = audioBuffer.numberOfChannels;
+  const length = audioBuffer.length;
+  
+  let mono = null;
+  if (numChannels === 1) {
+    mono = audioBuffer.getChannelData(0);
+  } else {
+    mono = new Float32Array(length);
+    const ch0 = audioBuffer.getChannelData(0);
+    const ch1 = audioBuffer.getChannelData(1);
+    for (let i = 0; i < length; i++) {
+      mono[i] = (ch0[i] + ch1[i]) * 0.5;
+    }
+  }
+  
+  return {
+    pcmData: mono,
+    duration: audioBuffer.duration,
+    sampleRate: 16000
+  };
+}
+
+// Carregador do Modelo Whisper Local (Transformers.js)
+async function getWhisperLocalPipeline(progressCallback) {
+  if (localWhisperPipeline) return localWhisperPipeline;
+  
+  if (typeof progressCallback === 'function') {
+    progressCallback(10, 'Carregando biblioteca Transformers.js neural...');
+  }
+  
+  const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+  env.allowLocalModels = false;
+  env.useBrowserCache = true;
+  
+  localWhisperPipeline = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny', {
+    progress_callback: (info) => {
+      if (info && info.status === 'progress' && typeof progressCallback === 'function') {
+        const pct = Math.round(info.progress || 0);
+        progressCallback(pct, 'Baixando modelo Whisper OpenAI no navegador (' + (info.file || '') + '): ' + pct + '%');
+      }
+    }
+  });
+  
+  return localWhisperPipeline;
+}
+
+// Execução Principal da Transcrição de Fala Real
 async function processSelectedAudio() {
   if (!selectedAudioFile) {
     alert('Por favor, selecione ou arraste um arquivo de áudio ou vídeo primeiro.');
     return;
   }
 
+  const engineSelect = document.getElementById('transcribe-engine');
+  const engine = engineSelect ? engineSelect.value : 'whisper-local';
   const startBtn = document.getElementById('start-transcribe-btn');
   const output = document.getElementById('transcription-output');
   const boxId = 'transcribe-progress-box';
 
   if (startBtn) startBtn.disabled = true;
-  output.innerHTML = '<div style="color: var(--amber-primary); padding: 1rem;"><span class="pulse-dot"></span> Decodificando frequências de áudio e dividindo em blocos acústicos...</div>';
-
-  const totalDuration = audioDurationSeconds || 120;
-  // Fatiamento inteligente: blocos de 30 segundos (compatível até 2 horas = 240 blocos)
-  const chunkSize = 30;
-  const totalChunks = Math.max(1, Math.ceil(totalDuration / chunkSize));
+  isTranscribingActive = true;
+  output.innerHTML = '';
   currentTranscriptSegments = [];
 
-  updateUnifiedProgress(boxId, 5, 'Inicializando fatiamento em ' + totalChunks + ' blocos...', 'Bloco 1 de ' + totalChunks);
+  try {
+    // ROTA 1: MODO TURBO GROQ CLOUD (Para 1h-2h em ~5 segundos)
+    if (engine === 'groq-turbo') {
+      const groqKeyInput = document.getElementById('groq-api-key');
+      const apiKey = groqKeyInput ? groqKeyInput.value.trim() : '';
 
-  // Executa processamento assíncrono em blocos
-  for (let c = 0; c < totalChunks; c++) {
-    const chunkStartSec = c * chunkSize;
-    const chunkEndSec = Math.min(totalDuration, (c + 1) * chunkSize);
-    const progressPercent = Math.round(((c + 1) / totalChunks) * 92);
+      if (!apiKey) {
+        const wantsKey = confirm('Para usar o Modo Turbo em alta velocidade, você precisa colar uma chave gratuita da Groq.\n\nDeseja abrir a página da Groq agora para obter sua chave em 30 segundos (sem cartão de crédito)?');
+        if (wantsKey) {
+          window.open('https://console.groq.com/keys', '_blank');
+        }
+        if (startBtn) startBtn.disabled = false;
+        isTranscribingActive = false;
+        output.innerHTML = '<div style="color: var(--amber-primary); padding: 1rem;">Cole sua chave da Groq acima ou alterne o motor para "Whisper IA Local (No Navegador)".</div>';
+        return;
+      }
 
-    const etaSeconds = Math.max(1, Math.round((totalChunks - (c + 1)) * 0.25));
-    const statusMsg = 'Processando bloco ' + (c + 1) + ' de ' + totalChunks + ' (' + formatAudioDuration(chunkStartSec) + ' a ' + formatAudioDuration(chunkEndSec) + ')...';
-    const subInfo = 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + etaSeconds + 's restante';
+      updateUnifiedProgress(boxId, 15, 'Enviando gravação para o motor Groq Whisper-Large-V3...', 'Processamento Turbo Ativo');
 
-    updateUnifiedProgress(boxId, progressPercent, statusMsg, subInfo);
+      const formData = new FormData();
+      formData.append('file', selectedAudioFile);
+      formData.append('model', 'whisper-large-v3');
+      const langSelect = document.getElementById('transcribe-lang');
+      const langVal = langSelect ? langSelect.value.split('-')[0] : 'pt';
+      formData.append('language', langVal);
+      formData.append('response_format', 'verbose_json');
 
-    // Pequena pausa assíncrona para liberar o event loop e atualizar a barra de progresso
-    await new Promise(r => setTimeout(r, Math.min(180, Math.max(40, 1500 / totalChunks))));
+      updateUnifiedProgress(boxId, 45, 'Transcrevendo áudio com precisão extrema palavra por palavra...', 'Aguardando Whisper Large');
 
-    // Gera o segmento de texto correspondente
-    const segment = generateAcousticSegment(c, chunkStartSec, chunkEndSec, selectedAudioFile.name);
-    currentTranscriptSegments.push(segment);
+      const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey
+        },
+        body: formData
+      });
 
-    // Renderiza em tempo real no output
-    if (c === 0) output.innerHTML = '';
-    const formattedTime = formatTimestampSrt(chunkStartSec).slice(0, 8);
-    const enrichedText = enrichTextWithSuggestions(segment.text);
-    output.innerHTML += '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
-      '<span style="color: var(--amber-primary); font-family: monospace; font-size: 0.82rem; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.4rem; border-radius: 4px; margin-right: 0.5rem;">[' + formattedTime + ']</span>' +
-      '<span>' + enrichedText + '</span>' +
-      '</p>';
-    output.scrollTop = output.scrollHeight;
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error?.message || 'Erro na API da Groq: HTTP ' + response.status);
+      }
 
-    // Atualiza o compreendedor de contexto a cada 3 blocos ou no final
-    if (c % 3 === 0 || c === totalChunks - 1) {
+      updateUnifiedProgress(boxId, 85, 'Formatando falas e calculando pontuações e timestamps...', 'Finalizando');
+      const data = await response.json();
+
+      if (data.segments && data.segments.length > 0) {
+        output.innerHTML = '';
+        data.segments.forEach((seg, idx) => {
+          const startSec = Math.floor(seg.start || 0);
+          const timeTag = formatTimestampSrt(startSec).slice(0, 8);
+          const text = seg.text ? seg.text.trim() : '';
+          if (text) {
+            currentTranscriptSegments.push({
+              time: timeTag,
+              seconds: startSec,
+              text: text
+            });
+            output.innerHTML += '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
+              '<span style="color: var(--amber-primary); font-family: monospace; font-size: 0.82rem; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.4rem; border-radius: 4px; margin-right: 0.5rem;">[' + timeTag + ']</span>' +
+              '<span>' + enrichTextWithSuggestions(text) + '</span>' +
+              '</p>';
+          }
+        });
+      } else if (data.text) {
+        output.innerHTML = '<p style="line-height: 1.6;">' + enrichTextWithSuggestions(data.text) + '</p>';
+        currentTranscriptSegments.push({
+          time: '00:00:00',
+          seconds: 0,
+          text: data.text
+        });
+      }
+
+      updateUnifiedProgress(boxId, 100, 'Transcrição Turbo concluída com 100% de sucesso!', 'Finalizado');
       analyzeTranscriptionContext(output.innerText);
-    }
-  }
-
-  // Finalização
-  updateUnifiedProgress(boxId, 100, 'Transcrição concluída com 100% de sucesso!', 'Todos os ' + totalChunks + ' blocos processados');
-  if (startBtn) startBtn.disabled = false;
-  analyzeTranscriptionContext(output.innerText);
-  hideUnifiedProgress(boxId, 2500);
-}
-
-// Gerador de segmentos adaptados ao contexto do arquivo
-function generateAcousticSegment(index, startSec, endSec, fileName) {
-  const cleanName = (fileName || '').toLowerCase();
-  
-  const phrasesByTheme = {
-    business: [
-      "Iniciando a reunião de alinhamento estratégico sobre o faturamento do trimestre e metas de entrega.",
-      "Analisamos a demanda dos clientes e a taxa de conversão das principais campanhas de marketing.",
-      "Precisamos rever o orçamento previsto e validar os termos do novo contrato com os fornecedores.",
-      "O resultado operacional superou as projeções preliminares estabelecidas pela diretoria executiva.",
-      "A sessão de planejamento concluiu que devemos acelerar a contratação da equipe técnica.",
-      "Revisamos os processos internos para garantir conformidade e mitigar riscos de compliance.",
-      "A próxima etapa inclui a homologação do sistema e apresentação dos relatórios de auditoria."
-    ],
-    tech: [
-      "Verificamos a arquitetura do software e o deploy da nova versão na nuvem com alta disponibilidade.",
-      "O banco de dados relacional apresentou tempo de resposta excelente durante os testes de carga.",
-      "Implementamos a autenticação segura com criptografia ponta a ponta e tokens temporários.",
-      "O pipeline de integração contínua executou todos os testes automatizados sem nenhuma falha.",
-      "A equipe de desenvolvimento aprovou o refactoring dos módulos de backend e interfaces visuais.",
-      "Identificamos que a escalabilidade horizontal reduziu o consumo de memória dos servidores em 40%."
-    ],
-    legal: [
-      "Na presente audiência e análise de contrato, constatamos que as cláusulas pactuadas estão vigentes.",
-      "A cessão dos direitos patrimoniais foi acordada em conformidade com o artigo correspondente da legislação.",
-      "O parecer jurídico ressalta a importância de lavrar a ata e anexar as certidões comprobatórias.",
-      "O prazo recursal expira no próximo termo judicial, devendo as partes apresentar manifestação expressa.",
-      "Foram devidamente apreciadas as provas documentais juntadas aos autos do processo."
-    ],
-    general: [
-      "Iniciando a gravação de áudio com captura cristalina e acompanhamento de frequências sonoras.",
-      "Discutimos os pontos prioritários da nossa pauta, destacando os desafios e oportunidades imediatas.",
-      "É fundamental que todos estejam alinhados quanto às decisões tomadas nesta sessão de trabalho.",
-      "A análise detalhada dos tópicos permitiu esclarecer todas as dúvidas levantadas pelos participantes.",
-      "Como próximo passo, definimos as responsabilidades individuais e os prazos finais de entrega.",
-      "Agradecemos a participação de todos e consolidamos aqui os principais registros do encontro."
-    ]
-  };
-
-  let pool = phrasesByTheme.general;
-  if (cleanName.includes('reuniao') || cleanName.includes('negocio') || cleanName.includes('vendas') || cleanName.includes('financeiro') || cleanName.includes('meta')) {
-    pool = phrasesByTheme.business;
-  } else if (cleanName.includes('tech') || cleanName.includes('dev') || cleanName.includes('app') || cleanName.includes('codigo') || cleanName.includes('sistema')) {
-    pool = phrasesByTheme.tech;
-  } else if (cleanName.includes('juridico') || cleanName.includes('contrato') || cleanName.includes('direito') || cleanName.includes('termo')) {
-    pool = phrasesByTheme.legal;
-  }
-
-  const selectedPhrase = pool[index % pool.length];
-  return {
-    index: index,
-    startSec: startSec,
-    endSec: endSec,
-    text: selectedPhrase
-  };
-}
-
-// Injeta spans com classe .flagged-word e dataset de sugestões
-function enrichTextWithSuggestions(text) {
-  const sensitivity = document.getElementById('transcribe-sensitivity');
-  if (sensitivity && sensitivity.value === 'off') {
-    return text;
-  }
-
-  const words = text.split(/\s+/);
-  return words.map(word => {
-    const clean = word.toLowerCase().replace(/[.,!?:;()"]/g, '');
-    if (PORTUGUESE_CONFUSION_PAIRS[clean]) {
-      const suggestions = PORTUGUESE_CONFUSION_PAIRS[clean].join('|');
-      return '<span class="flagged-word" data-suggestions="' + suggestions + '" data-original="' + word + '" onclick="showWordSuggestions(event, this)" title="Clique para ver sugestões de correção da IA">' + word + '</span>';
-    }
-    return word;
-  }).join(' ');
-}
-
-// Popover interativo flutuante de sugestões de palavras
-function showWordSuggestions(event, el) {
-  event.stopPropagation();
-  
-  const oldPop = document.getElementById('sollius-word-popover');
-  if (oldPop) oldPop.remove();
-
-  const suggestionsAttr = el.getAttribute('data-suggestions') || '';
-  const suggestions = suggestionsAttr.split('|').filter(s => s.trim().length > 0);
-  const currentWord = el.textContent.trim().replace(/[.,!?:;()"]/g, '');
-
-  const popover = document.createElement('div');
-  popover.id = 'sollius-word-popover';
-  popover.style.cssText = 'position: absolute; z-index: 999999; background: #181D2F; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 0.65rem 0.85rem; box-shadow: 0 10px 25px rgba(0,0,0,0.6); max-width: 280px; font-family: inherit; font-size: 0.85rem; color: #fff; backdrop-filter: blur(10px); animation: fadeIn 0.15s ease-out;';
-
-  const rect = el.getBoundingClientRect();
-  popover.style.left = (window.scrollX + rect.left) + 'px';
-  popover.style.top = (window.scrollY + rect.bottom + 6) + 'px';
-
-  let popHtml = '<div style="font-size: 0.75rem; font-weight: 700; color: #FBBF24; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.3rem;"><span>💡</span> Sugestões da IA para "' + currentWord + '":</div>';
-  popHtml += '<div style="display: flex; flex-direction: column; gap: 0.35rem;">';
-  
-  suggestions.forEach(sug => {
-    const isCurrent = sug.toLowerCase() === currentWord.toLowerCase();
-    popHtml += '<button type="button" class="sug-pill-btn" onclick="applyWordSuggestion(\'' + sug + '\')" style="text-align: left; background: ' + (isCurrent ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.06)') + '; color: ' + (isCurrent ? '#FBBF24' : '#E2E8F0') + '; border: 1px solid ' + (isCurrent ? 'rgba(245, 158, 11, 0.4)' : 'rgba(255,255,255,0.1)') + '; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.82rem; cursor: pointer; transition: all 0.15s ease;">' +
-      (isCurrent ? '✓ ' : '→ ') + sug +
-      '</button>';
-  });
-
-  popHtml += '<button type="button" onclick="editWordDirectly()" style="margin-top: 0.2rem; text-align: center; background: transparent; color: var(--text-muted); border: none; font-size: 0.75rem; cursor: pointer; text-decoration: underline;">✏️ Digitar outra palavra</button>';
-  popHtml += '</div>';
-
-  popover.innerHTML = popHtml;
-  document.body.appendChild(popover);
-
-  window.activeFlaggedElement = el;
-
-  setTimeout(() => {
-    const closeHandler = (e) => {
-      if (!popover.contains(e.target) && e.target !== el) {
-        popover.remove();
-        document.removeEventListener('click', closeHandler);
-      }
-    };
-    document.addEventListener('click', closeHandler);
-  }, 50);
-}
-
-function applyWordSuggestion(newWord) {
-  if (window.activeFlaggedElement) {
-    const el = window.activeFlaggedElement;
-    el.textContent = newWord;
-    el.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
-    el.style.color = '#34D399';
-    el.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-    el.title = 'Palavra verificada e corrigida pela IA';
-    const pop = document.getElementById('sollius-word-popover');
-    if (pop) pop.remove();
-    
-    const output = document.getElementById('transcription-output');
-    if (output) analyzeTranscriptionContext(output.innerText);
-  }
-}
-
-function editWordDirectly() {
-  if (window.activeFlaggedElement) {
-    const el = window.activeFlaggedElement;
-    const pop = document.getElementById('sollius-word-popover');
-    if (pop) pop.remove();
-    const promptVal = prompt('Digite o termo correto para substituir:', el.textContent.trim());
-    if (promptVal !== null && promptVal.trim().length > 0) {
-      applyWordSuggestion(promptVal.trim());
-    }
-  }
-}
-
-// Motor de Compreensão Semântica & Análise de Contexto IA
-function analyzeTranscriptionContext(fullText) {
-  if (!fullText || fullText.trim().length === 0) return;
-
-  const topicBadge = document.getElementById('context-topic');
-  const summaryList = document.getElementById('context-summary-list');
-  const tagCloud = document.getElementById('context-tags');
-  const wordsStat = document.getElementById('audio-stat-words');
-  const confStat = document.getElementById('audio-stat-confidence');
-
-  const textLower = fullText.toLowerCase();
-
-  // 1. Classificador de Temas
-  const topicCategories = [
-    {
-      name: '💼 Negócios & Gestão Estratégica',
-      keywords: ['faturamento', 'orçamento', 'meta', 'lucro', 'receita', 'demanda', 'estratégia', 'cliente', 'reunião', 'planejamento', 'vendas', 'gestão', 'trimestre']
-    },
-    {
-      name: '💻 Tecnologia, Software & Inovação',
-      keywords: ['software', 'deploy', 'sistema', 'servidor', 'banco de dados', 'nuvem', 'código', 'desenvolvimento', 'api', 'computador', 'arquitetura', 'rede']
-    },
-    {
-      name: '⚖️ Jurídico, Contratos & Leis',
-      keywords: ['contrato', 'processo', 'audiência', 'cláusula', 'direitos', 'legislação', 'parecer', 'autos', 'provas', 'termo', 'aditivo', 'judicial']
-    },
-    {
-      name: '🎓 Educação, Aula & Treinamento',
-      keywords: ['aula', 'aluno', 'professor', 'curso', 'aprendizado', 'conceito', 'estudo', 'exercício', 'módulo', 'disciplina', 'exemplo']
-    },
-    {
-      name: '🎙️ Entrevista, Podcast & Mídia',
-      keywords: ['entrevista', 'podcast', 'episódio', 'conversa', 'ouvinte', 'convidado', 'pergunta', 'opinião', 'história', 'experiência']
-    },
-    {
-      name: '🏥 Saúde, Bem-Estar & Medicina',
-      keywords: ['saúde', 'médico', 'paciente', 'diagnóstico', 'tratamento', 'exame', 'sintoma', 'clínica', 'medicamento', 'cuidado']
-    }
-  ];
-
-  let bestCategory = '🗣️ Reunião & Alinhamento Geral';
-  let maxScore = 0;
-
-  topicCategories.forEach(cat => {
-    let score = 0;
-    cat.keywords.forEach(kw => {
-      const regex = new RegExp('\\b' + kw + '\\b', 'gi');
-      const matches = textLower.match(regex);
-      if (matches) score += matches.length;
-    });
-    if (score > maxScore) {
-      maxScore = score;
-      bestCategory = cat.name;
-    }
-  });
-
-  if (topicBadge) {
-    topicBadge.innerHTML = '<span class="pulse-dot"></span> ' + bestCategory;
-  }
-
-  // 2. Resumo Executivo em Tópicos
-  if (summaryList) {
-    const rawSentences = fullText
-      .replace(/\[\d{2}:\d{2}:\d{2}\]/g, '')
-      .split(/[.!?\n]+/)
-      .map(s => s.trim())
-      .filter(s => s.length > 25);
-
-    const keySentences = rawSentences.slice(0, 4);
-    if (keySentences.length > 0) {
-      summaryList.innerHTML = keySentences.map(sen => {
-        return '<li style="margin-bottom: 0.5rem; line-height: 1.5; color: #E2E8F0;">' + sen + '.</li>';
-      }).join('');
-    } else {
-      summaryList.innerHTML = '<li>Conteúdo transcrito e estruturado com sucesso.</li>';
-    }
-  }
-
-  // 3. Nuvem de Palavras-Chave Frequentes
-  if (tagCloud) {
-    const stopwords = new Set([
-      'de', 'a', 'o', 'que', 'e', 'do', 'da', 'em', 'um', 'para', 'é', 'com', 'não', 'uma', 'os', 'no', 'se', 'na', 'por', 'mais', 'as', 'dos', 'como', 'mas', 'foi', 'ao', 'ele', 'das', 'tem', 'à', 'seu', 'sua', 'ou', 'ser', 'quando', 'muito', 'há', 'nos', 'já', 'está', 'eu', 'também', 'só', 'pelo', 'pela', 'até', 'isso', 'ela', 'entre', 'era', 'depois', 'sem', 'mesmo', 'aos', 'ter', 'seus', 'quem', 'nas', 'me', 'esse', 'eles', 'estão', 'você', 'tinha', 'foram', 'essa', 'num', 'nem', 'suas', 'meu', 'às', 'minha', 'têm', 'numa', 'pelos', 'elas', 'havia', 'seja', 'qual', 'será', 'nós', 'tenho', 'lhe', 'deles', 'essas', 'esses', 'pelas', 'este', 'fosse', 'dele', 'tu', 'te', 'vocês', 'vos', 'lhes', 'meus', 'minhas', 'teu', 'tua', 'teus', 'tuas', 'nosso', 'nossa', 'nossos', 'nossas', 'dela', 'delas', 'esta', 'estes', 'estas', 'aquele', 'aquela', 'aqueles', 'aquelas', 'isto', 'aquilo', 'estou', 'está', 'estamos', 'estão', 'estive', 'esteve', 'estivemos', 'estiveram', 'estava', 'estávamos', 'estavam', 'sobre', 'todos', 'tudo'
-    ]);
-
-    const words = textLower.match(/\b[a-záàâãéèêíïóôõöúçñ]{4,}\b/gi) || [];
-    const freq = {};
-    words.forEach(w => {
-      if (!stopwords.has(w)) {
-        freq[w] = (freq[w] || 0) + 1;
-      }
-    });
-
-    const sortedTags = Object.entries(freq)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8);
-
-    if (sortedTags.length > 0) {
-      tagCloud.innerHTML = sortedTags.map(([tag, count]) => {
-        return '<span class="keyword-tag">#' + tag + ' <strong style="color: #FBBF24; font-size: 0.72rem;">(' + count + ')</strong></span>';
-      }).join('');
-    }
-  }
-
-  // 4. Métricas do Áudio
-  const wordCount = (fullText.match(/\S+/g) || []).length;
-  if (wordsStat) wordsStat.textContent = wordCount;
-  if (confStat) {
-    const accuracy = Math.min(99, Math.max(94, 98 - Math.round(wordCount * 0.002)));
-    confStat.textContent = accuracy + '%';
-  }
-}
-
-// Exportações do Transcritor
-function formatTimestampSrt(seconds) {
-  const s = Math.floor(seconds);
-  const ms = Math.floor((seconds - s) * 1000);
-  const h = String(Math.floor(s / 3600)).padStart(2, '0');
-  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
-  const sec = String(s % 60).padStart(2, '0');
-  const milli = String(ms).padStart(3, '0');
-  return h + ':' + m + ':' + sec + ',' + milli;
-}
-
-function downloadTranscriptionTxt() {
-  const output = document.getElementById('transcription-output');
-  if (!output) return;
-  const rawText = output.innerText.trim();
-  if (!rawText || rawText.includes('O texto transcrito da sua gravação')) {
-    alert('Nenhuma transcrição disponível para download.');
-    return;
-  }
-
-  const topicEl = document.getElementById('context-topic');
-  const topic = topicEl ? topicEl.innerText : 'Geral';
-  const header = '========================================================\n' +
-                 'SOLLIUS IA - TRANSCRIÇÃO DE ÁUDIO COM CONTEXTO & DÚVIDAS\n' +
-                 'Arquivo: ' + (selectedAudioFile ? selectedAudioFile.name : 'Gravação de Áudio') + '\n' +
-                 'Duração Estimada: ' + formatAudioDuration(audioDurationSeconds) + '\n' +
-                 'Tema Identificado: ' + topic + '\n' +
-                 'Data: ' + new Date().toLocaleString('pt-BR') + '\n' +
-                 'Privacidade: 100% Client-Side no Navegador\n' +
-                 '========================================================\n\n' +
-                 'CONTEÚDO TRANSCRITO:\n\n';
-
-  const blob = new Blob([header + rawText], { type: 'text/plain;charset=utf-8' });
-  const filename = (selectedAudioFile ? selectedAudioFile.name.replace(/\.[^/.]+$/, '') : 'transcricao_sollius') + '_transcricao.txt';
-  downloadBlob(blob, filename);
-}
-
-function downloadTranscriptionSrt() {
-  if (!currentTranscriptSegments || currentTranscriptSegments.length === 0) {
-    const output = document.getElementById('transcription-output');
-    if (!output || output.innerText.includes('O texto transcrito da sua gravação')) {
-      alert('Nenhuma transcrição para exportar como legenda SRT.');
+      hideUnifiedProgress(boxId, 2500);
+      if (startBtn) startBtn.disabled = false;
+      isTranscribingActive = false;
       return;
     }
-    const lines = output.innerText.split('\n').filter(l => l.trim().length > 0);
-    let srtContent = '';
-    lines.forEach((line, idx) => {
-      const start = formatTimestampSrt(idx * 5);
-      const end = formatTimestampSrt((idx + 1) * 5);
-      const cleanLine = line.replace(/\[\d{2}:\d{2}:\d{2}\]/, '').trim();
-      srtContent += (idx + 1) + '\n' + start + ' --> ' + end + '\n' + cleanLine + '\n\n';
+
+    // ROTA 2: MOTOR LOCAL WHISPER NO NAVEGADOR (Transformers.js 100% Client-Side)
+    updateUnifiedProgress(boxId, 5, 'Lendo arquivo de áudio e decodificando faixas de voz...', 'Amostragem PCM 16kHz');
+
+    const decoded = await decodeAudioFileTo16k(selectedAudioFile, (msg) => {
+      updateUnifiedProgress(boxId, 15, msg, 'Decodificando');
     });
-    const blob = new Blob([srtContent], { type: 'text/plain;charset=utf-8' });
-    downloadBlob(blob, 'legendas_sollius.srt');
-    return;
+
+    const pcm = decoded.pcmData;
+    const totalSecs = decoded.duration || 60;
+
+    updateUnifiedProgress(boxId, 25, 'Carregando modelo neural Whisper da OpenAI no navegador...', 'Download ONNX');
+    
+    const transcriber = await getWhisperLocalPipeline((pct, msg) => {
+      const mappedPct = Math.round(25 + (pct * 0.25));
+      updateUnifiedProgress(boxId, mappedPct, msg, 'Modelo Neural');
+    });
+
+    // Fatiamento acústico de 30 segundos (480.000 amostras a 16kHz)
+    const samplesPerChunk = 16000 * 30;
+    const totalChunks = Math.ceil(pcm.length / samplesPerChunk);
+    
+    output.innerHTML = '';
+    currentTranscriptSegments = [];
+
+    for (let c = 0; c < totalChunks; c++) {
+      if (!isTranscribingActive) break;
+
+      const startSample = c * samplesPerChunk;
+      const endSample = Math.min(pcm.length, (c + 1) * samplesPerChunk);
+      const chunkSamples = pcm.subarray(startSample, endSample);
+      const startSec = Math.floor(c * 30);
+      const timeTag = formatTimestampSrt(startSec).slice(0, 8);
+
+      const progressPct = Math.round(50 + ((c + 1) / totalChunks) * 48);
+      const etaSecs = Math.max(1, Math.round((totalChunks - (c + 1)) * 3.5));
+      updateUnifiedProgress(boxId, progressPct, 'Transcrevendo bloco ' + (c + 1) + ' de ' + totalChunks + ' (' + timeTag + ')...', 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + etaSecs + 's');
+
+      // Detecção de Silêncio (RMS Energy): pula blocos sem fala
+      let sumSq = 0;
+      const step = 20;
+      for (let s = 0; s < chunkSamples.length; s += step) {
+        sumSq += chunkSamples[s] * chunkSamples[s];
+      }
+      const rms = Math.sqrt(sumSq / (chunkSamples.length / step));
+
+      if (rms < 0.003) {
+        // Pausa ou silêncio no trecho
+        await new Promise(r => setTimeout(r, 20));
+        continue;
+      }
+
+      // Inferência Neural Real com Whisper em Português
+      try {
+        const langSelect = document.getElementById('transcribe-lang');
+        const langVal = langSelect && langSelect.value.startsWith('en') ? 'english' : (langSelect && langSelect.value.startsWith('es') ? 'spanish' : 'portuguese');
+
+        const result = await transcriber(chunkSamples, {
+          language: langVal,
+          task: 'transcribe'
+        });
+
+        const rawText = result && result.text ? result.text.trim() : '';
+
+        if (rawText && rawText.length > 1) {
+          const enrichedText = enrichTextWithSuggestions(rawText);
+          output.innerHTML += '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
+            '<span style="color: var(--amber-primary); font-family: monospace; font-size: 0.82rem; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.4rem; border-radius: 4px; margin-right: 0.5rem;">[' + timeTag + ']</span>' +
+            '<span>' + enrichedText + '</span>' +
+            '</p>';
+          output.scrollTop = output.scrollHeight;
+
+          currentTranscriptSegments.push({
+            time: timeTag,
+            seconds: startSec,
+            text: rawText
+          });
+
+          // Atualiza contexto a cada 3 blocos
+          if (c % 3 === 0 || c === totalChunks - 1) {
+            analyzeTranscriptionContext(output.innerText);
+          }
+        }
+      } catch (chunkErr) {
+        console.warn('Erro ao transcrever bloco ' + c + ':', chunkErr);
+      }
+
+      // Pausa rápida para liberar o event loop da interface
+      await new Promise(r => setTimeout(r, 30));
+    }
+
+    updateUnifiedProgress(boxId, 100, 'Transcrição neural concluída com sucesso!', 'Todos os blocos de áudio foram analisados');
+    analyzeTranscriptionContext(output.innerText);
+    hideUnifiedProgress(boxId, 2500);
+
+  } catch (err) {
+    console.error('Erro na transcrição:', err);
+    updateUnifiedProgress(boxId, 100, 'Erro: ' + err.message);
+    alert('Erro durante a transcrição: ' + err.message + '\n\nPara áudios muito longos (acima de 1 hora), recomendamos usar o "Modo Turbo Groq", que processa o arquivo completo em 5 segundos gratuitamente.');
+  } finally {
+    if (startBtn) startBtn.disabled = false;
+    isTranscribingActive = false;
   }
-
-  let srt = '';
-  currentTranscriptSegments.forEach((seg, i) => {
-    const start = formatTimestampSrt(seg.startSec || i * 5);
-    const end = formatTimestampSrt(seg.endSec || (i + 1) * 5);
-    srt += (i + 1) + '\n' + start + ' --> ' + end + '\n' + seg.text + '\n\n';
-  });
-
-  const blob = new Blob([srt], { type: 'text/plain;charset=utf-8' });
-  const filename = (selectedAudioFile ? selectedAudioFile.name.replace(/\.[^/.]+$/, '') : 'legendas_sollius') + '.srt';
-  downloadBlob(blob, filename);
-}
-
-function copyTranscription() {
-  const output = document.getElementById('transcription-output');
-  if (!output) return;
-  const text = output.innerText.trim();
-  if (!text || text.includes('O texto transcrito da sua gravação')) {
-    alert('Nenhum texto para copiar.');
-    return;
-  }
-  navigator.clipboard.writeText(text).then(() => {
-    alert('Transcrição copiada com sucesso para a área de transferência!');
-  });
 }
 
 
