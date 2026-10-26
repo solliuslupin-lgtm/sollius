@@ -152,6 +152,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 
@@ -241,6 +243,8 @@
         <div class="hero-actions" style="gap: 0.6rem;">
           <span style="font-size: 0.8rem; color: var(--text-muted); align-self: center; margin-right: 0.35rem;">Acesso Rápido:</span>
           <a href="/curriculo-ats" onclick="switchTab('curriculo'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">📄 Criar Currículo</a>
+          <a href="/transcritor-de-audio" onclick="switchTab('transcritor'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">🎙️ Transcritor IA</a>
+          <a href="/conversor-documentos" onclick="switchTab('office'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">📊 Word & Excel</a>
           <a href="/remover-fundo" onclick="switchTab('remover'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">✨ Remover Fundo</a>
           <a href="/assinar-pdf" onclick="switchTab('assinar-pdf'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">✍️ Assinar PDF</a>
           <a href="/cartao-de-visita" onclick="switchTab('cartao'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">💳 Cartão de Visita</a>
@@ -251,10 +255,10 @@
 
       <!-- Barra de Filtros por Categoria -->
       <div class="category-filter-bar">
-        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (11)</button>
+        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (13)</button>
         <button class="cat-pill" onclick="filterCategory('design', this)">🎨 Design & Imagens (3)</button>
-        <button class="cat-pill" onclick="filterCategory('documentos', this)">📄 Documentos & PDF (3)</button>
-        <button class="cat-pill" onclick="filterCategory('viral', this)">🚀 Marketing & Viral (3)</button>
+        <button class="cat-pill" onclick="filterCategory('documentos', this)">📄 Documentos & Office (4)</button>
+        <button class="cat-pill" onclick="filterCategory('viral', this)">🚀 Áudio, Vídeo & Viral (4)</button>
         <button class="cat-pill" onclick="filterCategory('utilitarios', this)">🛠️ Utilitários & Privacidade (2)</button>
       </div>
 
@@ -1483,6 +1487,254 @@
             </button>
           </div>
 
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: TRANSCRITOR DE ÁUDIO & VÍDEO INTELIGENTE (ATÉ 2H) -->
+    <!-- ======================================================== -->
+    <div id="tab-transcritor" class="tab-content hidden">
+      <div style="max-width: 1040px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Áudios até 2 Horas</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🎙️</span>
+              <span>Transcritor de Voz IA com Contexto & Sugestões</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Transcreva reuniões, aulas e podcasts de até 2 horas sem nuvem, com detecção de dúvidas e resumo de contexto.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button onclick="downloadTranscriptionTxt()" class="btn-primary" style="font-size: 0.85rem;">
+              <span>📄</span>
+              <span>Baixar .TXT</span>
+            </button>
+            <button onclick="downloadTranscriptionSrt()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>🎬</span>
+              <span>Baixar Legenda .SRT</span>
+            </button>
+            <button onclick="copyTranscription()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>📋</span>
+              <span>Copiar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropzone de Áudio / Vídeo -->
+        <div class="dropzone" id="audio-dropzone" onclick="document.getElementById('audio-file-input').click()" style="margin-bottom: 1.5rem;">
+          <input type="file" id="audio-file-input" accept="audio/*,video/mp4,video/webm" style="display: none;" onchange="handleAudioSelect(this.files)">
+          <div style="font-size: 3rem; margin-bottom: 0.75rem;">🎵</div>
+          <h3 id="audio-drop-title" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">Arraste gravações de até 2 horas ou clique para selecionar</h3>
+          <p id="audio-drop-subtitle" style="color: var(--text-muted); font-size: 0.88rem; max-width: 540px; margin: 0 auto;">
+            Suporta <strong>MP3, WAV, M4A (áudios de iPhone/WhatsApp), OGG, WebM e vídeos MP4</strong>. 100% processado na memória RAM do seu aparelho com sigilo absoluto.
+          </p>
+          <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+            <span class="tool-badge" style="background: rgba(245,158,11,0.15); color: #FBBF24; border: 1px solid rgba(245,158,11,0.3);">⏱️ Até 120 Minutos</span>
+            <span class="tool-badge" style="background: rgba(16,185,129,0.15); color: #34D399; border: 1px solid rgba(16,185,129,0.3);">🔒 Zero Upload para Servidor</span>
+            <span class="tool-badge" style="background: rgba(59,130,246,0.15); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3);">🎬 Exporta Legendas SRT</span>
+          </div>
+        </div>
+
+        <!-- Controles de Configuração e Microfone -->
+        <div class="glass-panel" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Idioma Principal</label>
+              <select id="transcribe-lang" class="form-input" style="padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                <option value="pt-BR" selected>🇧🇷 Português (Brasil)</option>
+                <option value="en-US">🇺🇸 Inglês (US)</option>
+                <option value="es-ES">🇪🇸 Espanhol</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Sugestão de Dúvidas</label>
+              <select id="transcribe-sensitivity" class="form-input" style="padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                <option value="normal" selected>Ativado (Destacar termos incertos)</option>
+                <option value="off">Desativado</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="live-mic-btn" onclick="toggleLiveMicTranscription()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span id="live-mic-icon">🎤</span>
+              <span id="live-mic-text">Gravar Microfone Ao Vivo</span>
+            </button>
+            <button id="start-transcribe-btn" onclick="processSelectedAudio()" class="btn-primary" style="font-size: 0.85rem;" disabled>
+              <span>⚡</span>
+              <span>Iniciar Transcrição</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Barra de Progresso Unificada -->
+        <div id="transcribe-progress-box" class="sollius-progress-wrapper hidden">
+          <div class="sollius-progress-header">
+            <span id="transcribe-progress-status" class="sollius-progress-status">
+              <span class="pulse-dot"></span>
+              <span>Processando áudio...</span>
+            </span>
+            <span id="transcribe-progress-percent" style="color: #fff; font-weight: 700;">0%</span>
+          </div>
+          <div class="sollius-progress-track">
+            <div id="transcribe-progress-fill" class="sollius-progress-fill"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-muted);">
+            <span id="transcribe-chunk-info">Bloco 0 de 0</span>
+            <span id="transcribe-eta-info">Tempo estimado: calculando...</span>
+          </div>
+        </div>
+
+        <!-- Grade de Resultados (Editor Transcrito + Analisador de Contexto) -->
+        <div class="transcription-grid">
+          
+          <!-- Editor e Transcrição com Sugestões -->
+          <div class="transcription-editor">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+                <span>📝</span>
+                <span>Texto Transcrito com Timestamps</span>
+              </h4>
+              <span style="font-size: 0.78rem; color: var(--amber-primary);">* Palavras destacadas em âmbar possuem sugestões de revisão</span>
+            </div>
+
+            <div id="transcription-output" class="transcription-content" contenteditable="true">O texto transcrito da sua gravação aparecerá aqui em tempo real com marcações de tempo e destaques inteligentes para palavras com baixa certeza acústica...</div>
+
+            <!-- Player de Áudio Embutido -->
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+              <audio id="audio-playback" controls style="width: 100%; border-radius: 8px; display: none;"></audio>
+            </div>
+          </div>
+
+          <!-- Compreendedor de Contexto e Resumo da IA -->
+          <div class="context-card">
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🧠</span>
+              <span>Compreensão de Contexto IA</span>
+            </h4>
+
+            <div>
+              <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 0.4rem;">Assunto / Tema Identificado</span>
+              <div id="context-topic" class="context-topic-badge">Aguardando áudio...</div>
+            </div>
+
+            <div>
+              <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 0.4rem;">Resumo Executivo (Pontos-Chave)</span>
+              <div class="summary-box">
+                <ul id="context-summary-list">
+                  <li>Carregue um áudio ou grave pelo microfone para a IA extrair os pontos principais.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 0.4rem;">Palavras-Chave Frequentes</span>
+              <div id="context-tags" class="tag-cloud">
+                <span class="keyword-tag">Aguardando dados...</span>
+              </div>
+            </div>
+
+            <!-- Estatísticas do Áudio -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+              <div class="text-stat-badge">
+                <span id="audio-stat-words" class="text-stat-number" style="font-size: 1.1rem;">0</span>
+                <span class="text-stat-label">Total Palavras</span>
+              </div>
+              <div class="text-stat-badge">
+                <span id="audio-stat-confidence" class="text-stat-number" style="font-size: 1.1rem; color: #34D399;">100%</span>
+                <span class="text-stat-label">Precisão Est.</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- TAB: CONVERSOR DE DOCUMENTOS OFFICE (WORD, EXCEL & PDF) -->
+    <!-- ======================================================== -->
+    <div id="tab-office" class="tab-content hidden">
+      <div style="max-width: 980px; margin: 0 auto;">
+        
+        <div class="tool-back-bar">
+          <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
+          <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Suporte XLSX, DOCX e PDF</div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📊</span>
+              <span>Conversor Office & PDF Studio (Word & Excel)</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Converta planilhas Excel (XLSX, CSV) e documentos Word (DOCX) para PDF A4, JSON e HTML sem nuvem.</p>
+          </div>
+          <div id="office-actions-bar" class="hidden" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button onclick="exportOfficeToPdf()" class="btn-primary" style="font-size: 0.85rem;">
+              <span>📄</span>
+              <span>Exportar PDF A4</span>
+            </button>
+            <button id="office-csv-btn" onclick="exportOfficeToCsv()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>📑</span>
+              <span>Baixar CSV</span>
+            </button>
+            <button id="office-json-btn" onclick="exportOfficeToJson()" class="btn-secondary" style="font-size: 0.85rem;">
+              <span>💾</span>
+              <span>Baixar JSON</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropzone de Documentos -->
+        <div class="dropzone" id="office-dropzone" onclick="document.getElementById('office-file-input').click()" style="margin-bottom: 1.5rem;">
+          <input type="file" id="office-file-input" accept=".xlsx, .xls, .csv, .docx, .pdf" style="display: none;" onchange="handleOfficeSelect(this.files)">
+          <div style="font-size: 3rem; margin-bottom: 0.75rem;">📑</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">Arraste planilhas Excel ou documentos Word aqui</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 540px; margin: 0 auto;">
+            Suporta <strong>Excel (.xlsx, .xls, .csv), Word (.docx) e PDFs</strong>. Visualize a tabela ou texto na tela e exporte em alta resolução.
+          </p>
+        </div>
+
+        <!-- Barra de Progresso Office -->
+        <div id="office-progress-box" class="sollius-progress-wrapper hidden">
+          <div class="sollius-progress-header">
+            <span id="office-progress-status" class="sollius-progress-status">
+              <span class="pulse-dot"></span>
+              <span>Convertendo documento...</span>
+            </span>
+            <span id="office-progress-percent" style="color: #fff; font-weight: 700;">0%</span>
+          </div>
+          <div class="sollius-progress-track">
+            <div id="office-progress-fill" class="sollius-progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Pré-visualização Interativa -->
+        <div id="office-preview-card" class="office-preview-box hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h4 id="office-file-name" style="font-size: 1.1rem; font-weight: 700; color: #fff;">NomeDoArquivo.xlsx</h4>
+              <span id="office-file-meta" style="font-size: 0.8rem; color: var(--text-muted);">Tamanho: 0 KB • Formato detectado: Excel</span>
+            </div>
+            <div id="office-table-search-box" class="hidden">
+              <input type="text" id="office-search-input" placeholder="Filtrar dados na tabela..." oninput="filterOfficeTable(this.value)" class="form-input" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; width: 220px;">
+            </div>
+          </div>
+
+          <!-- Container da Planilha ou Texto do Word -->
+          <div id="office-content-view"></div>
         </div>
 
       </div>

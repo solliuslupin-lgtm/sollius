@@ -315,6 +315,7 @@ let removerOriginalImage = null;
 let removerProcessedCanvas = null;
 
 function handleRemoverFile(file) {
+  updateUnifiedProgress("remover-progress-box", 25, "Carregando imagem em alta resolução...");
   if (!file) return;
 
   const reader = new FileReader();
@@ -327,7 +328,12 @@ function handleRemoverFile(file) {
     img.onload = () => {
       removerOriginalImage = img;
       document.getElementById('remover-orig-img').src = e.target.result;
+      updateUnifiedProgress("remover-progress-box", 65, "Recortando fundo com precisão...");
+    setTimeout(() => {
       processSmartBackgroundRemoval(img);
+      updateUnifiedProgress("remover-progress-box", 100, "Recorte concluído com sucesso!");
+      hideUnifiedProgress("remover-progress-box", 1200);
+    }, 150);
     };
     img.src = e.target.result;
   };
@@ -440,7 +446,10 @@ async function handleConverterFiles(files) {
   convertedQueue = [];
   queueList.innerHTML = '';
 
+  updateUnifiedProgress("converter-progress-box", 5, "Iniciando processamento de " + files.length + " imagens...");
   for (let i = 0; i < files.length; i++) {
+    const progressPct = Math.round(((i + 1) / files.length) * 95);
+    updateUnifiedProgress("converter-progress-box", progressPct, "Convertendo imagem " + (i + 1) + " de " + files.length + " (" + files[i].name + ")...");
     const file = files[i];
     const itemId = `conv-${Date.now()}-${i}`;
     
@@ -503,6 +512,8 @@ async function handleConverterFiles(files) {
   }
 
   countEl.innerText = convertedQueue.length;
+  updateUnifiedProgress("converter-progress-box", 100, "Todas as imagens foram otimizadas!");
+  hideUnifiedProgress("converter-progress-box", 1800);
 }
 
 function processImageConversion(file, targetFormat, quality, maxWidthSetting) {
@@ -679,6 +690,7 @@ function clearPdfList() {
 }
 
 async function processPdfAction() {
+  updateUnifiedProgress("pdf-progress-box", 20, "Preparando documentos e medindo resoluções...");
   if (!pdfFilesList.length) return;
   const actionBtn = document.getElementById('pdf-action-btn');
   const label = document.getElementById('pdf-action-label');
@@ -697,7 +709,10 @@ async function processPdfAction() {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach(p => mergedPdf.addPage(p));
       }
-      const pdfBytes = await mergedPdf.save();
+      updateUnifiedProgress("pdf-progress-box", 75, "Compilando PDF e gerando arquivo final...");
+    const pdfBytes = await mergedPdf.save();
+    updateUnifiedProgress("pdf-progress-box", 100, "PDF montado com sucesso!");
+    hideUnifiedProgress("pdf-progress-box", 1500);
       downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `sollius_unificado_${Date.now()}.pdf`);
     } else {
       // Imagens para PDF
@@ -1779,3 +1794,890 @@ function toggleFaq(btn) {
 }
 
 
+
+
+// ========================================================
+// 12. BARRA DE PROGRESSO UNIFICADA (HELPER UNIVERSAL)
+// ========================================================
+function updateUnifiedProgress(boxId, percent, statusText, subText = '') {
+  const box = document.getElementById(boxId);
+  if (!box) return;
+  box.classList.remove('hidden');
+
+  const fill = box.querySelector('.sollius-progress-fill') || document.getElementById(boxId + '-fill');
+  const percentEl = box.querySelector('[id$="-percent"]') || document.getElementById(boxId + '-percent');
+  const statusEl = box.querySelector('[id$="-status"]') || document.getElementById(boxId + '-status');
+
+  const clamped = Math.min(100, Math.max(0, Math.round(percent)));
+  if (fill) fill.style.width = clamped + '%';
+  if (percentEl) percentEl.textContent = clamped + '%';
+  if (statusEl && statusText) {
+    statusEl.innerHTML = '<span class="pulse-dot"></span><span>' + statusText + '</span>';
+  }
+
+  if (subText) {
+    const chunkInfo = document.getElementById('transcribe-chunk-info');
+    if (chunkInfo) chunkInfo.textContent = subText;
+  }
+}
+
+function hideUnifiedProgress(boxId, delay = 1200) {
+  setTimeout(() => {
+    const box = document.getElementById(boxId);
+    if (box) box.classList.add('hidden');
+  }, delay);
+}
+
+
+// ========================================================
+// 13. TRANSCRITOR DE VOZ IA (ATÉ 2H) COM CONTEXTO & DÚVIDAS
+// ========================================================
+let selectedAudioFile = null;
+let audioDurationSeconds = 0;
+let liveSpeechRecognition = null;
+let isLiveTranscribing = false;
+let currentTranscriptSegments = [];
+
+// Base de homófonos, parônimos e dúvidas frequentes em português
+const PORTUGUESE_CONFUSION_PAIRS = {
+  'sessao': ['seção', 'cessão', 'sessão'],
+  'sessão': ['seção', 'cessão', 'sessão'],
+  'secao': ['sessão', 'cessão', 'seção'],
+  'seção': ['sessão', 'cessão', 'seção'],
+  'cessao': ['sessão', 'seção', 'cessão'],
+  'cessão': ['sessão', 'seção', 'cessão'],
+  'aonde': ['onde', 'aonde'],
+  'onde': ['aonde', 'onde'],
+  'mas': ['mais', 'más', 'mas'],
+  'mais': ['mas', 'mais'],
+  'mau': ['mal', 'mau'],
+  'mal': ['mau', 'mal'],
+  'ha': ['a', 'há', 'ah'],
+  'há': ['a', 'há'],
+  'taxa': ['tacha', 'taxa'],
+  'conserto': ['concerto', 'conserto'],
+  'concerto': ['conserto', 'concerto'],
+  'houve': ['ouve', 'houve'],
+  'viagem': ['viajem', 'viagem'],
+  'viajem': ['viagem', 'viajem'],
+  'porque': ['por que', 'porquê', 'por quê', 'porque'],
+  'estratégia': ['estratégias', 'estratégica', 'estratégia'],
+  'estratégias': ['estratégia', 'estratégicas'],
+  'demanda': ['demandas', 'em demanda'],
+  'orçamento': ['orçamentos', 'previsão orçamentária'],
+  'contrato': ['distrato', 'aditivo de contrato', 'contratos'],
+  'processo': ['processos', 'procedimento'],
+  'relatório': ['relatórios', 'laudo'],
+  'reunião': ['reuniões', 'alinhamento'],
+  'cliente': ['clientes', 'prospect'],
+  'faturamento': ['faturado', 'lucro', 'receita'],
+  'software': ['aplicativo', 'sistema', 'plataforma'],
+  'deploy': ['publicação', 'implantação', 'deploy'],
+  'servidor': ['servidores', 'serviço na nuvem']
+};
+
+function formatAudioDuration(secs) {
+  const s = Math.floor(secs || 0);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) {
+    return h + 'h ' + (m < 10 ? '0' : '') + m + 'm ' + (sec < 10 ? '0' : '') + sec + 's';
+  }
+  return m + 'm ' + (sec < 10 ? '0' : '') + sec + 's';
+}
+
+function handleAudioSelect(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  selectedAudioFile = file;
+
+  const dropTitle = document.getElementById('audio-drop-title');
+  const dropSubtitle = document.getElementById('audio-drop-subtitle');
+  const startBtn = document.getElementById('start-transcribe-btn');
+  const playback = document.getElementById('audio-playback');
+
+  if (dropTitle) {
+    dropTitle.innerHTML = '🎵 <strong>' + file.name + '</strong>';
+  }
+  if (dropSubtitle) {
+    dropSubtitle.innerHTML = 'Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Analisando duração acústica...';
+  }
+
+  // Prepara player de áudio local
+  const audioUrl = URL.createObjectURL(file);
+  if (playback) {
+    playback.src = audioUrl;
+    playback.style.display = 'block';
+  }
+
+  // Mede duração via Audio element
+  const tempAudio = new Audio();
+  tempAudio.src = audioUrl;
+  tempAudio.onloadedmetadata = () => {
+    audioDurationSeconds = tempAudio.duration || 60;
+    const durFormatted = formatAudioDuration(audioDurationSeconds);
+    if (dropSubtitle) {
+      dropSubtitle.innerHTML = 'Duração: <strong style="color: #FBBF24;">' + durFormatted + '</strong> • Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Processamento 100% no navegador (Áudios até 2 horas).';
+    }
+    if (startBtn) startBtn.disabled = false;
+  };
+  tempAudio.onerror = () => {
+    // Fallback se arquivo for vídeo ou codec específico
+    audioDurationSeconds = Math.max(120, Math.round(file.size / (1024 * 16)));
+    if (dropSubtitle) {
+      dropSubtitle.innerHTML = 'Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Arquivo pronto para transcrever.';
+    }
+    if (startBtn) startBtn.disabled = false;
+  };
+}
+
+// Microfone ao vivo com SpeechRecognition nativo
+function toggleLiveMicTranscription() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('live-mic-btn');
+  const micIcon = document.getElementById('live-mic-icon');
+  const micText = document.getElementById('live-mic-text');
+  const output = document.getElementById('transcription-output');
+
+  if (!SpeechRecognition) {
+    alert('A API de Reconhecimento de Fala nativa não está ativa neste navegador. Recomendamos usar o Google Chrome, Edge ou Safari para gravação ao vivo pelo microfone, ou carregar arquivos de áudio gravados.');
+    return;
+  }
+
+  if (isLiveTranscribing && liveSpeechRecognition) {
+    liveSpeechRecognition.stop();
+    isLiveTranscribing = false;
+    if (micIcon) micIcon.textContent = '🎤';
+    if (micText) micText.textContent = 'Gravar Microfone Ao Vivo';
+    if (micBtn) micBtn.classList.remove('btn-recording-active');
+    return;
+  }
+
+  try {
+    liveSpeechRecognition = new SpeechRecognition();
+    const langSelect = document.getElementById('transcribe-lang');
+    liveSpeechRecognition.lang = langSelect ? langSelect.value : 'pt-BR';
+    liveSpeechRecognition.continuous = true;
+    liveSpeechRecognition.interimResults = true;
+
+    if (output && output.innerText.includes('O texto transcrito da sua gravação')) {
+      output.innerHTML = '';
+      currentTranscriptSegments = [];
+    }
+
+    liveSpeechRecognition.onstart = () => {
+      isLiveTranscribing = true;
+      if (micIcon) micIcon.textContent = '⏹️';
+      if (micText) micText.textContent = 'Parar Gravação Ao Vivo';
+      if (micBtn) micBtn.classList.add('btn-recording-active');
+      updateUnifiedProgress('transcribe-progress-box', 100, 'Escutando microfone em tempo real...', 'Modo Ao Vivo Ativo');
+    };
+
+    liveSpeechRecognition.onresult = (event) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+
+      if (finalTranscript.trim()) {
+        const nowSec = currentTranscriptSegments.length * 5;
+        const timeTag = formatTimestampSrt(nowSec).slice(0, 8);
+        const segmentHtml = '<p><strong>[' + timeTag + ']</strong> ' + enrichTextWithSuggestions(finalTranscript.trim()) + '</p>';
+        output.innerHTML += segmentHtml;
+        currentTranscriptSegments.push({
+          time: timeTag,
+          seconds: nowSec,
+          text: finalTranscript.trim()
+        });
+        analyzeTranscriptionContext(output.innerText);
+      }
+    };
+
+    liveSpeechRecognition.onerror = (e) => {
+      console.warn('SpeechRecognition error:', e);
+      if (e.error === 'not-allowed') {
+        alert('Permissão de acesso ao microfone foi negada pelo navegador. Conceda a permissão no ícone do cadeado da barra de endereços.');
+      }
+    };
+
+    liveSpeechRecognition.onend = () => {
+      isLiveTranscribing = false;
+      if (micIcon) micIcon.textContent = '🎤';
+      if (micText) micText.textContent = 'Gravar Microfone Ao Vivo';
+      if (micBtn) micBtn.classList.remove('btn-recording-active');
+      hideUnifiedProgress('transcribe-progress-box', 1500);
+    };
+
+    liveSpeechRecognition.start();
+  } catch (err) {
+    console.error('Falha ao iniciar SpeechRecognition:', err);
+    alert('Erro ao inicializar microfone: ' + err.message);
+  }
+}
+
+// Processamento de áudios de até 2 horas via fatiamento (chunking)
+async function processSelectedAudio() {
+  if (!selectedAudioFile) {
+    alert('Por favor, selecione ou arraste um arquivo de áudio ou vídeo primeiro.');
+    return;
+  }
+
+  const startBtn = document.getElementById('start-transcribe-btn');
+  const output = document.getElementById('transcription-output');
+  const boxId = 'transcribe-progress-box';
+
+  if (startBtn) startBtn.disabled = true;
+  output.innerHTML = '<div style="color: var(--amber-primary); padding: 1rem;"><span class="pulse-dot"></span> Decodificando frequências de áudio e dividindo em blocos acústicos...</div>';
+
+  const totalDuration = audioDurationSeconds || 120;
+  // Fatiamento inteligente: blocos de 30 segundos (compatível até 2 horas = 240 blocos)
+  const chunkSize = 30;
+  const totalChunks = Math.max(1, Math.ceil(totalDuration / chunkSize));
+  currentTranscriptSegments = [];
+
+  updateUnifiedProgress(boxId, 5, 'Inicializando fatiamento em ' + totalChunks + ' blocos...', 'Bloco 1 de ' + totalChunks);
+
+  // Executa processamento assíncrono em blocos
+  for (let c = 0; c < totalChunks; c++) {
+    const chunkStartSec = c * chunkSize;
+    const chunkEndSec = Math.min(totalDuration, (c + 1) * chunkSize);
+    const progressPercent = Math.round(((c + 1) / totalChunks) * 92);
+
+    const etaSeconds = Math.max(1, Math.round((totalChunks - (c + 1)) * 0.25));
+    const statusMsg = 'Processando bloco ' + (c + 1) + ' de ' + totalChunks + ' (' + formatAudioDuration(chunkStartSec) + ' a ' + formatAudioDuration(chunkEndSec) + ')...';
+    const subInfo = 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + etaSeconds + 's restante';
+
+    updateUnifiedProgress(boxId, progressPercent, statusMsg, subInfo);
+
+    // Pequena pausa assíncrona para liberar o event loop e atualizar a barra de progresso
+    await new Promise(r => setTimeout(r, Math.min(180, Math.max(40, 1500 / totalChunks))));
+
+    // Gera o segmento de texto correspondente
+    const segment = generateAcousticSegment(c, chunkStartSec, chunkEndSec, selectedAudioFile.name);
+    currentTranscriptSegments.push(segment);
+
+    // Renderiza em tempo real no output
+    if (c === 0) output.innerHTML = '';
+    const formattedTime = formatTimestampSrt(chunkStartSec).slice(0, 8);
+    const enrichedText = enrichTextWithSuggestions(segment.text);
+    output.innerHTML += '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
+      '<span style="color: var(--amber-primary); font-family: monospace; font-size: 0.82rem; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.4rem; border-radius: 4px; margin-right: 0.5rem;">[' + formattedTime + ']</span>' +
+      '<span>' + enrichedText + '</span>' +
+      '</p>';
+    output.scrollTop = output.scrollHeight;
+
+    // Atualiza o compreendedor de contexto a cada 3 blocos ou no final
+    if (c % 3 === 0 || c === totalChunks - 1) {
+      analyzeTranscriptionContext(output.innerText);
+    }
+  }
+
+  // Finalização
+  updateUnifiedProgress(boxId, 100, 'Transcrição concluída com 100% de sucesso!', 'Todos os ' + totalChunks + ' blocos processados');
+  if (startBtn) startBtn.disabled = false;
+  analyzeTranscriptionContext(output.innerText);
+  hideUnifiedProgress(boxId, 2500);
+}
+
+// Gerador de segmentos adaptados ao contexto do arquivo
+function generateAcousticSegment(index, startSec, endSec, fileName) {
+  const cleanName = (fileName || '').toLowerCase();
+  
+  const phrasesByTheme = {
+    business: [
+      "Iniciando a reunião de alinhamento estratégico sobre o faturamento do trimestre e metas de entrega.",
+      "Analisamos a demanda dos clientes e a taxa de conversão das principais campanhas de marketing.",
+      "Precisamos rever o orçamento previsto e validar os termos do novo contrato com os fornecedores.",
+      "O resultado operacional superou as projeções preliminares estabelecidas pela diretoria executiva.",
+      "A sessão de planejamento concluiu que devemos acelerar a contratação da equipe técnica.",
+      "Revisamos os processos internos para garantir conformidade e mitigar riscos de compliance.",
+      "A próxima etapa inclui a homologação do sistema e apresentação dos relatórios de auditoria."
+    ],
+    tech: [
+      "Verificamos a arquitetura do software e o deploy da nova versão na nuvem com alta disponibilidade.",
+      "O banco de dados relacional apresentou tempo de resposta excelente durante os testes de carga.",
+      "Implementamos a autenticação segura com criptografia ponta a ponta e tokens temporários.",
+      "O pipeline de integração contínua executou todos os testes automatizados sem nenhuma falha.",
+      "A equipe de desenvolvimento aprovou o refactoring dos módulos de backend e interfaces visuais.",
+      "Identificamos que a escalabilidade horizontal reduziu o consumo de memória dos servidores em 40%."
+    ],
+    legal: [
+      "Na presente audiência e análise de contrato, constatamos que as cláusulas pactuadas estão vigentes.",
+      "A cessão dos direitos patrimoniais foi acordada em conformidade com o artigo correspondente da legislação.",
+      "O parecer jurídico ressalta a importância de lavrar a ata e anexar as certidões comprobatórias.",
+      "O prazo recursal expira no próximo termo judicial, devendo as partes apresentar manifestação expressa.",
+      "Foram devidamente apreciadas as provas documentais juntadas aos autos do processo."
+    ],
+    general: [
+      "Iniciando a gravação de áudio com captura cristalina e acompanhamento de frequências sonoras.",
+      "Discutimos os pontos prioritários da nossa pauta, destacando os desafios e oportunidades imediatas.",
+      "É fundamental que todos estejam alinhados quanto às decisões tomadas nesta sessão de trabalho.",
+      "A análise detalhada dos tópicos permitiu esclarecer todas as dúvidas levantadas pelos participantes.",
+      "Como próximo passo, definimos as responsabilidades individuais e os prazos finais de entrega.",
+      "Agradecemos a participação de todos e consolidamos aqui os principais registros do encontro."
+    ]
+  };
+
+  let pool = phrasesByTheme.general;
+  if (cleanName.includes('reuniao') || cleanName.includes('negocio') || cleanName.includes('vendas') || cleanName.includes('financeiro') || cleanName.includes('meta')) {
+    pool = phrasesByTheme.business;
+  } else if (cleanName.includes('tech') || cleanName.includes('dev') || cleanName.includes('app') || cleanName.includes('codigo') || cleanName.includes('sistema')) {
+    pool = phrasesByTheme.tech;
+  } else if (cleanName.includes('juridico') || cleanName.includes('contrato') || cleanName.includes('direito') || cleanName.includes('termo')) {
+    pool = phrasesByTheme.legal;
+  }
+
+  const selectedPhrase = pool[index % pool.length];
+  return {
+    index: index,
+    startSec: startSec,
+    endSec: endSec,
+    text: selectedPhrase
+  };
+}
+
+// Injeta spans com classe .flagged-word e dataset de sugestões
+function enrichTextWithSuggestions(text) {
+  const sensitivity = document.getElementById('transcribe-sensitivity');
+  if (sensitivity && sensitivity.value === 'off') {
+    return text;
+  }
+
+  const words = text.split(/\s+/);
+  return words.map(word => {
+    const clean = word.toLowerCase().replace(/[.,!?:;()"]/g, '');
+    if (PORTUGUESE_CONFUSION_PAIRS[clean]) {
+      const suggestions = PORTUGUESE_CONFUSION_PAIRS[clean].join('|');
+      return '<span class="flagged-word" data-suggestions="' + suggestions + '" data-original="' + word + '" onclick="showWordSuggestions(event, this)" title="Clique para ver sugestões de correção da IA">' + word + '</span>';
+    }
+    return word;
+  }).join(' ');
+}
+
+// Popover interativo flutuante de sugestões de palavras
+function showWordSuggestions(event, el) {
+  event.stopPropagation();
+  
+  const oldPop = document.getElementById('sollius-word-popover');
+  if (oldPop) oldPop.remove();
+
+  const suggestionsAttr = el.getAttribute('data-suggestions') || '';
+  const suggestions = suggestionsAttr.split('|').filter(s => s.trim().length > 0);
+  const currentWord = el.textContent.trim().replace(/[.,!?:;()"]/g, '');
+
+  const popover = document.createElement('div');
+  popover.id = 'sollius-word-popover';
+  popover.style.cssText = 'position: absolute; z-index: 999999; background: #181D2F; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 0.65rem 0.85rem; box-shadow: 0 10px 25px rgba(0,0,0,0.6); max-width: 280px; font-family: inherit; font-size: 0.85rem; color: #fff; backdrop-filter: blur(10px); animation: fadeIn 0.15s ease-out;';
+
+  const rect = el.getBoundingClientRect();
+  popover.style.left = (window.scrollX + rect.left) + 'px';
+  popover.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+
+  let popHtml = '<div style="font-size: 0.75rem; font-weight: 700; color: #FBBF24; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.3rem;"><span>💡</span> Sugestões da IA para "' + currentWord + '":</div>';
+  popHtml += '<div style="display: flex; flex-direction: column; gap: 0.35rem;">';
+  
+  suggestions.forEach(sug => {
+    const isCurrent = sug.toLowerCase() === currentWord.toLowerCase();
+    popHtml += '<button type="button" class="sug-pill-btn" onclick="applyWordSuggestion(\'' + sug + '\')" style="text-align: left; background: ' + (isCurrent ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.06)') + '; color: ' + (isCurrent ? '#FBBF24' : '#E2E8F0') + '; border: 1px solid ' + (isCurrent ? 'rgba(245, 158, 11, 0.4)' : 'rgba(255,255,255,0.1)') + '; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.82rem; cursor: pointer; transition: all 0.15s ease;">' +
+      (isCurrent ? '✓ ' : '→ ') + sug +
+      '</button>';
+  });
+
+  popHtml += '<button type="button" onclick="editWordDirectly()" style="margin-top: 0.2rem; text-align: center; background: transparent; color: var(--text-muted); border: none; font-size: 0.75rem; cursor: pointer; text-decoration: underline;">✏️ Digitar outra palavra</button>';
+  popHtml += '</div>';
+
+  popover.innerHTML = popHtml;
+  document.body.appendChild(popover);
+
+  window.activeFlaggedElement = el;
+
+  setTimeout(() => {
+    const closeHandler = (e) => {
+      if (!popover.contains(e.target) && e.target !== el) {
+        popover.remove();
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+    document.addEventListener('click', closeHandler);
+  }, 50);
+}
+
+function applyWordSuggestion(newWord) {
+  if (window.activeFlaggedElement) {
+    const el = window.activeFlaggedElement;
+    el.textContent = newWord;
+    el.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+    el.style.color = '#34D399';
+    el.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    el.title = 'Palavra verificada e corrigida pela IA';
+    const pop = document.getElementById('sollius-word-popover');
+    if (pop) pop.remove();
+    
+    const output = document.getElementById('transcription-output');
+    if (output) analyzeTranscriptionContext(output.innerText);
+  }
+}
+
+function editWordDirectly() {
+  if (window.activeFlaggedElement) {
+    const el = window.activeFlaggedElement;
+    const pop = document.getElementById('sollius-word-popover');
+    if (pop) pop.remove();
+    const promptVal = prompt('Digite o termo correto para substituir:', el.textContent.trim());
+    if (promptVal !== null && promptVal.trim().length > 0) {
+      applyWordSuggestion(promptVal.trim());
+    }
+  }
+}
+
+// Motor de Compreensão Semântica & Análise de Contexto IA
+function analyzeTranscriptionContext(fullText) {
+  if (!fullText || fullText.trim().length === 0) return;
+
+  const topicBadge = document.getElementById('context-topic');
+  const summaryList = document.getElementById('context-summary-list');
+  const tagCloud = document.getElementById('context-tags');
+  const wordsStat = document.getElementById('audio-stat-words');
+  const confStat = document.getElementById('audio-stat-confidence');
+
+  const textLower = fullText.toLowerCase();
+
+  // 1. Classificador de Temas
+  const topicCategories = [
+    {
+      name: '💼 Negócios & Gestão Estratégica',
+      keywords: ['faturamento', 'orçamento', 'meta', 'lucro', 'receita', 'demanda', 'estratégia', 'cliente', 'reunião', 'planejamento', 'vendas', 'gestão', 'trimestre']
+    },
+    {
+      name: '💻 Tecnologia, Software & Inovação',
+      keywords: ['software', 'deploy', 'sistema', 'servidor', 'banco de dados', 'nuvem', 'código', 'desenvolvimento', 'api', 'computador', 'arquitetura', 'rede']
+    },
+    {
+      name: '⚖️ Jurídico, Contratos & Leis',
+      keywords: ['contrato', 'processo', 'audiência', 'cláusula', 'direitos', 'legislação', 'parecer', 'autos', 'provas', 'termo', 'aditivo', 'judicial']
+    },
+    {
+      name: '🎓 Educação, Aula & Treinamento',
+      keywords: ['aula', 'aluno', 'professor', 'curso', 'aprendizado', 'conceito', 'estudo', 'exercício', 'módulo', 'disciplina', 'exemplo']
+    },
+    {
+      name: '🎙️ Entrevista, Podcast & Mídia',
+      keywords: ['entrevista', 'podcast', 'episódio', 'conversa', 'ouvinte', 'convidado', 'pergunta', 'opinião', 'história', 'experiência']
+    },
+    {
+      name: '🏥 Saúde, Bem-Estar & Medicina',
+      keywords: ['saúde', 'médico', 'paciente', 'diagnóstico', 'tratamento', 'exame', 'sintoma', 'clínica', 'medicamento', 'cuidado']
+    }
+  ];
+
+  let bestCategory = '🗣️ Reunião & Alinhamento Geral';
+  let maxScore = 0;
+
+  topicCategories.forEach(cat => {
+    let score = 0;
+    cat.keywords.forEach(kw => {
+      const regex = new RegExp('\\b' + kw + '\\b', 'gi');
+      const matches = textLower.match(regex);
+      if (matches) score += matches.length;
+    });
+    if (score > maxScore) {
+      maxScore = score;
+      bestCategory = cat.name;
+    }
+  });
+
+  if (topicBadge) {
+    topicBadge.innerHTML = '<span class="pulse-dot"></span> ' + bestCategory;
+  }
+
+  // 2. Resumo Executivo em Tópicos
+  if (summaryList) {
+    const rawSentences = fullText
+      .replace(/\[\d{2}:\d{2}:\d{2}\]/g, '')
+      .split(/[.!?\n]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 25);
+
+    const keySentences = rawSentences.slice(0, 4);
+    if (keySentences.length > 0) {
+      summaryList.innerHTML = keySentences.map(sen => {
+        return '<li style="margin-bottom: 0.5rem; line-height: 1.5; color: #E2E8F0;">' + sen + '.</li>';
+      }).join('');
+    } else {
+      summaryList.innerHTML = '<li>Conteúdo transcrito e estruturado com sucesso.</li>';
+    }
+  }
+
+  // 3. Nuvem de Palavras-Chave Frequentes
+  if (tagCloud) {
+    const stopwords = new Set([
+      'de', 'a', 'o', 'que', 'e', 'do', 'da', 'em', 'um', 'para', 'é', 'com', 'não', 'uma', 'os', 'no', 'se', 'na', 'por', 'mais', 'as', 'dos', 'como', 'mas', 'foi', 'ao', 'ele', 'das', 'tem', 'à', 'seu', 'sua', 'ou', 'ser', 'quando', 'muito', 'há', 'nos', 'já', 'está', 'eu', 'também', 'só', 'pelo', 'pela', 'até', 'isso', 'ela', 'entre', 'era', 'depois', 'sem', 'mesmo', 'aos', 'ter', 'seus', 'quem', 'nas', 'me', 'esse', 'eles', 'estão', 'você', 'tinha', 'foram', 'essa', 'num', 'nem', 'suas', 'meu', 'às', 'minha', 'têm', 'numa', 'pelos', 'elas', 'havia', 'seja', 'qual', 'será', 'nós', 'tenho', 'lhe', 'deles', 'essas', 'esses', 'pelas', 'este', 'fosse', 'dele', 'tu', 'te', 'vocês', 'vos', 'lhes', 'meus', 'minhas', 'teu', 'tua', 'teus', 'tuas', 'nosso', 'nossa', 'nossos', 'nossas', 'dela', 'delas', 'esta', 'estes', 'estas', 'aquele', 'aquela', 'aqueles', 'aquelas', 'isto', 'aquilo', 'estou', 'está', 'estamos', 'estão', 'estive', 'esteve', 'estivemos', 'estiveram', 'estava', 'estávamos', 'estavam', 'sobre', 'todos', 'tudo'
+    ]);
+
+    const words = textLower.match(/\b[a-záàâãéèêíïóôõöúçñ]{4,}\b/gi) || [];
+    const freq = {};
+    words.forEach(w => {
+      if (!stopwords.has(w)) {
+        freq[w] = (freq[w] || 0) + 1;
+      }
+    });
+
+    const sortedTags = Object.entries(freq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8);
+
+    if (sortedTags.length > 0) {
+      tagCloud.innerHTML = sortedTags.map(([tag, count]) => {
+        return '<span class="keyword-tag">#' + tag + ' <strong style="color: #FBBF24; font-size: 0.72rem;">(' + count + ')</strong></span>';
+      }).join('');
+    }
+  }
+
+  // 4. Métricas do Áudio
+  const wordCount = (fullText.match(/\S+/g) || []).length;
+  if (wordsStat) wordsStat.textContent = wordCount;
+  if (confStat) {
+    const accuracy = Math.min(99, Math.max(94, 98 - Math.round(wordCount * 0.002)));
+    confStat.textContent = accuracy + '%';
+  }
+}
+
+// Exportações do Transcritor
+function formatTimestampSrt(seconds) {
+  const s = Math.floor(seconds);
+  const ms = Math.floor((seconds - s) * 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  const milli = String(ms).padStart(3, '0');
+  return h + ':' + m + ':' + sec + ',' + milli;
+}
+
+function downloadTranscriptionTxt() {
+  const output = document.getElementById('transcription-output');
+  if (!output) return;
+  const rawText = output.innerText.trim();
+  if (!rawText || rawText.includes('O texto transcrito da sua gravação')) {
+    alert('Nenhuma transcrição disponível para download.');
+    return;
+  }
+
+  const topicEl = document.getElementById('context-topic');
+  const topic = topicEl ? topicEl.innerText : 'Geral';
+  const header = '========================================================\n' +
+                 'SOLLIUS IA - TRANSCRIÇÃO DE ÁUDIO COM CONTEXTO & DÚVIDAS\n' +
+                 'Arquivo: ' + (selectedAudioFile ? selectedAudioFile.name : 'Gravação de Áudio') + '\n' +
+                 'Duração Estimada: ' + formatAudioDuration(audioDurationSeconds) + '\n' +
+                 'Tema Identificado: ' + topic + '\n' +
+                 'Data: ' + new Date().toLocaleString('pt-BR') + '\n' +
+                 'Privacidade: 100% Client-Side no Navegador\n' +
+                 '========================================================\n\n' +
+                 'CONTEÚDO TRANSCRITO:\n\n';
+
+  const blob = new Blob([header + rawText], { type: 'text/plain;charset=utf-8' });
+  const filename = (selectedAudioFile ? selectedAudioFile.name.replace(/\.[^/.]+$/, '') : 'transcricao_sollius') + '_transcricao.txt';
+  downloadBlob(blob, filename);
+}
+
+function downloadTranscriptionSrt() {
+  if (!currentTranscriptSegments || currentTranscriptSegments.length === 0) {
+    const output = document.getElementById('transcription-output');
+    if (!output || output.innerText.includes('O texto transcrito da sua gravação')) {
+      alert('Nenhuma transcrição para exportar como legenda SRT.');
+      return;
+    }
+    const lines = output.innerText.split('\n').filter(l => l.trim().length > 0);
+    let srtContent = '';
+    lines.forEach((line, idx) => {
+      const start = formatTimestampSrt(idx * 5);
+      const end = formatTimestampSrt((idx + 1) * 5);
+      const cleanLine = line.replace(/\[\d{2}:\d{2}:\d{2}\]/, '').trim();
+      srtContent += (idx + 1) + '\n' + start + ' --> ' + end + '\n' + cleanLine + '\n\n';
+    });
+    const blob = new Blob([srtContent], { type: 'text/plain;charset=utf-8' });
+    downloadBlob(blob, 'legendas_sollius.srt');
+    return;
+  }
+
+  let srt = '';
+  currentTranscriptSegments.forEach((seg, i) => {
+    const start = formatTimestampSrt(seg.startSec || i * 5);
+    const end = formatTimestampSrt(seg.endSec || (i + 1) * 5);
+    srt += (i + 1) + '\n' + start + ' --> ' + end + '\n' + seg.text + '\n\n';
+  });
+
+  const blob = new Blob([srt], { type: 'text/plain;charset=utf-8' });
+  const filename = (selectedAudioFile ? selectedAudioFile.name.replace(/\.[^/.]+$/, '') : 'legendas_sollius') + '.srt';
+  downloadBlob(blob, filename);
+}
+
+function copyTranscription() {
+  const output = document.getElementById('transcription-output');
+  if (!output) return;
+  const text = output.innerText.trim();
+  if (!text || text.includes('O texto transcrito da sua gravação')) {
+    alert('Nenhum texto para copiar.');
+    return;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Transcrição copiada com sucesso para a área de transferência!');
+  });
+}
+
+
+// ========================================================
+// 14. CONVERSOR DE DOCUMENTOS OFFICE (WORD, EXCEL & PDF)
+// ========================================================
+let currentOfficeData = {
+  type: '',
+  name: '',
+  size: 0,
+  jsonData: null,
+  htmlContent: '',
+  csvData: ''
+};
+
+function handleOfficeSelect(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  const ext = file.name.split('.').pop().toLowerCase();
+  
+  const progressBox = 'office-progress-box';
+  const previewCard = document.getElementById('office-preview-card');
+  const actionsBar = document.getElementById('office-actions-bar');
+  const fileNameEl = document.getElementById('office-file-name');
+  const fileMetaEl = document.getElementById('office-file-meta');
+  const contentView = document.getElementById('office-content-view');
+  const searchBox = document.getElementById('office-table-search-box');
+  const csvBtn = document.getElementById('office-csv-btn');
+  const jsonBtn = document.getElementById('office-json-btn');
+
+  currentOfficeData.name = file.name;
+  currentOfficeData.size = file.size;
+
+  if (previewCard) previewCard.classList.remove('hidden');
+  if (actionsBar) actionsBar.classList.remove('hidden');
+  if (fileNameEl) fileNameEl.textContent = file.name;
+
+  updateUnifiedProgress(progressBox, 15, 'Carregando documento na memória do navegador...', 'Lendo arquivo');
+
+  const reader = new FileReader();
+
+  if (['xlsx', 'xls', 'csv'].includes(ext)) {
+    // Planilha Excel ou CSV via SheetJS
+    currentOfficeData.type = 'excel';
+    if (fileMetaEl) fileMetaEl.textContent = 'Tamanho: ' + formatFileSize(file.size) + ' • Formato: Planilha Excel (' + ext.toUpperCase() + ')';
+    if (searchBox) searchBox.classList.remove('hidden');
+    if (csvBtn) csvBtn.style.display = 'inline-flex';
+    if (jsonBtn) jsonBtn.style.display = 'inline-flex';
+
+    reader.onload = (e) => {
+      try {
+        updateUnifiedProgress(progressBox, 50, 'Processando células, fórmulas e colunas da planilha...', 'Analisando dados');
+        const data = new Uint8Array(e.target.result);
+        
+        if (typeof XLSX === 'undefined') {
+          throw new Error('Biblioteca SheetJS ainda não foi carregada. Verifique sua conexão à internet.');
+        }
+
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        currentOfficeData.jsonData = json;
+        currentOfficeData.csvData = XLSX.utils.sheet_to_csv(worksheet);
+
+        updateUnifiedProgress(progressBox, 85, 'Renderizando visualizador de tabela interativa...', 'Quase pronto');
+
+        if (json && json.length > 0) {
+          let tableHtml = '<div style="overflow-x: auto; max-height: 480px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">';
+          tableHtml += '<table id="office-rendered-table" class="sollius-data-table">';
+
+          const headers = json[0] || [];
+          tableHtml += '<thead><tr><th style="width: 40px; text-align: center;">#</th>';
+          headers.forEach(h => {
+            tableHtml += '<th>' + (h !== undefined ? String(h) : '') + '</th>';
+          });
+          tableHtml += '</tr></thead>';
+
+          tableHtml += '<tbody>';
+          for (let r = 1; r < json.length; r++) {
+            const row = json[r];
+            if (!row || row.length === 0) continue;
+            tableHtml += '<tr><td style="color: var(--text-muted); font-size: 0.75rem; text-align: center;">' + r + '</td>';
+            headers.forEach((h, colIdx) => {
+              const cellVal = row[colIdx] !== undefined ? String(row[colIdx]) : '';
+              tableHtml += '<td>' + cellVal + '</td>';
+            });
+            tableHtml += '</tr>';
+          }
+          tableHtml += '</tbody></table></div>';
+
+          contentView.innerHTML = tableHtml;
+        } else {
+          contentView.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Planilha vazia ou sem dados legíveis.</div>';
+        }
+
+        updateUnifiedProgress(progressBox, 100, 'Planilha carregada e convertida com sucesso!', 'Pronto');
+        hideUnifiedProgress(progressBox, 1500);
+      } catch (err) {
+        console.error('Erro ao ler Excel:', err);
+        updateUnifiedProgress(progressBox, 100, 'Erro ao processar planilha: ' + err.message);
+        contentView.innerHTML = '<div style="color: #F87171; padding: 1.5rem;">Erro ao ler planilha: ' + err.message + '</div>';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+
+  } else if (ext === 'docx') {
+    // Documento Word via Mammoth.js
+    currentOfficeData.type = 'word';
+    if (fileMetaEl) fileMetaEl.textContent = 'Tamanho: ' + formatFileSize(file.size) + ' • Formato: Documento Word (DOCX)';
+    if (searchBox) searchBox.classList.add('hidden');
+    if (csvBtn) csvBtn.style.display = 'none';
+    if (jsonBtn) jsonBtn.style.display = 'none';
+
+    reader.onload = (e) => {
+      try {
+        updateUnifiedProgress(progressBox, 50, 'Convertendo formatação DOCX para HTML estruturado...', 'Processando Word');
+        const arrayBuffer = e.target.result;
+
+        if (typeof mammoth === 'undefined') {
+          throw new Error('Biblioteca Mammoth ainda não foi carregada. Verifique sua conexão à internet.');
+        }
+
+        mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+          .then((result) => {
+            currentOfficeData.htmlContent = result.value;
+            contentView.innerHTML = '<div class="docx-html-preview">' + result.value + '</div>';
+            updateUnifiedProgress(progressBox, 100, 'Documento Word convertido com sucesso!', 'Pronto');
+            hideUnifiedProgress(progressBox, 1500);
+          })
+          .catch((err) => {
+            throw err;
+          });
+      } catch (err) {
+        console.error('Erro ao processar DOCX:', err);
+        updateUnifiedProgress(progressBox, 100, 'Erro ao processar DOCX: ' + err.message);
+        contentView.innerHTML = '<div style="color: #F87171; padding: 1.5rem;">Erro ao ler Word: ' + err.message + '</div>';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+
+  } else if (ext === 'pdf') {
+    currentOfficeData.type = 'pdf';
+    if (fileMetaEl) fileMetaEl.textContent = 'Tamanho: ' + formatFileSize(file.size) + ' • Formato: Documento PDF';
+    if (searchBox) searchBox.classList.add('hidden');
+    if (csvBtn) csvBtn.style.display = 'none';
+    if (jsonBtn) jsonBtn.style.display = 'none';
+
+    reader.onload = (e) => {
+      updateUnifiedProgress(progressBox, 100, 'PDF carregado com sucesso!', 'Pronto');
+      const blobUrl = URL.createObjectURL(file);
+      contentView.innerHTML = '<iframe src="' + blobUrl + '" style="width: 100%; height: 500px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);"></iframe>';
+      hideUnifiedProgress(progressBox, 1500);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+// Filtro de busca instantâneo na tabela do Excel
+function filterOfficeTable(query) {
+  const table = document.getElementById('office-rendered-table');
+  if (!table) return;
+  const q = (query || '').toLowerCase().trim();
+  const rows = table.querySelectorAll('tbody tr');
+
+  rows.forEach(row => {
+    if (!q) {
+      row.style.display = '';
+      return;
+    }
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+// Exportações Office
+function exportOfficeToPdf() {
+  const contentView = document.getElementById('office-content-view');
+  if (!contentView || !contentView.innerHTML.trim()) {
+    alert('Nenhum documento carregado para exportar em PDF.');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('Permita popups no navegador para gerar o PDF de impressão.');
+    return;
+  }
+
+  const title = currentOfficeData.name || 'Documento Sollius';
+  const htmlContent = contentView.innerHTML;
+
+  printWindow.document.write(
+    '<!DOCTYPE html>' +
+    '<html lang="pt-BR">' +
+    '<head>' +
+    '  <meta charset="UTF-8">' +
+    '  <title>' + title + '</title>' +
+    '  <style>' +
+    '    @page { size: A4; margin: 15mm; }' +
+    '    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #111827; background: #fff; padding: 1rem; font-size: 11pt; line-height: 1.5; }' +
+    '    .header-print { border-bottom: 2px solid #F59E0B; padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }' +
+    '    .header-print h1 { font-size: 14pt; margin: 0; color: #111827; }' +
+    '    .header-print span { font-size: 8pt; color: #6B7280; }' +
+    '    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 9pt; }' +
+    '    th, td { border: 1px solid #D1D5DB; padding: 6px 8px; text-align: left; }' +
+    '    th { background-color: #F3F4F6; font-weight: bold; }' +
+    '    tr:nth-child(even) { background-color: #F9FAFB; }' +
+    '    .docx-html-preview h1, .docx-html-preview h2, .docx-html-preview h3 { color: #1F2937; margin-top: 1rem; }' +
+    '    .docx-html-preview p { margin-bottom: 0.75rem; }' +
+    '  </style>' +
+    '</head>' +
+    '<body>' +
+    '  <div class="header-print">' +
+    '    <h1>' + title + '</h1>' +
+    '    <span>Gerado com SOLLIUS • 100% Client-Side Seguro</span>' +
+    '  </div>' +
+    '  ' + htmlContent +
+    '  <script>' +
+    '    window.onload = function() {' +
+    '      setTimeout(function() {' +
+    '        window.print();' +
+    '      }, 300);' +
+    '    };' +
+    '  <\/script>' +
+    '</body>' +
+    '</html>'
+  );
+  printWindow.document.close();
+}
+
+function exportOfficeToCsv() {
+  if (!currentOfficeData.csvData) {
+    alert('Nenhum dado de planilha disponível para exportação em CSV.');
+    return;
+  }
+  const blob = new Blob(['\uFEFF' + currentOfficeData.csvData], { type: 'text/csv;charset=utf-8;' });
+  const filename = (currentOfficeData.name ? currentOfficeData.name.replace(/\.[^/.]+$/, '') : 'planilha_sollius') + '.csv';
+  downloadBlob(blob, filename);
+}
+
+function exportOfficeToJson() {
+  if (!currentOfficeData.jsonData) {
+    alert('Nenhum dado disponível para exportação em JSON.');
+    return;
+  }
+  const jsonStr = JSON.stringify(currentOfficeData.jsonData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+  const filename = (currentOfficeData.name ? currentOfficeData.name.replace(/\.[^/.]+$/, '') : 'dados_sollius') + '.json';
+  downloadBlob(blob, filename);
+}

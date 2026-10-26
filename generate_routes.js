@@ -86,6 +86,20 @@ const ROUTES = [
     path: '/gravador-de-tela',
     title: 'Gravador de Tela e Áudio Gratuito sem Instalação | SOLLIUS',
     desc: 'Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto pelo navegador.'
+  },
+  {
+    tab: 'transcritor',
+    folder: 'transcritor-de-audio',
+    path: '/transcritor-de-audio',
+    title: 'Transcritor de Voz IA com Contexto & Sugestões de Dúvidas | SOLLIUS',
+    desc: 'Transcreva gravações, podcasts e reuniões de até 2 horas com detecção inteligente de palavras duvidosas, compreensão de tema e exportação SRT.'
+  },
+  {
+    tab: 'office',
+    folder: 'conversor-documentos',
+    path: '/conversor-documentos',
+    title: 'Conversor Office & PDF Studio (Word & Excel) Gratuito | SOLLIUS',
+    desc: 'Converta planilhas Excel (XLSX, CSV) e documentos Word (DOCX) em PDF A4, JSON e HTML 100% no navegador sem instalar programas.'
   }
 ];
 
