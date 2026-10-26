@@ -2,6 +2,11 @@
 // SOLLIUS ECOSYSTEM ENGINE - 100% CLIENT-SIDE JAVASCRIPT
 // ========================================================
 
+// Forçar HTTPS automaticamente com Certificado Seguro
+if (typeof window !== 'undefined' && window.location.protocol === 'http:' && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+  window.location.replace('https://' + window.location.host + window.location.pathname + window.location.search + window.location.hash);
+}
+
 // Mapa de Rotas Amigáveis (URLs Limpas & SEO Dedicado)
 const ROUTE_MAP = {
   'hub': {
