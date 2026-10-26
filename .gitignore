@@ -5,3 +5,6 @@ Thumbs.db
 *.log
 .env
 .cache/
+.wrangler/
+*.bat
+generate_routes.js
