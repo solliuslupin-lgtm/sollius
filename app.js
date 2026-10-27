@@ -2200,12 +2200,20 @@ async function decodeAudioFileTo16k(file, progressCallback) {
   };
 }
 
-// Carregador do Modelo Whisper Local (Transformers.js) com Proteção Térmica e de CPU
-async function getWhisperLocalPipeline(progressCallback) {
-  if (localWhisperPipeline) return localWhisperPipeline;
+let currentLoadedModelName = null;
+
+// Carregador do Modelo Whisper Local (Transformers.js) com Suporte a Modelos de Alta Fidelidade
+async function getWhisperLocalPipeline(modelName = 'Xenova/whisper-base', progressCallback) {
+  if (localWhisperPipeline && currentLoadedModelName === modelName) {
+    return localWhisperPipeline;
+  }
   
+  const prettyName = modelName.includes('small') 
+    ? 'Whisper Small (Estúdio)' 
+    : (modelName.includes('base') ? 'Whisper Base (Alta Fidelidade)' : 'Whisper Tiny (Ultra Rápido)');
+
   if (typeof progressCallback === 'function') {
-    progressCallback(10, 'Carregando biblioteca Transformers.js neural...');
+    progressCallback(10, 'Carregando ' + prettyName + ' no navegador...');
   }
   
   const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
@@ -2214,22 +2222,22 @@ async function getWhisperLocalPipeline(progressCallback) {
   
   // Limitação inteligente de threads do WebAssembly para manter o PC 100% fluido e leve
   const totalCores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
-  // Aloca no máximo 2 threads para não travar os demais núcleos do computador
   const safeThreads = Math.min(2, Math.max(1, Math.floor(totalCores / 2)));
   if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
     env.backends.onnx.wasm.numThreads = safeThreads;
     env.backends.onnx.wasm.simd = true;
   }
   
-  localWhisperPipeline = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny', {
+  localWhisperPipeline = await pipeline('automatic-speech-recognition', modelName, {
     progress_callback: (info) => {
       if (info && info.status === 'progress' && typeof progressCallback === 'function') {
         const pct = Math.round(info.progress || 0);
-        progressCallback(pct, 'Baixando modelo Whisper OpenAI no navegador (' + (info.file || '') + '): ' + pct + '%');
+        progressCallback(pct, 'Carregando ' + prettyName + ' (' + (info.file || '') + '): ' + pct + '%');
       }
     }
   });
   
+  currentLoadedModelName = modelName;
   return localWhisperPipeline;
 }
 
@@ -2275,33 +2283,40 @@ async function processSelectedAudio() {
     const totalDurationSecs = decoded.duration || 60;
     const durFormatted = formatAudioDuration(totalDurationSecs);
 
-    updateUnifiedProgress(boxId, 25, 'Carregando modelo neural Whisper da OpenAI no navegador...', 'Inicializando IA');
+    const modelSelect = document.getElementById('transcribe-model');
+    const selectedModel = modelSelect ? modelSelect.value : 'Xenova/whisper-base';
+    const modelLabel = selectedModel.includes('small') ? 'Whisper Small' : (selectedModel.includes('base') ? 'Whisper Base' : 'Whisper Tiny');
+
+    updateUnifiedProgress(boxId, 25, 'Carregando modelo neural ' + modelLabel + ' no navegador...', 'Inicializando IA');
     
-    const transcriber = await getWhisperLocalPipeline((pct, msg) => {
+    const transcriber = await getWhisperLocalPipeline(selectedModel, (pct, msg) => {
       const mappedPct = Math.round(25 + (pct * 0.15));
       updateUnifiedProgress(boxId, mappedPct, msg, 'Modelo Neural');
     });
 
-    // Fatiamento acústico estrito de 30 segundos (480.000 amostras a 16kHz) cobrindo TODA a duração
-    const samplesPerChunk = 16000 * 30;
-    const totalChunks = Math.max(1, Math.ceil(pcm.length / samplesPerChunk));
+    // Fatiamento acústico inteligente com sobreposição (overlap) de 2 segundos:
+    // Janela de 30s (480.000 amostras) com avanço de 28s (448.000 amostras) garantindo que NENHUMA palavra seja cortada
+    const windowSamples = 16000 * 30;
+    const stepSamples = 16000 * 28;
+    const totalChunks = Math.max(1, Math.ceil(pcm.length / stepSamples));
     
     output.innerHTML = '';
     currentTranscriptSegments = [];
 
-    // Loop completo por TODOS os blocos (garantindo que 1h, 2h ou mais sejam 100% processados)
+    // Loop completo por TODOS os blocos cobrindo 100% da gravação
     for (let c = 0; c < totalChunks; c++) {
       if (!isTranscribingActive) break;
 
-      const startSample = c * samplesPerChunk;
-      const endSample = Math.min(pcm.length, (c + 1) * samplesPerChunk);
+      const startSample = c * stepSamples;
+      if (startSample >= pcm.length) break;
+      const endSample = Math.min(pcm.length, startSample + windowSamples);
       const chunkSamples = pcm.subarray(startSample, endSample);
-      const startSec = Math.floor(c * 30);
+      const startSec = Math.floor(startSample / 16000);
       const timeTag = formatTimestampSrt(startSec).slice(0, 8);
 
       const progressPct = Math.round(40 + ((c + 1) / totalChunks) * 58);
       const remainingChunks = totalChunks - (c + 1);
-      const etaSecs = Math.max(1, Math.round(remainingChunks * 2.8));
+      const etaSecs = Math.max(1, Math.round(remainingChunks * 3.2));
       
       const statusText = 'Transcrevendo bloco ' + (c + 1) + ' de ' + totalChunks + ' (' + timeTag + ' de ' + durFormatted + ')...';
       const subInfoText = 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + formatAudioDuration(etaSecs) + ' restante';
@@ -2317,23 +2332,23 @@ async function processSelectedAudio() {
 
       // Se a energia for imperceptível (silêncio ou ruído residual de microfone sem fala humana)
       if (rms < 0.0035) {
-        // Pausa leve para liberação e alívio térmico da CPU
         await new Promise(r => setTimeout(r, 20));
         continue;
       }
 
-      // Inferência Neural Real com Whisper em Português
+      // Inferência Neural Completa com Whisper
       try {
         const langSelect = document.getElementById('transcribe-lang');
         const langVal = langSelect && langSelect.value.startsWith('en') ? 'english' : (langSelect && langSelect.value.startsWith('es') ? 'spanish' : 'portuguese');
 
+        // GERAÇÃO COMPLETA: max_new_tokens: 448 para transcrever todo o áudio do bloco sem truncar
+        // Sem repetition_penalty nem no_repeat_ngram_size que quebravam a fala natural em português
         const result = await transcriber(chunkSamples, {
           language: langVal,
           task: 'transcribe',
           temperature: 0.0,
-          condition_on_previous_text: false, // CRUCIAL: impede contaminação de alucinações entre blocos!
-          repetition_penalty: 1.35,
-          no_repeat_ngram_size: 4
+          condition_on_previous_text: false,
+          max_new_tokens: 448
         });
 
         let rawText = result && result.text ? result.text.trim() : '';
@@ -2341,8 +2356,21 @@ async function processSelectedAudio() {
         // 1. Limpeza inteligente de alucinações (tags de som, [música], música isolada em zumbidos e créditos)
         rawText = cleanWhisperSpeech(rawText);
 
-        // 2. Remoção de repetições consecutivas
+        // 2. Remoção de repetições consecutivas anômalas
         rawText = removeRepetitiveLoops(rawText);
+
+        // 3. Suavização de sobreposição de borda com bloco anterior
+        if (currentTranscriptSegments.length > 0 && rawText.length > 0) {
+          const prevSegText = currentTranscriptSegments[currentTranscriptSegments.length - 1].text.toLowerCase();
+          const words = rawText.split(/\s+/);
+          if (words.length > 3) {
+            const headThree = words.slice(0, 3).join(' ').toLowerCase();
+            if (prevSegText.endsWith(headThree)) {
+              words.splice(0, 3);
+              rawText = words.join(' ');
+            }
+          }
+        }
 
         // Se após a filtragem o texto contiver fala humana real
         if (rawText && rawText.length > 0) {
@@ -2359,14 +2387,13 @@ async function processSelectedAudio() {
             text: rawText
           });
 
-          // Atualiza contexto a cada 3 blocos ou no final
-          if (c % 3 === 0 || c === totalChunks - 1) {
+          // Atualiza contexto a cada 2 blocos ou no final
+          if (c % 2 === 0 || c === totalChunks - 1) {
             analyzeTranscriptionContext(output.innerText);
           }
         }
       } catch (chunkErr) {
         console.warn('Aviso no bloco ' + c + ' (' + timeTag + '):', chunkErr);
-        // Continua sem interromper os blocos restantes!
       }
 
       // Pausa essencial de alívio de CPU (120ms) para manter o computador 100% livre e responsivo
@@ -2591,20 +2618,21 @@ function analyzeTranscriptionContext(fullText) {
   // 2. Resumo Executivo em Tópicos (Limpo de Repetições e Tags de Som)
   if (summaryList) {
     const cleanForSummary = fullText
-      .replace(/\\[\\d{2}:\\d{2}:\\d{2}\\]/g, '')
-      .replace(/\\[[^\\]]+\\]/g, '')
-      .replace(/^[-–\\s]+/gm, '');
+      .replace(/\[\d{2}:\d{2}:\d{2}\]/g, '')
+      .replace(/\[[^\]]+\]/g, '')
+      .replace(/\([^\)]+\)/g, '')
+      .replace(/^[-–\s]+/gm, '');
 
     const rawSentences = cleanForSummary
-      .split(/[.!?\\n]+/)
-      .map(s => removeRepetitiveLoops(s).trim())
-      .filter(s => s.length > 20 && !s.toLowerCase().includes('música'));
+      .split(/[.!?\n]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 25 && !s.toLowerCase().includes('música'));
 
     const uniqueSentences = [];
     const seenSentences = new Set();
     for (const sen of rawSentences) {
       const norm = sen.toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ0-9]/g, '');
-      if (norm.length > 15 && !seenSentences.has(norm)) {
+      if (norm.length > 20 && !seenSentences.has(norm)) {
         seenSentences.add(norm);
         uniqueSentences.push(sen);
       }
@@ -2626,7 +2654,7 @@ function analyzeTranscriptionContext(fullText) {
       'de', 'a', 'o', 'que', 'e', 'do', 'da', 'em', 'um', 'para', 'é', 'com', 'não', 'uma', 'os', 'no', 'se', 'na', 'por', 'mais', 'as', 'dos', 'como', 'mas', 'foi', 'ao', 'ele', 'das', 'tem', 'à', 'seu', 'sua', 'ou', 'ser', 'quando', 'muito', 'há', 'nos', 'já', 'está', 'eu', 'também', 'só', 'pelo', 'pela', 'até', 'isso', 'ela', 'entre', 'era', 'depois', 'sem', 'mesmo', 'aos', 'ter', 'seus', 'quem', 'nas', 'me', 'esse', 'eles', 'estão', 'você', 'tinha', 'foram', 'essa', 'num', 'nem', 'suas', 'meu', 'às', 'minha', 'têm', 'numa', 'pelos', 'elas', 'havia', 'seja', 'qual', 'será', 'nós', 'tenho', 'lhe', 'deles', 'essas', 'esses', 'pelas', 'este', 'fosse', 'dele', 'tu', 'te', 'vocês', 'vos', 'lhes', 'meus', 'minhas', 'teu', 'tua', 'teus', 'tuas', 'nosso', 'nossa', 'nossos', 'nossas', 'dela', 'delas', 'esta', 'estes', 'estas', 'aquele', 'aquela', 'aqueles', 'aquelas', 'isto', 'aquilo', 'estou', 'está', 'estamos', 'estão', 'estive', 'esteve', 'estivemos', 'estiveram', 'estava', 'estávamos', 'estavam', 'sobre', 'todos', 'tudo'
     ]);
 
-    const words = textLower.match(/\\b[a-záàâãéèêíïóôõöúçñ]{4,}\\b/gi) || [];
+    const words = textLower.match(/\b[a-záàâãéèêíïóôõöúçñ]{4,}\b/gi) || [];
     const freq = {};
     words.forEach(w => {
       if (!stopwords.has(w)) {
