@@ -2208,9 +2208,9 @@ async function getWhisperLocalPipeline(modelName = 'Xenova/whisper-base', progre
     return localWhisperPipeline;
   }
   
-  const prettyName = modelName.includes('small') 
-    ? 'Whisper Small (Estúdio)' 
-    : (modelName.includes('base') ? 'Whisper Base (Alta Fidelidade)' : 'Whisper Tiny (Ultra Rápido)');
+  const prettyName = modelName.includes('base') 
+    ? 'Whisper Base (Alta Fidelidade)' 
+    : 'Whisper Tiny (Ultra Rápido)';
 
   if (typeof progressCallback === 'function') {
     progressCallback(10, 'Carregando ' + prettyName + ' no navegador...');
@@ -2228,16 +2228,38 @@ async function getWhisperLocalPipeline(modelName = 'Xenova/whisper-base', progre
     env.backends.onnx.wasm.simd = true;
   }
   
-  localWhisperPipeline = await pipeline('automatic-speech-recognition', modelName, {
-    progress_callback: (info) => {
-      if (info && info.status === 'progress' && typeof progressCallback === 'function') {
-        const pct = Math.round(info.progress || 0);
-        progressCallback(pct, 'Carregando ' + prettyName + ' (' + (info.file || '') + '): ' + pct + '%');
+  try {
+    localWhisperPipeline = await pipeline('automatic-speech-recognition', modelName, {
+      quantized: true,
+      progress_callback: (info) => {
+        if (info && info.status === 'progress' && typeof progressCallback === 'function') {
+          const pct = Math.round(info.progress || 0);
+          progressCallback(pct, 'Carregando ' + prettyName + ' (' + (info.file || '') + '): ' + pct + '%');
+        }
       }
+    });
+    currentLoadedModelName = modelName;
+  } catch (loadErr) {
+    console.warn('Aviso: modelo ' + modelName + ' não pôde ser alocado diretamente, carregando modelo leve...', loadErr);
+    if (modelName !== 'Xenova/whisper-tiny') {
+      if (typeof progressCallback === 'function') {
+        progressCallback(45, 'Iniciando modelo Whisper leve compatível...');
+      }
+      localWhisperPipeline = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny', {
+        quantized: true,
+        progress_callback: (info) => {
+          if (info && info.status === 'progress' && typeof progressCallback === 'function') {
+            const pct = Math.round(info.progress || 0);
+            progressCallback(pct, 'Carregando Whisper Tiny (' + (info.file || '') + '): ' + pct + '%');
+          }
+        }
+      });
+      currentLoadedModelName = 'Xenova/whisper-tiny';
+    } else {
+      throw loadErr;
     }
-  });
+  }
   
-  currentLoadedModelName = modelName;
   return localWhisperPipeline;
 }
 
