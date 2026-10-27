@@ -435,7 +435,7 @@ body {
 /* ================= GRID DE FERRAMENTAS (BENTO STYLE) ================= */
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1.5rem;
   margin-top: 1rem;
 }
@@ -838,8 +838,11 @@ input[type="range"] {
 
 .card-3d-wrapper {
   position: relative;
-  width: 380px;
-  height: 220px;
+  width: min(380px, 100%);
+  max-width: 100%;
+  aspect-ratio: 380 / 220;
+  height: auto;
+  min-height: 190px;
   transform-style: preserve-3d;
   transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
   cursor: pointer;
@@ -1203,8 +1206,11 @@ input[type="range"] {
 }
 
 .business-card {
-  width: 360px;
-  height: 210px;
+  width: min(360px, 100%);
+  max-width: 100%;
+  aspect-ratio: 360 / 210;
+  height: auto;
+  min-height: 185px;
   border-radius: 14px;
   position: relative;
   overflow: hidden;
@@ -1698,6 +1704,296 @@ input[type="range"] {
   color: var(--amber-primary);
   margin-top: 1rem;
   margin-bottom: 0.5rem;
+}
+
+/* ========================================================
+   SUITE ULTRA RESPONSIVA MOBILE (SMARTPHONES & TABLETS)
+   Compatibilidade Total: iPhone SE, iPhone Pro/Max, 
+   Android (Galaxy, Xiaomi, Motorola), Tablets e Dobráveis
+   ======================================================== */
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img, svg, canvas, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Touch targets otimizados e feedback tátil fluido */
+button, input, select, textarea, a, .cat-pill, .tool-card {
+  touch-action: manipulation;
+}
+
+button:active, .cat-pill:active, .header-nav-btn:active {
+  transform: scale(0.97);
+}
+
+/* Breakpoint: Tablets e Telas Médias (<= 1024px) */
+@media (max-width: 1024px) {
+  .main-wrapper {
+    padding: 1.5rem 1.25rem;
+  }
+  .resume-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Breakpoint: Dispositivos Móveis e Tablets Verticais (<= 768px) */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.65rem 1rem;
+  }
+  .header-container {
+    gap: 0.75rem;
+  }
+  .header-nav {
+    display: none;
+  }
+  .badge-ecosystem {
+    display: none;
+  }
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.15rem;
+    border-radius: 10px;
+  }
+  .shield-badge {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.72rem;
+  }
+
+  .main-wrapper {
+    padding: 1.25rem 0.85rem;
+  }
+
+  .hero-card {
+    padding: 2rem 1.25rem;
+    margin-bottom: 1.75rem;
+    border-radius: 20px;
+  }
+  .hero-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.35rem);
+  }
+  .hero-desc {
+    font-size: 0.98rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-preview-stage {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+    padding: 1rem 0;
+  }
+
+  .transcription-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+  }
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+  }
+}
+
+/* Breakpoint: Smartphones Padrão e Pequenos (<= 640px) */
+@media (max-width: 640px) {
+  .main-wrapper {
+    padding: 1rem 0.65rem;
+  }
+
+  /* Grid 1 Coluna Perfeita */
+  .tools-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  .tool-card {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+  .tool-icon-wrapper {
+    width: 46px;
+    height: 46px;
+    font-size: 1.35rem;
+    margin-bottom: 0.85rem;
+    border-radius: 12px;
+  }
+  .tool-title {
+    font-size: 1.1rem;
+  }
+
+  /* Painéis de Vidro no Celular */
+  .glass-panel {
+    border-radius: 18px !important;
+  }
+
+  /* Barras de Voltar e Ações do Topo */
+  .tool-back-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 1.15rem;
+    padding-bottom: 0.75rem;
+  }
+  .btn-back {
+    width: 100%;
+    justify-content: center;
+    padding: 0.55rem 1rem;
+  }
+
+  /* Flex Headers de Ferramentas */
+  .flex-between {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
+  }
+
+  /* Botões de Ação Adaptáveis */
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary,
+  .btn-emerald {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.25rem;
+  }
+
+  /* Dropzones Compactas */
+  .dropzone {
+    padding: 1.75rem 1rem;
+    border-radius: 16px;
+  }
+  .dropzone-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+  }
+  .dropzone-title {
+    font-size: 0.98rem;
+  }
+
+  /* Controles e Formulários */
+  .controls-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  /* Fila de Arquivos */
+  .file-queue-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.85rem;
+    gap: 0.75rem;
+  }
+  .file-info-group {
+    min-width: 0;
+  }
+
+  /* Currículo ATS Preview */
+  #resume-printable-area {
+    padding: 1.25rem 0.85rem !important;
+    min-height: auto !important;
+    border-radius: 6px;
+  }
+  .resume-paper.theme-executive .res-name {
+    font-size: 1.45rem !important;
+  }
+  .resume-paper.theme-executive .res-title {
+    font-size: 0.95rem !important;
+  }
+
+  /* Cartão de Visita Studio */
+  .business-card {
+    padding: 1.1rem 0.95rem;
+  }
+  .bc-name {
+    font-size: 1.15rem !important;
+  }
+  .card-face {
+    padding: 1.1rem 0.95rem;
+  }
+
+  /* Transcritor de Voz IA */
+  .transcription-content {
+    font-size: 0.88rem;
+    padding: 0.85rem;
+    max-height: 340px;
+  }
+  .context-card {
+    padding: 1.15rem 0.95rem;
+    border-radius: 14px;
+  }
+
+  /* Conversor Office */
+  .office-preview-box {
+    padding: 1rem 0.75rem;
+    border-radius: 14px;
+  }
+  .table-responsive-container {
+    max-height: 360px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sollius-data-table th, .sollius-data-table td {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.78rem;
+  }
+  #office-table-search-box {
+    width: 100%;
+  }
+  #office-search-input {
+    width: 100% !important;
+  }
+
+  /* Barra de Categorias Horizontal com Touch Suave */
+  .category-filter-bar {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cat-pill {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Breakpoint: Telas Muito Pequenas (<= 380px) */
+@media (max-width: 380px) {
+  .logo-text {
+    font-size: 1.1rem;
+  }
+  .hero-title {
+    font-size: 1.5rem;
+  }
+  .btn-primary, .btn-secondary, .btn-purple {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
 }
 
 

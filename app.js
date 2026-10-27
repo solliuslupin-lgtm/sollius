@@ -2355,7 +2355,11 @@ function showWordSuggestions(event, el) {
   popover.style.cssText = 'position: absolute; z-index: 999999; background: #181D2F; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 0.65rem 0.85rem; box-shadow: 0 10px 25px rgba(0,0,0,0.6); max-width: 280px; font-family: inherit; font-size: 0.85rem; color: #fff; backdrop-filter: blur(10px); animation: fadeIn 0.15s ease-out;';
 
   const rect = el.getBoundingClientRect();
-  popover.style.left = (window.scrollX + rect.left) + 'px';
+  const screenWidth = window.innerWidth;
+  const popWidth = Math.min(280, screenWidth - 24);
+  const leftPos = Math.max(12, Math.min(window.scrollX + rect.left, window.scrollX + screenWidth - popWidth - 16));
+  popover.style.width = popWidth + 'px';
+  popover.style.left = leftPos + 'px';
   popover.style.top = (window.scrollY + rect.bottom + 6) + 'px';
 
   let popHtml = '<div style="font-size: 0.75rem; font-weight: 700; color: #FBBF24; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.3rem;"><span>💡</span> Sugestões da IA para "' + currentWord + '":</div>';
