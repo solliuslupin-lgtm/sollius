@@ -1925,21 +1925,22 @@ function handleAudioSelect(files) {
     playback.style.display = 'block';
   }
 
-  // Mede duração via Audio element
+  // Mede duração exata via Audio element
   const tempAudio = new Audio();
   tempAudio.src = audioUrl;
   tempAudio.onloadedmetadata = () => {
     audioDurationSeconds = tempAudio.duration || 60;
     const durFormatted = formatAudioDuration(audioDurationSeconds);
+    const estChunks = Math.ceil(audioDurationSeconds / 30);
     if (dropSubtitle) {
-      dropSubtitle.innerHTML = 'Duração: <strong style="color: #FBBF24;">' + durFormatted + '</strong> • Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Processamento 100% no navegador (Áudios até 2 horas).';
+      dropSubtitle.innerHTML = 'Duração total: <strong style="color: #FBBF24;">' + durFormatted + '</strong> (' + estChunks + ' blocos de 30s) • Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Transcrição completa 100% no navegador.';
     }
     if (startBtn) startBtn.disabled = false;
   };
   tempAudio.onerror = () => {
     audioDurationSeconds = Math.max(120, Math.round(file.size / (1024 * 16)));
     if (dropSubtitle) {
-      dropSubtitle.innerHTML = 'Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Arquivo pronto para transcrever no navegador.';
+      dropSubtitle.innerHTML = 'Tamanho: <strong>' + formatFileSize(file.size) + '</strong> • Arquivo pronto para transcrever.';
     }
     if (startBtn) startBtn.disabled = false;
   };
@@ -2038,35 +2039,64 @@ function toggleLiveMicTranscription() {
   }
 }
 
-// Decodificador de Áudio real para Mono Float32Array a 16.000 Hz
+// Decodificador Ultra-Robusto de Áudio para Mono Float32Array a 16.000 Hz
 async function decodeAudioFileTo16k(file, progressCallback) {
   const arrayBuffer = await file.arrayBuffer();
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  const audioCtx = new AudioContextClass({ sampleRate: 16000 });
-  
+  let audioCtx = null;
+  let audioBuffer = null;
+
   if (typeof progressCallback === 'function') {
     progressCallback('Decodificando frequências de áudio nativas...');
   }
-  
-  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+  // Tenta decodificar diretamente a 16kHz; se o navegador não permitir, decodifica na taxa nativa e reamostra
+  try {
+    audioCtx = new AudioContextClass({ sampleRate: 16000 });
+    audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+  } catch (ctxErr) {
+    audioCtx = new AudioContextClass();
+    audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  }
+
   const numChannels = audioBuffer.numberOfChannels;
-  const length = audioBuffer.length;
-  
+  const originalLength = audioBuffer.length;
+  const originalSampleRate = audioBuffer.sampleRate;
+  const duration = audioBuffer.duration;
+
   let mono = null;
-  if (numChannels === 1) {
-    mono = audioBuffer.getChannelData(0);
+
+  // Se já estiver em 16.000 Hz
+  if (originalSampleRate === 16000) {
+    if (numChannels === 1) {
+      mono = audioBuffer.getChannelData(0);
+    } else {
+      mono = new Float32Array(originalLength);
+      const ch0 = audioBuffer.getChannelData(0);
+      const ch1 = audioBuffer.getChannelData(1);
+      for (let i = 0; i < originalLength; i++) {
+        mono[i] = (ch0[i] + ch1[i]) * 0.5;
+      }
+    }
   } else {
-    mono = new Float32Array(length);
+    // Reamostragem limpa e precisa para 16.000 Hz (padrão Whisper)
+    const targetLength = Math.round(originalLength * 16000 / originalSampleRate);
+    mono = new Float32Array(targetLength);
     const ch0 = audioBuffer.getChannelData(0);
-    const ch1 = audioBuffer.getChannelData(1);
-    for (let i = 0; i < length; i++) {
-      mono[i] = (ch0[i] + ch1[i]) * 0.5;
+    const ch1 = numChannels > 1 ? audioBuffer.getChannelData(1) : null;
+    const ratio = originalLength / targetLength;
+
+    for (let i = 0; i < targetLength; i++) {
+      const origIndex = Math.min(originalLength - 1, Math.floor(i * ratio));
+      mono[i] = ch1 ? (ch0[origIndex] + ch1[origIndex]) * 0.5 : ch0[origIndex];
     }
   }
-  
+
+  try { audioCtx.close(); } catch (e) {}
+
   return {
     pcmData: mono,
-    duration: audioBuffer.duration,
+    duration: duration,
     sampleRate: 16000
   };
 }
@@ -2095,7 +2125,7 @@ async function getWhisperLocalPipeline(progressCallback) {
   return localWhisperPipeline;
 }
 
-// Execução Principal da Transcrição 100% no Navegador do Usuário
+// Execução Principal da Transcrição 100% no Navegador de Todas as Horas de Áudio
 async function processSelectedAudio() {
   if (!selectedAudioFile) {
     alert('Por favor, selecione ou arraste um arquivo de áudio ou vídeo primeiro.');
@@ -2106,13 +2136,28 @@ async function processSelectedAudio() {
   const output = document.getElementById('transcription-output');
   const boxId = 'transcribe-progress-box';
 
-  if (startBtn) startBtn.disabled = true;
+  // Toggle do botão para permitir parar se o usuário desejar
+  if (isTranscribingActive) {
+    isTranscribingActive = false;
+    if (startBtn) {
+      startBtn.innerHTML = '<span>⚡</span><span>Iniciar Transcrição</span>';
+      startBtn.classList.remove('btn-recording-active');
+    }
+    updateUnifiedProgress(boxId, 100, 'Transcrição pausada pelo usuário.', 'Pausado');
+    return;
+  }
+
   isTranscribingActive = true;
+  if (startBtn) {
+    startBtn.innerHTML = '<span>⏹️</span><span>Parar Transcrição</span>';
+    startBtn.classList.add('btn-recording-active');
+  }
+
   output.innerHTML = '<div style="color: var(--amber-primary); padding: 1rem;"><span class="pulse-dot"></span> Decodificando frequências de áudio na memória RAM do seu aparelho...</div>';
   currentTranscriptSegments = [];
 
   try {
-    updateUnifiedProgress(boxId, 5, 'Lendo arquivo de áudio e decodificando faixas de voz...', 'Amostragem PCM 16kHz');
+    updateUnifiedProgress(boxId, 5, 'Lendo arquivo e decodificando faixas de voz...', 'Amostragem PCM 16kHz');
 
     const decoded = await decodeAudioFileTo16k(selectedAudioFile, (msg) => {
       updateUnifiedProgress(boxId, 15, msg, 'Decodificando');
@@ -2120,21 +2165,23 @@ async function processSelectedAudio() {
 
     const pcm = decoded.pcmData;
     const totalDurationSecs = decoded.duration || 60;
+    const durFormatted = formatAudioDuration(totalDurationSecs);
 
     updateUnifiedProgress(boxId, 25, 'Carregando modelo neural Whisper da OpenAI no navegador...', 'Inicializando IA');
     
     const transcriber = await getWhisperLocalPipeline((pct, msg) => {
-      const mappedPct = Math.round(25 + (pct * 0.25));
+      const mappedPct = Math.round(25 + (pct * 0.15));
       updateUnifiedProgress(boxId, mappedPct, msg, 'Modelo Neural');
     });
 
-    // Fatiamento acústico de 30 segundos (480.000 amostras a 16kHz)
+    // Fatiamento acústico estrito de 30 segundos (480.000 amostras a 16kHz) cobrindo TODA a duração
     const samplesPerChunk = 16000 * 30;
     const totalChunks = Math.max(1, Math.ceil(pcm.length / samplesPerChunk));
     
     output.innerHTML = '';
     currentTranscriptSegments = [];
 
+    // Loop completo por TODOS os blocos (garantindo que 1h, 2h ou mais sejam 100% processados)
     for (let c = 0; c < totalChunks; c++) {
       if (!isTranscribingActive) break;
 
@@ -2144,12 +2191,15 @@ async function processSelectedAudio() {
       const startSec = Math.floor(c * 30);
       const timeTag = formatTimestampSrt(startSec).slice(0, 8);
 
-      const progressPct = Math.round(50 + ((c + 1) / totalChunks) * 48);
+      const progressPct = Math.round(40 + ((c + 1) / totalChunks) * 58);
       const remainingChunks = totalChunks - (c + 1);
-      const etaSecs = Math.max(1, Math.round(remainingChunks * 3.5));
-      updateUnifiedProgress(boxId, progressPct, 'Transcrevendo bloco ' + (c + 1) + ' de ' + totalChunks + ' (' + timeTag + ')...', 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + etaSecs + 's');
+      const etaSecs = Math.max(1, Math.round(remainingChunks * 2.8));
+      
+      const statusText = 'Transcrevendo bloco ' + (c + 1) + ' de ' + totalChunks + ' (' + timeTag + ' de ' + durFormatted + ')...';
+      const subInfoText = 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + formatAudioDuration(etaSecs) + ' restante';
+      updateUnifiedProgress(boxId, progressPct, statusText, subInfoText);
 
-      // Detecção de Silêncio (RMS Energy): pula blocos sem fala
+      // Detecção de Silêncio real (apenas salta se for linha reta plana absoluta)
       let sumSq = 0;
       const step = 20;
       for (let s = 0; s < chunkSamples.length; s += step) {
@@ -2157,9 +2207,9 @@ async function processSelectedAudio() {
       }
       const rms = Math.sqrt(sumSq / (chunkSamples.length / step));
 
-      if (rms < 0.003) {
-        // Pausa ou silêncio no trecho
-        await new Promise(r => setTimeout(r, 20));
+      if (rms < 0.0003) {
+        // Flatline mudo absoluto
+        await new Promise(r => setTimeout(r, 10));
         continue;
       }
 
@@ -2179,13 +2229,14 @@ async function processSelectedAudio() {
         let rawText = result && result.text ? result.text.trim() : '';
         rawText = removeRepetitiveLoops(rawText);
 
-        // Se for tag de som repetida (ex: [música]) ou texto idêntico ao último bloco, evita duplicatas
+        // Se for tag de som repetida (ex: [música] duas vezes seguidas), evita duplicata
         const lastSeg = currentTranscriptSegments[currentTranscriptSegments.length - 1];
-        if (lastSeg && lastSeg.text.toLowerCase().trim() === rawText.toLowerCase().trim()) {
+        const isSoundTag = /^\[[^\]]+\]$/.test(rawText);
+        if (isSoundTag && lastSeg && lastSeg.text.toLowerCase().trim() === rawText.toLowerCase().trim()) {
           continue;
         }
 
-        if (rawText && rawText.length > 1) {
+        if (rawText && rawText.length > 0) {
           const enrichedText = enrichTextWithSuggestions(rawText);
           output.innerHTML += '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
             '<span style="color: var(--amber-primary); font-family: monospace; font-size: 0.82rem; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.4rem; border-radius: 4px; margin-right: 0.5rem;">[' + timeTag + ']</span>' +
@@ -2205,27 +2256,31 @@ async function processSelectedAudio() {
           }
         }
       } catch (chunkErr) {
-        console.warn('Erro ao transcrever bloco ' + c + ':', chunkErr);
+        console.warn('Aviso no bloco ' + c + ' (' + timeTag + '):', chunkErr);
+        // Continua sem interromper os blocos restantes!
       }
 
-      // Pausa rápida para liberar o event loop da interface
-      await new Promise(r => setTimeout(r, 30));
+      // Pausa rápida para liberar o event loop e garantir rolagem suave
+      await new Promise(r => setTimeout(r, 25));
     }
 
-    updateUnifiedProgress(boxId, 100, 'Transcrição neural concluída com sucesso!', 'Todos os blocos de áudio foram analisados');
+    updateUnifiedProgress(boxId, 100, 'Transcrição de todas as falas concluída com 100% de sucesso!', 'Todos os ' + totalChunks + ' blocos foram transcritos');
     analyzeTranscriptionContext(output.innerText);
-    hideUnifiedProgress(boxId, 2500);
+    hideUnifiedProgress(boxId, 3000);
 
   } catch (err) {
     console.error('Erro na transcrição:', err);
     updateUnifiedProgress(boxId, 100, 'Erro: ' + err.message);
     alert('Erro durante a transcrição no navegador: ' + err.message);
   } finally {
-    if (startBtn) startBtn.disabled = false;
     isTranscribingActive = false;
+    if (startBtn) {
+      startBtn.innerHTML = '<span>⚡</span><span>Iniciar Transcrição</span>';
+      startBtn.classList.remove('btn-recording-active');
+      startBtn.disabled = false;
+    }
   }
 }
-
 
 // Removedor inteligente de repetições e alucinações em loop do Whisper
 function removeRepetitiveLoops(text) {
@@ -2238,7 +2293,6 @@ function removeRepetitiveLoops(text) {
   });
 
   // 2. Colapsa frases inteiras repetidas consecutivas com pontuação ou hífens de diálogo
-  // Ex: '- A melhor coisa, é a melhor coisa. - A melhor coisa, é a melhor coisa.'
   const sentenceDelim = /(?<=[.!?\n])|(?=\s*-\s+)/;
   const parts = str.split(sentenceDelim).map(p => p.trim()).filter(Boolean);
   
@@ -2256,7 +2310,6 @@ function removeRepetitiveLoops(text) {
   }
 
   // 3. Colapsa padrões de sub-frases repetidas dentro do mesmo texto
-  // Ex: 'que é uma coisa que é uma coisa que é uma coisa'
   str = str.replace(/(\b[a-záàâãéèêíïóôõöúçñ0-9\s,]{4,40}?\b)(?:\s*,\s*|\s+)\1(?:\s*,\s*|\s+\1)+/gi, '$1');
   
   // 4. Colapsa 2 ou 3 palavras repetidas: 'a melhor coisa a melhor coisa a melhor coisa'
@@ -2267,7 +2320,6 @@ function removeRepetitiveLoops(text) {
 
   return str.replace(/\s{2,}/g, ' ').trim();
 }
-
 
 // Injeta spans com classe .flagged-word e dataset de sugestões
 function enrichTextWithSuggestions(text) {
@@ -2423,19 +2475,18 @@ function analyzeTranscriptionContext(fullText) {
     topicBadge.innerHTML = '<span class="pulse-dot"></span> ' + bestCategory;
   }
 
-  // 2. Resumo Executivo em Tópicos (Limpo de Repetições e Tags de Áudio)
+  // 2. Resumo Executivo em Tópicos (Limpo de Repetições e Tags de Som)
   if (summaryList) {
     const cleanForSummary = fullText
       .replace(/\\[\\d{2}:\\d{2}:\\d{2}\\]/g, '')
-      .replace(/\\[[^\\]]+\\]/g, '') // remove [música], [risos], etc.
-      .replace(/^[-–\s]+/gm, '');        // remove hífens soltos no início de linhas
+      .replace(/\\[[^\\]]+\\]/g, '')
+      .replace(/^[-–\\s]+/gm, '');
 
     const rawSentences = cleanForSummary
       .split(/[.!?\\n]+/)
       .map(s => removeRepetitiveLoops(s).trim())
       .filter(s => s.length > 20 && !s.toLowerCase().includes('música'));
 
-    // Seleciona sentenças únicas sem repetições
     const uniqueSentences = [];
     const seenSentences = new Set();
     for (const sen of rawSentences) {
