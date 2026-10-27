@@ -2170,10 +2170,20 @@ async function processSelectedAudio() {
 
         const result = await transcriber(chunkSamples, {
           language: langVal,
-          task: 'transcribe'
+          task: 'transcribe',
+          temperature: 0.0,
+          repetition_penalty: 1.35,
+          no_repeat_ngram_size: 4
         });
 
-        const rawText = result && result.text ? result.text.trim() : '';
+        let rawText = result && result.text ? result.text.trim() : '';
+        rawText = removeRepetitiveLoops(rawText);
+
+        // Se for tag de som repetida (ex: [música]) ou texto idêntico ao último bloco, evita duplicatas
+        const lastSeg = currentTranscriptSegments[currentTranscriptSegments.length - 1];
+        if (lastSeg && lastSeg.text.toLowerCase().trim() === rawText.toLowerCase().trim()) {
+          continue;
+        }
 
         if (rawText && rawText.length > 1) {
           const enrichedText = enrichTextWithSuggestions(rawText);
@@ -2215,6 +2225,49 @@ async function processSelectedAudio() {
     isTranscribingActive = false;
   }
 }
+
+
+// Removedor inteligente de repetições e alucinações em loop do Whisper
+function removeRepetitiveLoops(text) {
+  if (!text) return '';
+  let str = text.trim();
+
+  // 1. Colapsa marcadores de som repetidos: [música] [música] -> [música]
+  str = str.replace(/(\[[^\]]+\]\s*)+/g, (match) => {
+    return match.trim().split(/\s+/)[0] + ' ';
+  });
+
+  // 2. Colapsa frases inteiras repetidas consecutivas com pontuação ou hífens de diálogo
+  // Ex: '- A melhor coisa, é a melhor coisa. - A melhor coisa, é a melhor coisa.'
+  const sentenceDelim = /(?<=[.!?\n])|(?=\s*-\s+)/;
+  const parts = str.split(sentenceDelim).map(p => p.trim()).filter(Boolean);
+  
+  if (parts.length > 1) {
+    const deduped = [];
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
+      const norm = p.toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ0-9]/g, '');
+      const prev = deduped[deduped.length - 1];
+      const prevNorm = prev ? prev.toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ0-9]/g, '') : '';
+      if (norm && norm === prevNorm) continue;
+      deduped.push(p);
+    }
+    str = deduped.join(' ');
+  }
+
+  // 3. Colapsa padrões de sub-frases repetidas dentro do mesmo texto
+  // Ex: 'que é uma coisa que é uma coisa que é uma coisa'
+  str = str.replace(/(\b[a-záàâãéèêíïóôõöúçñ0-9\s,]{4,40}?\b)(?:\s*,\s*|\s+)\1(?:\s*,\s*|\s+\1)+/gi, '$1');
+  
+  // 4. Colapsa 2 ou 3 palavras repetidas: 'a melhor coisa a melhor coisa a melhor coisa'
+  str = str.replace(/(\b\w+\s+\w+(?:\s+\w+)?\b)(?:\s*,\s*|\s+)\1(?:\s*,\s*|\s+\1)+/gi, '$1');
+
+  // 5. Colapsa palavras únicas repetidas consecutivas: 'coisa coisa coisa' -> 'coisa'
+  str = str.replace(/\b(\w+)(?:\s+\1){2,}\b/gi, '$1');
+
+  return str.replace(/\s{2,}/g, ' ').trim();
+}
+
 
 // Injeta spans com classe .flagged-word e dataset de sugestões
 function enrichTextWithSuggestions(text) {
@@ -2370,17 +2423,32 @@ function analyzeTranscriptionContext(fullText) {
     topicBadge.innerHTML = '<span class="pulse-dot"></span> ' + bestCategory;
   }
 
-  // 2. Resumo Executivo em Tópicos
+  // 2. Resumo Executivo em Tópicos (Limpo de Repetições e Tags de Áudio)
   if (summaryList) {
-    const rawSentences = fullText
+    const cleanForSummary = fullText
       .replace(/\\[\\d{2}:\\d{2}:\\d{2}\\]/g, '')
-      .split(/[.!?\\n]+/)
-      .map(s => s.trim())
-      .filter(s => s.length > 25);
+      .replace(/\\[[^\\]]+\\]/g, '') // remove [música], [risos], etc.
+      .replace(/^[-–\s]+/gm, '');        // remove hífens soltos no início de linhas
 
-    const keySentences = rawSentences.slice(0, 4);
-    if (keySentences.length > 0) {
-      summaryList.innerHTML = keySentences.map(sen => {
+    const rawSentences = cleanForSummary
+      .split(/[.!?\\n]+/)
+      .map(s => removeRepetitiveLoops(s).trim())
+      .filter(s => s.length > 20 && !s.toLowerCase().includes('música'));
+
+    // Seleciona sentenças únicas sem repetições
+    const uniqueSentences = [];
+    const seenSentences = new Set();
+    for (const sen of rawSentences) {
+      const norm = sen.toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ0-9]/g, '');
+      if (norm.length > 15 && !seenSentences.has(norm)) {
+        seenSentences.add(norm);
+        uniqueSentences.push(sen);
+      }
+      if (uniqueSentences.length >= 4) break;
+    }
+
+    if (uniqueSentences.length > 0) {
+      summaryList.innerHTML = uniqueSentences.map(sen => {
         return '<li style="margin-bottom: 0.5rem; line-height: 1.5; color: #E2E8F0;">' + sen + '.</li>';
       }).join('');
     } else {
