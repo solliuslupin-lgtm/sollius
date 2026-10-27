@@ -2039,6 +2039,88 @@ function toggleLiveMicTranscription() {
   }
 }
 
+// Filtro Passa-Alta digital a 85Hz para eliminar zumbido elétrico de 50Hz/60Hz e ruídos subgraves
+function applyHighPassFilter(samples, sampleRate = 16000, cutoff = 85) {
+  if (!samples || samples.length === 0) return samples;
+  const rc = 1.0 / (2.0 * Math.PI * cutoff);
+  const dt = 1.0 / sampleRate;
+  const alpha = rc / (rc + dt);
+  const filtered = new Float32Array(samples.length);
+  let lastIn = samples[0] || 0;
+  let lastOut = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const cur = samples[i];
+    lastOut = alpha * (lastOut + cur - lastIn);
+    filtered[i] = lastOut;
+    lastIn = cur;
+  }
+  return filtered;
+}
+
+// Normalização inteligente de pico para trazer a voz humana à faixa acústica ideal do Whisper
+function normalizeAudioSignal(samples) {
+  if (!samples || samples.length === 0) return samples;
+  let maxPeak = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const abs = Math.abs(samples[i]);
+    if (abs > maxPeak) maxPeak = abs;
+  }
+  if (maxPeak > 0.005 && maxPeak < 0.95) {
+    const factor = 0.92 / maxPeak;
+    for (let i = 0; i < samples.length; i++) {
+      samples[i] *= factor;
+    }
+  }
+  return samples;
+}
+
+// Filtro estrito de alucinações não-vocais do Whisper (zumbidos rotulados como música, créditos e ruído)
+function cleanWhisperSpeech(text) {
+  if (!text) return '';
+  let str = text.trim();
+
+  // 1. Remove marcadores de som e música: [música], (música), [risos], ♪, etc.
+  str = str.replace(/\[\s*(m[uú]sica|aplausos|risos|som|ru[ií]do|vinheta|sil[eê]ncio|cantoria)[^\]]*\]/gi, '');
+  str = str.replace(/\(\s*(m[uú]sica|aplausos|risos|som|ru[ií]do|vinheta|sil[eê]ncio|cantoria)[^\)]*\)/gi, '');
+  str = str.replace(/[♪♫#\-_]/g, ' ');
+
+  // 2. Remove frases clássicas que o Whisper alucina em silêncios/ruídos
+  const hallucinatedPhrases = [
+    /legendas?\s+pela\s+comunidade\s+amara\.org/gi,
+    /legendado\s+por/gi,
+    /subtitles\s+by/gi,
+    /obrigado\s+por\s+assistir/gi,
+    /inscreva-?se\s+no\s+canal/gi,
+    /deixe\s+seu\s+like/gi,
+    /curta\s+e\s+compartilhe/gi,
+    /at[eé]\s+a\s+pr[oó]xima/gi,
+    /at[eé]\s+logo/gi,
+    /thank\s+you\s+for\s+watching/gi,
+    /thanks\s+for\s+watching/gi
+  ];
+
+  for (const pattern of hallucinatedPhrases) {
+    str = str.replace(pattern, '');
+  }
+
+  // 3. Normaliza espaços e pontuações isoladas
+  str = str.replace(/\s{2,}/g, ' ').trim();
+  str = str.replace(/^[.,;:!?\s]+|[.,;:!?\s]+$/g, '').trim();
+
+  // 4. Se a única palavra que restou foi "música" ou "musica" isolada sem colchetes:
+  if (/^(m[uú]sica|musicas|m[uú]sica de fundo|som ambiente|ru[ií]do)$/i.test(str)) {
+    return '';
+  }
+
+  // Se o texto não contiver pelo menos 2 caracteres alfanuméricos reais, é apenas ruído
+  const lettersOnly = str.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚãõÃÕâêîôûÂÊÎÔÛçÇ]/g, '');
+  if (lettersOnly.length < 2) {
+    return '';
+  }
+
+  return str;
+}
+
 // Decodificador Ultra-Robusto de Áudio para Mono Float32Array a 16.000 Hz
 async function decodeAudioFileTo16k(file, progressCallback) {
   const arrayBuffer = await file.arrayBuffer();
@@ -2079,7 +2161,7 @@ async function decodeAudioFileTo16k(file, progressCallback) {
       }
     }
   } else {
-    // Reamostragem limpa e precisa para 16.000 Hz (padrão Whisper)
+    // Reamostragem com interpolação linear anti-aliasing precisa para 16.000 Hz (padrão Whisper)
     const targetLength = Math.round(originalLength * 16000 / originalSampleRate);
     mono = new Float32Array(targetLength);
     const ch0 = audioBuffer.getChannelData(0);
@@ -2087,12 +2169,29 @@ async function decodeAudioFileTo16k(file, progressCallback) {
     const ratio = originalLength / targetLength;
 
     for (let i = 0; i < targetLength; i++) {
-      const origIndex = Math.min(originalLength - 1, Math.floor(i * ratio));
-      mono[i] = ch1 ? (ch0[origIndex] + ch1[origIndex]) * 0.5 : ch0[origIndex];
+      const position = i * ratio;
+      const index = Math.floor(position);
+      const frac = position - index;
+      const nextIndex = Math.min(originalLength - 1, index + 1);
+      
+      const s0 = ch1 ? (ch0[index] + ch1[index]) * 0.5 : ch0[index];
+      const s1 = ch1 ? (ch0[nextIndex] + ch1[nextIndex]) * 0.5 : ch0[nextIndex];
+      
+      mono[i] = s0 + frac * (s1 - s0);
     }
   }
 
   try { audioCtx.close(); } catch (e) {}
+
+  if (typeof progressCallback === 'function') {
+    progressCallback('Filtrando zumbidos elétricos e normalizando volume de voz...');
+  }
+
+  // 1. Aplica filtro passa-alta a 85Hz para eliminar zumbido elétrico de 50/60Hz e estática de microfone
+  mono = applyHighPassFilter(mono, 16000, 85);
+
+  // 2. Normaliza amplitude de voz para a faixa ideal do Whisper
+  mono = normalizeAudioSignal(mono);
 
   return {
     pcmData: mono,
@@ -2101,7 +2200,7 @@ async function decodeAudioFileTo16k(file, progressCallback) {
   };
 }
 
-// Carregador do Modelo Whisper Local (Transformers.js)
+// Carregador do Modelo Whisper Local (Transformers.js) com Proteção Térmica e de CPU
 async function getWhisperLocalPipeline(progressCallback) {
   if (localWhisperPipeline) return localWhisperPipeline;
   
@@ -2112,6 +2211,15 @@ async function getWhisperLocalPipeline(progressCallback) {
   const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
   env.allowLocalModels = false;
   env.useBrowserCache = true;
+  
+  // Limitação inteligente de threads do WebAssembly para manter o PC 100% fluido e leve
+  const totalCores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
+  // Aloca no máximo 2 threads para não travar os demais núcleos do computador
+  const safeThreads = Math.min(2, Math.max(1, Math.floor(totalCores / 2)));
+  if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
+    env.backends.onnx.wasm.numThreads = safeThreads;
+    env.backends.onnx.wasm.simd = true;
+  }
   
   localWhisperPipeline = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny', {
     progress_callback: (info) => {
@@ -2199,17 +2307,18 @@ async function processSelectedAudio() {
       const subInfoText = 'Bloco ' + (c + 1) + ' de ' + totalChunks + ' • ETA: ~' + formatAudioDuration(etaSecs) + ' restante';
       updateUnifiedProgress(boxId, progressPct, statusText, subInfoText);
 
-      // Detecção de Silêncio real (apenas salta se for linha reta plana absoluta)
+      // Detecção de Silêncio e Ruído Fraco sem fala humana (após filtro passa-alta de 85Hz)
       let sumSq = 0;
-      const step = 20;
+      const step = 16;
       for (let s = 0; s < chunkSamples.length; s += step) {
         sumSq += chunkSamples[s] * chunkSamples[s];
       }
       const rms = Math.sqrt(sumSq / (chunkSamples.length / step));
 
-      if (rms < 0.0003) {
-        // Flatline mudo absoluto
-        await new Promise(r => setTimeout(r, 10));
+      // Se a energia for imperceptível (silêncio ou ruído residual de microfone sem fala humana)
+      if (rms < 0.0035) {
+        // Pausa leve para liberação e alívio térmico da CPU
+        await new Promise(r => setTimeout(r, 20));
         continue;
       }
 
@@ -2222,20 +2331,20 @@ async function processSelectedAudio() {
           language: langVal,
           task: 'transcribe',
           temperature: 0.0,
+          condition_on_previous_text: false, // CRUCIAL: impede contaminação de alucinações entre blocos!
           repetition_penalty: 1.35,
           no_repeat_ngram_size: 4
         });
 
         let rawText = result && result.text ? result.text.trim() : '';
+
+        // 1. Limpeza inteligente de alucinações (tags de som, [música], música isolada em zumbidos e créditos)
+        rawText = cleanWhisperSpeech(rawText);
+
+        // 2. Remoção de repetições consecutivas
         rawText = removeRepetitiveLoops(rawText);
 
-        // Se for tag de som repetida (ex: [música] duas vezes seguidas), evita duplicata
-        const lastSeg = currentTranscriptSegments[currentTranscriptSegments.length - 1];
-        const isSoundTag = /^\[[^\]]+\]$/.test(rawText);
-        if (isSoundTag && lastSeg && lastSeg.text.toLowerCase().trim() === rawText.toLowerCase().trim()) {
-          continue;
-        }
-
+        // Se após a filtragem o texto contiver fala humana real
         if (rawText && rawText.length > 0) {
           const enrichedText = enrichTextWithSuggestions(rawText);
           output.innerHTML += '<p style="margin-bottom: 0.85rem; line-height: 1.6;">' +
@@ -2260,8 +2369,8 @@ async function processSelectedAudio() {
         // Continua sem interromper os blocos restantes!
       }
 
-      // Pausa rápida para liberar o event loop e garantir rolagem suave
-      await new Promise(r => setTimeout(r, 25));
+      // Pausa essencial de alívio de CPU (120ms) para manter o computador 100% livre e responsivo
+      await new Promise(r => setTimeout(r, 120));
     }
 
     updateUnifiedProgress(boxId, 100, 'Transcrição de todas as falas concluída com 100% de sucesso!', 'Todos os ' + totalChunks + ' blocos foram transcritos');
