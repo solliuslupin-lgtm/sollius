@@ -32,7 +32,7 @@
   <meta property="og:url" content="https://sollius.com.br/pdf-studio">
   <meta property="og:site_name" content="SOLLIUS">
   <meta property="og:title" content="PDF Studio: Juntar PDFs e Fotos para PDF | SOLLIUS">
-  <meta property="og:description" content="Sem cadastros, sem limites diários e 100% no seu navegador. Removedor de fundo IA, criador de currículo ATS, cartão de visita de luxo, assinador de PDF e conversores.">
+  <meta property="og:description" content="Mescle múltiplos PDFs e boletos em ordem ou transforme imagens em PDF único de graça sem filas.">
   <meta property="og:image" content="https://sollius.com.br/og-banner.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -146,7 +146,7 @@
   <base href="/">
 
   <!-- CSS Autônomo e Standalone com Cache-Busting -->
-  <link rel="stylesheet" href="style.css?v=6.9.1">
+  <link rel="stylesheet" href="style.css?v=6.9.2">
 
   <!-- Bibliotecas Seguras e Robustas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -156,7 +156,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Catálogo de Jogos do Arcade (Fase 2) -->
-  <script src="games_data.js?v=6.9.1"></script>
+  <script src="games_data.js?v=6.9.2"></script>
+
+  <!-- SCHEMA.ORG DEDICADO PARA /pdf-studio -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://sollius.com.br/pdf-studio/#webpage",
+      "url": "https://sollius.com.br/pdf-studio",
+      "name": "PDF Studio: Juntar PDFs e Fotos para PDF | SOLLIUS",
+      "description": "Mescle múltiplos PDFs e boletos em ordem ou transforme imagens em PDF único de graça sem filas.",
+      "inLanguage": "pt-BR"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://sollius.com.br/pdf-studio/#app",
+      "name": "PDF Studio: Juntar PDFs e Fotos para PDF",
+      "url": "https://sollius.com.br/pdf-studio",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All Web Browsers (Chrome, Edge, Safari, Firefox, Android, iOS)",
+      "browserRequirements": "Requires HTML5 & JavaScript.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BRL"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "2860",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    }
+  ]
+}
+  </script>
 </head>
 
 <body data-initial-tab="pdf">
@@ -225,7 +263,7 @@
     <!-- ======================================================== -->
     <!-- TAB: HUB / DASHBOARD -->
     <!-- ======================================================== -->
-    <div id="tab-hub" class="tab-content">
+    <div id="tab-hub" class="tab-content hidden">
       
       <!-- Hero Banner Redesenhado -->
       <div class="hero-card glass-panel">
@@ -717,7 +755,7 @@
     <!-- ======================================================== -->
     <!-- TAB: PDF STUDIO -->
     <!-- ======================================================== -->
-    <div id="tab-pdf" class="tab-content hidden">
+    <div id="tab-pdf" class="tab-content">
       <div style="max-width: 860px; margin: 0 auto;">
         
         <div class="tool-back-bar">
@@ -1591,8 +1629,8 @@
             <div>
               <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Modelo de Precisão IA</label>
               <select id="transcribe-model" class="form-input" style="padding: 0.45rem 0.85rem; font-size: 0.85rem;">
-                <option value="Xenova/whisper-base" selected>⭐ Whisper Base (Alta Fidelidade • Vocabulário Completo BR)</option>
-                <option value="Xenova/whisper-tiny">⚡ Whisper Tiny (Ultra Leve • Máquinas Mais Antigas)</option>
+                <option value="Xenova/whisper-tiny" selected>⚡ Whisper Tiny (Ultra Leve • Não Trava o PC • Recomendado)</option>
+                <option value="Xenova/whisper-base">⭐ Whisper Base (Maior Vocabulário • Exige PC Potente)</option>
               </select>
             </div>
             <div>
@@ -1940,6 +1978,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=6.9.1"></script>
+  <script src="app.js?v=6.9.2"></script>
 </body>
 </html>

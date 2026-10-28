@@ -2143,8 +2143,10 @@ function cleanWhisperSpeech(text) {
   str = str.replace(/\s{2,}/g, ' ').trim();
   str = str.replace(/^[.,;:!?\s]+|[.,;:!?\s]+$/g, '').trim();
 
-  // 4. Se a única palavra que restou foi "música" ou "musica" isolada sem colchetes:
-  if (/^(m[uú]sica|musicas|m[uú]sica de fundo|som ambiente|ru[ií]do)$/i.test(str)) {
+  // 4. Purga total de qualquer menção a música/ruído/zumbido alucinado pelo modelo
+  str = str.replace(/\b(m[uú]sicas?|fundo musical|tocando m[uú]sica|cantoria|som ambiente|zumbido)\b/gi, '').trim();
+  str = str.replace(/\s{2,}/g, ' ').trim();
+  if (!str || /^[.,;:!?\s]+$/.test(str)) {
     return '';
   }
 
@@ -2239,7 +2241,7 @@ async function decodeAudioFileTo16k(file, progressCallback) {
 let currentLoadedModelName = null;
 
 // Carregador do Modelo Whisper Local (Transformers.js) com Suporte a Modelos de Alta Fidelidade
-async function getWhisperLocalPipeline(modelName = 'Xenova/whisper-base', progressCallback) {
+async function getWhisperLocalPipeline(modelName = 'Xenova/whisper-tiny', progressCallback) {
   if (localWhisperPipeline && currentLoadedModelName === modelName) {
     return localWhisperPipeline;
   }
@@ -2260,7 +2262,7 @@ async function getWhisperLocalPipeline(modelName = 'Xenova/whisper-base', progre
   const totalCores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
   const safeThreads = Math.min(2, Math.max(1, Math.floor(totalCores / 2)));
   if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
-    env.backends.onnx.wasm.numThreads = safeThreads;
+    env.backends.onnx.wasm.numThreads = 1;
     env.backends.onnx.wasm.simd = true;
   }
   
@@ -2342,7 +2344,7 @@ async function processSelectedAudio() {
     const durFormatted = formatAudioDuration(totalDurationSecs);
 
     const modelSelect = document.getElementById('transcribe-model');
-    const selectedModel = modelSelect ? modelSelect.value : 'Xenova/whisper-base';
+    const selectedModel = modelSelect ? modelSelect.value : 'Xenova/whisper-tiny';
     const modelLabel = selectedModel.includes('small') ? 'Whisper Small' : (selectedModel.includes('base') ? 'Whisper Base' : 'Whisper Tiny');
 
     updateUnifiedProgress(boxId, 25, 'Carregando modelo neural ' + modelLabel + ' no navegador...', 'Inicializando IA');
@@ -2354,8 +2356,8 @@ async function processSelectedAudio() {
 
     // Fatiamento acústico inteligente com sobreposição (overlap) de 2 segundos:
     // Janela de 30s (480.000 amostras) com avanço de 28s (448.000 amostras) garantindo que NENHUMA palavra seja cortada
-    const windowSamples = 16000 * 30;
-    const stepSamples = 16000 * 28;
+    const windowSamples = 16000 * 15;
+    const stepSamples = 16000 * 14;
     const totalChunks = Math.max(1, Math.ceil(pcm.length / stepSamples));
     
     output.innerHTML = '';
@@ -2389,7 +2391,7 @@ async function processSelectedAudio() {
       const rms = Math.sqrt(sumSq / (chunkSamples.length / step));
 
       // Se a energia for imperceptível (silêncio ou ruído residual de microfone sem fala humana)
-      if (rms < 0.0035) {
+      if (rms < 0.0065) {
         await new Promise(r => setTimeout(r, 20));
         continue;
       }
@@ -2399,7 +2401,7 @@ async function processSelectedAudio() {
         const langSelect = document.getElementById('transcribe-lang');
         const langVal = langSelect && langSelect.value.startsWith('en') ? 'english' : (langSelect && langSelect.value.startsWith('es') ? 'spanish' : 'portuguese');
 
-        // GERAÇÃO COMPLETA: max_new_tokens: 448 para transcrever todo o áudio do bloco sem truncar
+        // GERAÇÃO COMPLETA: max_new_tokens: 128 para transcrever todo o áudio do bloco sem truncar
         // Sem repetition_penalty nem no_repeat_ngram_size que quebravam a fala natural em português
         const result = await transcriber(chunkSamples, {
           language: langVal,
