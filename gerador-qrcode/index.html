@@ -146,7 +146,7 @@
   <base href="/">
 
   <!-- CSS Autônomo e Standalone com Cache-Busting -->
-  <link rel="stylesheet" href="style.css?v=6.8.0">
+  <link rel="stylesheet" href="style.css?v=6.9.0">
 
   <!-- Bibliotecas Seguras e Robustas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -155,6 +155,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Catálogo de Jogos do Arcade (Fase 2) -->
+  <script src="games_data.js?v=6.9.0"></script>
 </head>
 
 <body data-initial-tab="qrcode">
@@ -180,6 +182,11 @@
 
       <!-- Navegação Principal -->
       <nav class="header-nav" role="navigation" aria-label="Navegação Superior">
+        <a href="/jogos" onclick="switchTab('jogos'); return false;" class="header-nav-btn" data-tab="jogos" style="text-decoration:none; background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(139,92,246,0.18)); border: 1px solid rgba(236,72,153,0.35);">
+          <span>🎮</span>
+          <span style="color:#F472B6; font-weight:700;">Jogos Online</span>
+        </a>
+      
         <a href="/" onclick="switchTab('hub'); filterCategory('all'); return false;" class="header-nav-btn active" data-tab="hub" style="text-decoration:none;">
           <span>⚡</span>
           <span>Todas as Ferramentas</span>
@@ -255,11 +262,12 @@
 
       <!-- Barra de Filtros por Categoria -->
       <div class="category-filter-bar">
-        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (13)</button>
+        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (14)</button>
         <button class="cat-pill" onclick="filterCategory('design', this)">🎨 Design & Imagens (3)</button>
         <button class="cat-pill" onclick="filterCategory('documentos', this)">📄 Documentos & Office (4)</button>
         <button class="cat-pill" onclick="filterCategory('viral', this)">🚀 Áudio, Vídeo & Viral (4)</button>
         <button class="cat-pill" onclick="filterCategory('utilitarios', this)">🛠️ Utilitários & Privacidade (2)</button>
+        <button class="cat-pill" onclick="filterCategory('jogos', this)" style="border-color: rgba(236,72,153,0.3); color:#F472B6;">🎮 Jogos & Arcade (+40)</button>
       </div>
 
       <!-- Grid de Módulos (Bento Cards com Filtragem Dinâmica e Links SEO Reais) -->
@@ -395,6 +403,17 @@
           </div>
           <p class="tool-desc">Transcreva áudios de reuniões e aulas de até 2 horas com compreensão de contexto, sugestão inteligente de dúvidas e exportação em TXT e SRT.</p>
           <div class="tool-link" style="color: #FBBF24;">Transcrever Áudio →</div>
+        </a>
+
+        <!-- 14. SOLLIUS Games Arcade (Fase 2) -->
+        <a id="card-games" href="/jogos" onclick="switchTab('jogos'); return false;" class="tool-card" role="button" tabindex="0" data-category="jogos" data-keywords="jogos games arcade online gratis celular pc browser tiro corrida moto puzzle raciocinio retro esportes 2048 sem download">
+          <div class="tool-icon-wrapper" style="background: rgba(236, 72, 153, 0.15); color: #F472B6; border: 1px solid rgba(236, 72, 153, 0.3);">🎮</div>
+          <div class="tool-header">
+            <h3 class="tool-title">SOLLIUS Games Arcade</h3>
+            <span class="tool-badge" style="background: rgba(236, 72, 153, 0.15); color: #F472B6; border: 1px solid rgba(236, 72, 153, 0.3);">+40 Jogos Grátis</span>
+          </div>
+          <p class="tool-desc">Catálogo arcade completo dos jogos mais jogados da web: corrida 3D, motos, tiro, puzzles e retrô. Sem download, direto no celular e PC.</p>
+          <div class="tool-link" style="color: #F472B6;">Jogar Agora →</div>
         </a>
 
         <!-- 13. Conversor de Documentos Office & PDF -->
@@ -1775,7 +1794,128 @@
       </div>
     </div>
 
-  </main>
+      <!-- ======================================================== -->
+    <!-- TAB: JOGOS ONLINE / SOLLIUS GAMES ARCADE (FASE 2) -->
+    <!-- ======================================================== -->
+    <div id="tab-jogos" class="tab-content hidden">
+      <div class="games-hero-card glass-panel">
+        <div class="games-hero-badges">
+          <span class="games-badge-live"><span class="pulse-dot"></span> ARCADE ONLINE</span>
+          <span class="hero-pill">⚡ 100% Grátis • Sem Download • Direto no Navegador</span>
+        </div>
+        <h1 class="hero-title" style="margin-top: 0.5rem;">
+          SOLLIUS <span class="hero-gradient">GAMES</span> ARCADE
+        </h1>
+        <p class="hero-desc">
+          Jogue os títulos mais virais da internet instantaneamente no seu celular ou computador. Corrida 3D, Motos, Ação FPS, Puzzles e Clássicos Retrô sem instalar nada!
+        </p>
+
+        <!-- Stats Counter -->
+        <div class="games-stats-bar">
+          <div class="games-stat-item">
+            <span class="games-stat-num" id="games-total-counter">42</span>
+            <span class="games-stat-label">Jogos Disponíveis</span>
+          </div>
+          <div class="games-stat-item">
+            <span class="games-stat-num">0s</span>
+            <span class="games-stat-label">Tempo de Download</span>
+          </div>
+          <div class="games-stat-item">
+            <span class="games-stat-num">100%</span>
+            <span class="games-stat-label">Mobile & PC</span>
+          </div>
+          <div class="games-stat-item">
+            <span class="games-stat-num">❤️</span>
+            <span class="games-stat-label">Salve Favoritos</span>
+          </div>
+        </div>
+
+        <!-- Barra de Busca de Jogos -->
+        <div class="games-search-bar">
+          <span class="games-search-icon">🔍</span>
+          <input type="text" id="game-search-input" class="games-search-input" placeholder="Buscar jogo (ex: moto, carro, tiro, 2048, zumbi, luta)..." oninput="handleGameSearch(this.value)">
+          <button class="games-search-clear hidden" id="game-search-clear" onclick="clearGameSearch()" aria-label="Limpar busca">✕</button>
+        </div>
+
+        <!-- Filtros de Categorias de Jogos -->
+        <div class="games-filter-bar">
+          <button class="game-cat-pill active" data-cat="all" onclick="filterGameCategory('all', this)">🌟 Todos (<span id="count-all">42</span>)</button>
+          <button class="game-cat-pill" data-cat="corrida" onclick="filterGameCategory('corrida', this)">🏎️ Corrida & Motos (<span id="count-corrida">7</span>)</button>
+          <button class="game-cat-pill" data-cat="acao" onclick="filterGameCategory('acao', this)">🎯 Ação & Tiro (<span id="count-acao">13</span>)</button>
+          <button class="game-cat-pill" data-cat="puzzle" onclick="filterGameCategory('puzzle', this)">🧩 Raciocínio & Puzzle (<span id="count-puzzle">10</span>)</button>
+          <button class="game-cat-pill" data-cat="classicos" onclick="filterGameCategory('classicos', this)">🕹️ Clássicos & Retrô (<span id="count-classicos">10</span>)</button>
+          <button class="game-cat-pill" data-cat="esportes" onclick="filterGameCategory('esportes', this)">⚽ Esportes (<span id="count-esportes">2</span>)</button>
+          <button class="game-cat-pill" data-cat="favoritos" onclick="filterGameCategory('favoritos', this)">❤️ Favoritos (<span id="count-favs">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- Grid de Jogos -->
+      <div id="games-catalog-grid" class="games-grid" role="region" aria-label="Catálogo de Jogos Online">
+        <!-- Injetado dinamicamente via app.js -->
+      </div>
+
+      <!-- Estado Vazio / Nenhum Jogo Encontrado -->
+      <div id="games-empty-state" class="games-empty hidden">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎮🔍</div>
+        <h3 style="color: #fff; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem;">Nenhum jogo encontrado</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Tente buscar por outro termo ou selecione a categoria "Todos".</p>
+        <button class="btn btn-primary" onclick="filterGameCategory('all'); document.getElementById('game-search-input').value='';" style="margin-top: 1rem;">Ver Todos os Jogos</button>
+      </div>
+    </div>
+
+    <!-- MODAL CINEMA / PLAYER DE JOGOS -->
+    <div id="game-player-modal" class="game-player-modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-game-title">
+      <div class="game-player-container">
+        
+        <!-- Header do Player -->
+        <div class="game-player-header">
+          <div class="game-player-title-box">
+            <span class="game-player-icon" id="modal-game-icon">🎮</span>
+            <div>
+              <h2 id="modal-game-title" class="game-player-title">Carregando Jogo...</h2>
+              <span id="modal-game-cat" class="game-player-meta">Categoria</span>
+            </div>
+          </div>
+          <div class="game-player-controls">
+            <button id="modal-game-fav-btn" class="game-control-btn" onclick="toggleCurrentGameFavorite()" title="Favoritar Jogo" aria-label="Favoritar">
+              <span id="modal-game-fav-icon">🤍</span>
+            </button>
+            <button class="game-control-btn" onclick="toggleGameFullscreen()" title="Tela Cheia" aria-label="Tela Cheia">
+              <span>⛶ Tela Cheia</span>
+            </button>
+            <button class="game-control-btn game-control-close" onclick="closeGamePlayer()" title="Fechar Jogo" aria-label="Fechar">
+              <span>✕ Fechar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tela do Jogo (Iframe com Sandboxing e Permissões Seguras) -->
+        <div class="game-screen-wrapper" id="game-screen-wrapper">
+          <div id="game-player-loader" class="game-player-loader">
+            <div class="pulse-dot" style="width: 24px; height: 24px;"></div>
+            <p style="color: #fff; margin-top: 1rem; font-weight: 600;">Iniciando Motor do Jogo...</p>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Toque ou use o teclado para jogar</span>
+          </div>
+          <iframe id="game-player-iframe" class="game-iframe" src="" allow="fullscreen; autoplay; accelerometer; gyroscope" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <!-- Rodapé do Player com Instruções e Dicas de Controle -->
+        <div class="game-instructions-box">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <span class="game-instructions-label">🕹️ Como Jogar:</span>
+              <span id="modal-game-instructions" class="game-instructions-text">Use as setas do teclado, WASD ou toque na tela para controlar.</span>
+            </div>
+            <div class="game-player-tips">
+              <span>💡 Dica: Pressione <strong>⛶ Tela Cheia</strong> para a melhor experiência imersiva no celular e PC.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+</main>
 
 
   <!-- FOOTER -->
@@ -1795,10 +1935,11 @@
         <a href="/gerador-tags-virais" onclick="switchTab('tags'); return false;" style="color: inherit; text-decoration: none;">Tags Virais</a>
         <a href="/gerador-qrcode" onclick="switchTab('qrcode'); return false;" style="color: inherit; text-decoration: none;">QR Code</a>
         <a href="/formatador-texto" onclick="switchTab('texto'); return false;" style="color: inherit; text-decoration: none;">Text Studio</a>
+        <a href="/jogos" onclick="switchTab('jogos'); return false;" style="color: #F472B6; font-weight: 700; text-decoration: none;">🎮 Jogos Arcade</a>
       </div>
     </div>
   </footer>
 
-  <script src="app.js?v=6.8.0"></script>
+  <script src="app.js?v=6.9.0"></script>
 </body>
 </html>

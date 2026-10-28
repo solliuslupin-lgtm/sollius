@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof loadResumeSample === 'function') loadResumeSample();
   if (typeof updateCardPreview === 'function') updateCardPreview();
   if (typeof initSignaturePad === 'function') initSignaturePad();
+  if (typeof initGamesCatalog === 'function') initGamesCatalog();
 
   // Roteador Inicial: Determina qual ferramenta abrir pela URL atual
   resolveInitialRoute();
@@ -3026,3 +3027,261 @@ function exportOfficeToJson() {
   const filename = (currentOfficeData.name ? currentOfficeData.name.replace(/\.[^/.]+$/, '') : 'dados_sollius') + '.json';
   downloadBlob(blob, filename);
 }
+
+
+// ========================================================
+// 14. SOLLIUS GAMES ARCADE (FASE 2) - MOTOR 100% CLIENT-SIDE
+// ========================================================
+let currentGamesCategory = 'all';
+let currentGamesSearch = '';
+let currentGamePlayingId = null;
+let solliusFavGames = [];
+
+function loadGamesFavorites() {
+  try {
+    const raw = localStorage.getItem('sollius_fav_games');
+    solliusFavGames = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(solliusFavGames)) solliusFavGames = [];
+  } catch (e) {
+    solliusFavGames = [];
+  }
+}
+
+function saveGamesFavorites() {
+  try {
+    localStorage.setItem('sollius_fav_games', JSON.stringify(solliusFavGames));
+  } catch (e) {}
+}
+
+function initGamesCatalog() {
+  if (typeof SOLLIUS_GAMES_DATABASE === 'undefined') {
+    return;
+  }
+  loadGamesFavorites();
+  updateGameCategoryCounts();
+  renderGamesGrid(currentGamesCategory, currentGamesSearch);
+}
+
+function updateGameCategoryCounts() {
+  if (typeof SOLLIUS_GAMES_DATABASE === 'undefined') return;
+  const counts = { all: SOLLIUS_GAMES_DATABASE.length, corrida: 0, acao: 0, puzzle: 0, classicos: 0, esportes: 0, favoritos: solliusFavGames.length };
+  SOLLIUS_GAMES_DATABASE.forEach(g => {
+    if (counts[g.category] !== undefined) counts[g.category]++;
+  });
+
+  const setElText = (id, txt) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  };
+
+  setElText('games-total-counter', counts.all);
+  setElText('count-all', counts.all);
+  setElText('count-corrida', counts.corrida);
+  setElText('count-acao', counts.acao);
+  setElText('count-puzzle', counts.puzzle);
+  setElText('count-classicos', counts.classicos);
+  setElText('count-esportes', counts.esportes);
+  setElText('count-favs', counts.favoritos);
+}
+
+function filterGameCategory(cat, btnEl) {
+  currentGamesCategory = cat;
+  const pills = document.querySelectorAll('.game-cat-pill');
+  pills.forEach(p => {
+    if (p.getAttribute('data-cat') === cat) {
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
+  });
+  renderGamesGrid(currentGamesCategory, currentGamesSearch);
+}
+
+function handleGameSearch(val) {
+  currentGamesSearch = (val || '').trim().toLowerCase();
+  const clearBtn = document.getElementById('game-search-clear');
+  if (clearBtn) {
+    if (currentGamesSearch) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+  renderGamesGrid(currentGamesCategory, currentGamesSearch);
+}
+
+function clearGameSearch() {
+  const input = document.getElementById('game-search-input');
+  if (input) input.value = '';
+  handleGameSearch('');
+}
+
+function renderGamesGrid(category = 'all', query = '') {
+  const container = document.getElementById('games-catalog-grid');
+  const emptyState = document.getElementById('games-empty-state');
+  if (!container || typeof SOLLIUS_GAMES_DATABASE === 'undefined') return;
+
+  loadGamesFavorites();
+
+  let filtered = SOLLIUS_GAMES_DATABASE.filter(g => {
+    // Categoria
+    if (category === 'favoritos') {
+      if (!solliusFavGames.includes(g.id)) return false;
+    } else if (category !== 'all' && g.category !== category) {
+      return false;
+    }
+
+    // Busca textual
+    if (query) {
+      const matchTitle = (g.title || '').toLowerCase().includes(query);
+      const matchDesc = (g.desc || '').toLowerCase().includes(query);
+      const matchCat = (g.category || '').toLowerCase().includes(query);
+      const matchInstr = (g.instructions || '').toLowerCase().includes(query);
+      if (!matchTitle && !matchDesc && !matchCat && !matchInstr) return false;
+    }
+
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    container.classList.add('hidden');
+    if (emptyState) emptyState.classList.remove('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  if (emptyState) emptyState.classList.add('hidden');
+
+  container.innerHTML = filtered.map(g => {
+    const isFav = solliusFavGames.includes(g.id);
+    return `
+      <div class="game-card" role="button" tabindex="0" onclick="openGamePlayer('${g.id}')" onkeydown="if(event.key==='Enter')openGamePlayer('${g.id}')" aria-label="Jogar ${g.title}">
+        <div class="game-thumb-wrapper">
+          <img src="${g.thumb}" alt="${g.title}" class="game-thumb-img" loading="lazy" width="512" height="384" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80'">
+          <span class="game-card-badge">${g.categoryLabel.split(' ')[0]} ${g.category.toUpperCase()}</span>
+          <button class="game-card-fav-btn ${isFav ? 'favorited' : ''}" onclick="toggleGameFavorite('${g.id}', event)" title="${isFav ? 'Remover dos Favoritos' : 'Salvar nos Favoritos'}" aria-label="Favoritar">
+            ${isFav ? '❤️' : '🤍'}
+          </button>
+        </div>
+        <div class="game-info">
+          <h3 class="game-title" title="${g.title}">${g.title}</h3>
+          <div class="game-meta-row">
+            <span>⭐ ${g.rating} (${g.plays})</span>
+            <span>⚡ Sem Download</span>
+          </div>
+          <p class="tool-desc" style="font-size: 0.82rem; margin-bottom: 0.75rem; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;">
+            ${g.desc}
+          </p>
+          <button class="game-play-btn" onclick="openGamePlayer('${g.id}')">
+            <span>▶ Jogar Agora</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openGamePlayer(gameId) {
+  if (typeof SOLLIUS_GAMES_DATABASE === 'undefined') return;
+  const game = SOLLIUS_GAMES_DATABASE.find(g => g.id === gameId);
+  if (!game) return;
+
+  currentGamePlayingId = gameId;
+  loadGamesFavorites();
+
+  const modal = document.getElementById('game-player-modal');
+  const iframe = document.getElementById('game-player-iframe');
+  const loader = document.getElementById('game-player-loader');
+  const titleEl = document.getElementById('modal-game-title');
+  const catEl = document.getElementById('modal-game-cat');
+  const instrEl = document.getElementById('modal-game-instructions');
+  const favIcon = document.getElementById('modal-game-fav-icon');
+
+  if (titleEl) titleEl.textContent = game.title;
+  if (catEl) catEl.textContent = `${game.categoryLabel} • ⭐ ${game.rating} (${game.plays} jogadores)`;
+  if (instrEl) instrEl.textContent = game.instructions || 'Use o teclado, mouse ou toque na tela para jogar.';
+  if (favIcon) favIcon.textContent = solliusFavGames.includes(gameId) ? '❤️' : '🤍';
+
+  if (loader) loader.style.display = 'flex';
+  if (iframe) {
+    iframe.onload = () => {
+      if (loader) loader.style.display = 'none';
+    };
+    iframe.src = game.url;
+  }
+
+  if (modal) modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGamePlayer() {
+  const modal = document.getElementById('game-player-modal');
+  const iframe = document.getElementById('game-player-iframe');
+  if (iframe) {
+    iframe.src = ''; // Interrompe áudio do jogo imediatamente
+  }
+  if (modal) modal.classList.add('hidden');
+  document.body.style.overflow = '';
+  currentGamePlayingId = null;
+}
+
+function toggleGameFullscreen() {
+  const wrapper = document.getElementById('game-screen-wrapper') || document.getElementById('game-player-iframe');
+  if (!wrapper) return;
+
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (wrapper.requestFullscreen) {
+      wrapper.requestFullscreen().catch(err => console.warn('Erro ao abrir fullscreen:', err));
+    } else if (wrapper.webkitRequestFullscreen) {
+      wrapper.webkitRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
+function toggleGameFavorite(gameId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  loadGamesFavorites();
+  const idx = solliusFavGames.indexOf(gameId);
+  const isAdding = idx === -1;
+  if (isAdding) {
+    solliusFavGames.push(gameId);
+  } else {
+    solliusFavGames.splice(idx, 1);
+  }
+  saveGamesFavorites();
+  updateGameCategoryCounts();
+
+  // Se estiver na aba de favoritos, re-renderiza o catálogo
+  renderGamesGrid(currentGamesCategory, currentGamesSearch);
+
+  // Atualiza ícone do modal se o jogo estiver aberto
+  if (currentGamePlayingId === gameId) {
+    const favIcon = document.getElementById('modal-game-fav-icon');
+    if (favIcon) favIcon.textContent = isAdding ? '❤️' : '🤍';
+  }
+
+  // Notificação toast discreta
+  showCopyToast(isAdding ? '❤️ Adicionado aos Favoritos!' : '🤍 Removido dos Favoritos');
+}
+
+function toggleCurrentGameFavorite() {
+  if (currentGamePlayingId) {
+    toggleGameFavorite(currentGamePlayingId);
+  }
+}
+
+// Fechar com tecla Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('game-player-modal');
+    if (modal && !modal.classList.contains('hidden')) {
+      closeGamePlayer();
+    }
+  }
+});

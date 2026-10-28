@@ -100,6 +100,13 @@ const ROUTES = [
     path: '/conversor-documentos',
     title: 'Conversor Office & PDF Studio (Word & Excel) Gratuito | SOLLIUS',
     desc: 'Converta planilhas Excel (XLSX, CSV) e documentos Word (DOCX) em PDF A4, JSON e HTML 100% no navegador sem instalar programas.'
+  },
+  {
+    tab: 'jogos',
+    folder: 'jogos',
+    path: '/jogos',
+    title: 'Jogos Online Grátis no Navegador | SOLLIUS Games Arcade',
+    desc: 'Jogue +40 jogos online grátis sem download nem cadastro no celular e PC. Corrida 3D, Motos, Ação FPS, Puzzles, Retrô e Esportes instantâneos.'
   }
 ];
 
