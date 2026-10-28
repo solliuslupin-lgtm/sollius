@@ -81,6 +81,25 @@ const ROUTE_MAP = {
     title: 'Gravador de Tela e Áudio Gratuito sem Instalação | SOLLIUS',
     desc: 'Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto pelo navegador.'
   }
+,
+  'transcritor': {
+    path: '/transcritor-de-audio',
+    hash: '#transcritor-de-audio',
+    title: 'Transcritor de Voz IA com Contexto & Sugestões de Dúvidas | SOLLIUS',
+    desc: 'Transcreva gravações, podcasts e reuniões de até 2 horas com detecção inteligente de palavras duvidosas, compreensão de tema e exportação SRT.'
+  },
+  'office': {
+    path: '/conversor-documentos',
+    hash: '#conversor-documentos',
+    title: 'Conversor Office & PDF Studio (Word & Excel) Gratuito | SOLLIUS',
+    desc: 'Converta planilhas Excel (XLSX, CSV) e documentos Word (DOCX) em PDF A4, JSON e HTML 100% no navegador sem instalar programas.'
+  },
+  'jogos': {
+    path: '/jogos',
+    hash: '#jogos',
+    title: 'Jogos Online Grátis no Navegador | SOLLIUS Games Arcade',
+    desc: 'Jogue +40 jogos online grátis sem download nem cadastro no celular e PC. Corrida 3D, Motos, Ação FPS, Puzzles, Retrô e Esportes instantâneos.'
+  }
 };
 
 // Aliases para suportar múltiplos formatos de URL (ex: /compressor ou /compressor-imagem)
@@ -116,6 +135,19 @@ const PATH_TO_TAB = {
   '/gravador-de-tela': 'recorder',
   '/gravador': 'recorder',
   '/recorder': 'recorder'
+,
+  '/transcritor-de-audio': 'transcritor',
+  '/transcritor': 'transcritor',
+  '/audio': 'transcritor',
+  '/conversor-documentos': 'office',
+  '/office': 'office',
+  '/documentos': 'office',
+  '/jogos': 'jogos',
+  '/jogos/': 'jogos',
+  '/games': 'jogos',
+  '/games/': 'jogos',
+  '/arcade': 'jogos',
+  '/arcade/': 'jogos'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -281,6 +313,9 @@ function switchTab(tabId, pushHistory = true) {
   }
   if (tabId === 'cartao' && typeof updateCardPreview === 'function') {
     setTimeout(updateCardPreview, 50);
+  }
+  if (tabId === 'jogos' && typeof initGamesCatalog === 'function') {
+    setTimeout(initGamesCatalog, 50);
   }
 
   // Atualiza botões
