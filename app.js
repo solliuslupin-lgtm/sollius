@@ -95,10 +95,22 @@ const ROUTE_MAP = {
     desc: 'Converta planilhas Excel (XLSX, CSV) e documentos Word (DOCX) em PDF A4, JSON e HTML 100% no navegador sem instalar programas.'
   },
   'jogos': {
-    path: '/jogos',
+    path: '/jogos/',
     hash: '#jogos',
     title: 'Jogos Online Grátis no Navegador | SOLLIUS Games Arcade',
     desc: 'Jogue +40 jogos online grátis sem download nem cadastro no celular e PC. Corrida 3D, Motos, Ação FPS, Puzzles, Retrô e Esportes instantâneos.'
+  },
+  'programas': {
+    path: '/programas/',
+    hash: '#programas',
+    title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
+    desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollius Ultra Compressor v1.01 com multithread e auto-atualização contínua.'
+  },
+  'compressor-pc': {
+    path: '/sollius-compressor/',
+    hash: '#sollius-compressor',
+    title: 'Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
+    desc: 'Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Substituto definitivo para WinRAR e 7-Zip com motor multithread, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.'
   }
 };
 
@@ -147,7 +159,21 @@ const PATH_TO_TAB = {
   '/games': 'jogos',
   '/games/': 'jogos',
   '/arcade': 'jogos',
-  '/arcade/': 'jogos'
+  '/arcade/': 'jogos',
+  '/programas': 'programas',
+  '/programas/': 'programas',
+  '/softwares': 'programas',
+  '/softwares/': 'programas',
+  '/desktop': 'programas',
+  '/desktop/': 'programas',
+  '/sollius-compressor': 'compressor-pc',
+  '/sollius-compressor/': 'compressor-pc',
+  '/compressor-pc': 'compressor-pc',
+  '/compressor-pc/': 'compressor-pc',
+  '/compressor-windows': 'compressor-pc',
+  '/compressor-windows/': 'compressor-pc',
+  '/programas/compressor': 'compressor-pc',
+  '/programas/compressor/': 'compressor-pc'
 };
 
 document.addEventListener('DOMContentLoaded', () => {

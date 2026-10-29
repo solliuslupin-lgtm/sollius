@@ -19,7 +19,7 @@ const ROUTES = [
   {
     tab: 'remover',
     folder: 'remover-fundo',
-    path: '/remover-fundo',
+    path: '/remover-fundo/',
     title: 'Removedor de Fundo com IA Grátis e Ilimitado | SOLLIUS',
     desc: 'Remova o fundo de qualquer imagem automaticamente sem enviar fotos para servidores. Processamento 100% local, seguro e gratuito.',
     schemaType: 'DesignApplication',
@@ -28,7 +28,7 @@ const ROUTES = [
   {
     tab: 'curriculo',
     folder: 'curriculo-ats',
-    path: '/curriculo-ats',
+    path: '/curriculo-ats/',
     title: 'Criador de Currículos Padrão ATS Gratuito | SOLLIUS',
     desc: 'Crie currículos modernos aprovados por robôs de RH (Gupy, Workday) com formatação A4 perfeita e acessibilidade visual.',
     schemaType: 'BusinessApplication',
@@ -37,7 +37,7 @@ const ROUTES = [
   {
     tab: 'cartao',
     folder: 'cartao-de-visita',
-    path: '/cartao-de-visita',
+    path: '/cartao-de-visita/',
     title: 'Criador de Cartão de Visita de Elite com QR Code | SOLLIUS',
     desc: 'Crie artes gráficas de frente e verso com temas de luxo em 300 DPI e QR Code automático integrado.',
     schemaType: 'DesignApplication',
@@ -46,7 +46,7 @@ const ROUTES = [
   {
     tab: 'assinar-pdf',
     folder: 'assinar-pdf',
-    path: '/assinar-pdf',
+    path: '/assinar-pdf/',
     title: 'Assinar PDF no Navegador 100% Privado | SOLLIUS',
     desc: 'Assine contratos e procurações diretamente no seu computador sem enviar documentos para a nuvem.',
     schemaType: 'UtilitiesApplication',
@@ -55,7 +55,7 @@ const ROUTES = [
   {
     tab: 'limpar-gps',
     folder: 'limpar-gps',
-    path: '/limpar-gps',
+    path: '/limpar-gps/',
     title: 'Limpador de GPS & Metadados EXIF de Fotos | SOLLIUS',
     desc: 'Elimine coordenadas de GPS e dados de identificação da câmera de suas fotos antes de publicar na web.',
     schemaType: 'SecurityApplication',
@@ -64,7 +64,7 @@ const ROUTES = [
   {
     tab: 'converter',
     folder: 'compressor-imagem',
-    path: '/compressor-imagem',
+    path: '/compressor-imagem/',
     title: 'Compressor & Conversor de Imagens em Lote WebP | SOLLIUS',
     desc: 'Comprima e converta imagens para WebP, PNG e JPG reduzindo até 90% do tamanho com download em ZIP.',
     schemaType: 'UtilitiesApplication',
@@ -73,7 +73,7 @@ const ROUTES = [
   {
     tab: 'pdf',
     folder: 'pdf-studio',
-    path: '/pdf-studio',
+    path: '/pdf-studio/',
     title: 'PDF Studio: Juntar PDFs e Fotos para PDF | SOLLIUS',
     desc: 'Mescle múltiplos PDFs e boletos em ordem ou transforme imagens em PDF único de graça sem filas.',
     schemaType: 'UtilitiesApplication',
@@ -82,7 +82,7 @@ const ROUTES = [
   {
     tab: 'tags',
     folder: 'gerador-tags-virais',
-    path: '/gerador-tags-virais',
+    path: '/gerador-tags-virais/',
     title: 'Gerador de Tags Virais & Click Magnet para YouTube e TikTok | SOLLIUS',
     desc: 'Gere tags otimizadas para o YouTube Studio, fórmulas de títulos de alto clique e hashtags para TikTok.',
     schemaType: 'SocialNetworkingApplication',
@@ -91,7 +91,7 @@ const ROUTES = [
   {
     tab: 'qrcode',
     folder: 'gerador-qrcode',
-    path: '/gerador-qrcode',
+    path: '/gerador-qrcode/',
     title: 'Gerador de QR Code Pro Vitalício sem Expiração | SOLLIUS',
     desc: 'Crie QR Codes personalizados para Pix, links, WhatsApp e Wi-Fi que nunca expiram e sem mensalidade.',
     schemaType: 'UtilitiesApplication',
@@ -100,7 +100,7 @@ const ROUTES = [
   {
     tab: 'texto',
     folder: 'formatador-texto',
-    path: '/formatador-texto',
+    path: '/formatador-texto/',
     title: 'Text Studio: Contador e Limpador de Linhas | SOLLIUS',
     desc: 'Remova linhas duplicadas, conte caracteres e palavras e formate textos online com 1 clique.',
     schemaType: 'UtilitiesApplication',
@@ -109,7 +109,7 @@ const ROUTES = [
   {
     tab: 'recorder',
     folder: 'gravador-de-tela',
-    path: '/gravador-de-tela',
+    path: '/gravador-de-tela/',
     title: 'Gravador de Tela e Áudio Gratuito sem Instalação | SOLLIUS',
     desc: 'Grave sua tela, gameplay ou tutoriais com microfone e áudio interno direto pelo navegador.',
     schemaType: 'MultimediaApplication',
@@ -118,7 +118,7 @@ const ROUTES = [
   {
     tab: 'transcritor',
     folder: 'transcritor-de-audio',
-    path: '/transcritor-de-audio',
+    path: '/transcritor-de-audio/',
     title: 'Transcritor de Voz IA com Contexto & Sugestões de Dúvidas | SOLLIUS',
     desc: 'Transcreva gravações, podcasts e reuniões de até 2 horas com detecção inteligente de palavras duvidosas, compreensão de tema e exportação SRT.',
     schemaType: 'AudioApplication',
@@ -127,7 +127,7 @@ const ROUTES = [
   {
     tab: 'office',
     folder: 'conversor-documentos',
-    path: '/conversor-documentos',
+    path: '/conversor-documentos/',
     title: 'Conversor Office & PDF Studio (Word & Excel) Gratuito | SOLLIUS',
     desc: 'Converta planilhas Excel (XLSX, CSV) e documentos Word (DOCX) em PDF A4, JSON e HTML 100% no navegador sem instalar programas.',
     schemaType: 'OfficeApplication',
@@ -136,7 +136,7 @@ const ROUTES = [
   {
     tab: 'jogos',
     folder: 'jogos',
-    path: '/jogos',
+    path: '/jogos/',
     title: 'Jogos Online Grátis no Navegador | SOLLIUS Games Arcade',
     desc: 'Jogue +40 jogos online grátis sem download nem cadastro no celular e PC. Corrida 3D, Motos, Ação FPS, Puzzles, Retrô e Esportes instantâneos.',
     schemaType: 'GameApplication',
@@ -145,7 +145,7 @@ const ROUTES = [
   {
     tab: 'programas',
     folder: 'programas',
-    path: '/programas',
+    path: '/programas/',
     title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
     desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollius Ultra Compressor v1.01 com multithread e auto-atualização contínua.',
     schemaType: 'SoftwareApplication',
@@ -154,7 +154,7 @@ const ROUTES = [
   {
     tab: 'compressor-pc',
     folder: 'sollius-compressor',
-    path: '/sollius-compressor',
+    path: '/sollius-compressor/',
     title: 'Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
     desc: 'Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.',
     schemaType: 'SoftwareApplication',
