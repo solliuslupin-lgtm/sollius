@@ -146,7 +146,7 @@
   <base href="/">
 
   <!-- CSS Autônomo e Standalone com Cache-Busting -->
-  <link rel="stylesheet" href="style.css?v=6.9.2">
+  <link rel="stylesheet" href="style.css?v=6.9.3">
 
   <!-- Bibliotecas Seguras e Robustas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -156,7 +156,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Catálogo de Jogos do Arcade (Fase 2) -->
-  <script src="games_data.js?v=6.9.2"></script>
+  <script src="games_data.js?v=6.9.3"></script>
+  <!-- Repositório de Softwares Desktop e Auto-Update -->
+  <script src="programas_data.js?v=6.9.3"></script>
 
   <!-- SCHEMA.ORG DEDICADO PARA /assinar-pdf -->
   <script type="application/ld+json">
@@ -220,7 +222,11 @@
 
       <!-- Navegação Principal -->
       <nav class="header-nav" role="navigation" aria-label="Navegação Superior">
-        <a href="/jogos" onclick="switchTab('jogos'); return false;" class="header-nav-btn" data-tab="jogos" style="text-decoration:none; background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(139,92,246,0.18)); border: 1px solid rgba(236,72,153,0.35);">
+        <a href="/programas" onclick="switchTab('programas'); return false;" class="header-nav-btn" data-tab="programas" style="text-decoration:none; background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(6,182,212,0.18)); border: 1px solid rgba(59,130,246,0.35);">
+          <span>💻</span>
+          <span style="color:#60A5FA; font-weight:700;">Softwares PC</span>
+        </a>
+      <a href="/jogos" onclick="switchTab('jogos'); return false;" class="header-nav-btn" data-tab="jogos" style="text-decoration:none; background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(139,92,246,0.18)); border: 1px solid rgba(236,72,153,0.35);">
           <span>🎮</span>
           <span style="color:#F472B6; font-weight:700;">Jogos Online</span>
         </a>
@@ -287,6 +293,7 @@
         <!-- Atalhos Rápidos -->
         <div class="hero-actions" style="gap: 0.6rem;">
           <span style="font-size: 0.8rem; color: var(--text-muted); align-self: center; margin-right: 0.35rem;">Acesso Rápido:</span>
+          <a href="/programas" onclick="switchTab('programas'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem; border-color: rgba(59,130,246,0.3); color:#60A5FA;">💻 Softwares PC</a>
           <a href="/curriculo-ats" onclick="switchTab('curriculo'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">📄 Criar Currículo</a>
           <a href="/transcritor-de-audio" onclick="switchTab('transcritor'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">🎙️ Transcritor IA</a>
           <a href="/conversor-documentos" onclick="switchTab('office'); return false;" class="cat-pill" style="text-decoration:none; font-size: 0.78rem; padding: 0.4rem 0.85rem;">📊 Word & Excel</a>
@@ -300,11 +307,12 @@
 
       <!-- Barra de Filtros por Categoria -->
       <div class="category-filter-bar">
-        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (14)</button>
+        <button class="cat-pill active" onclick="filterCategory('all', this)">⚡ Todas as Ferramentas (15)</button>
         <button class="cat-pill" onclick="filterCategory('design', this)">🎨 Design & Imagens (3)</button>
         <button class="cat-pill" onclick="filterCategory('documentos', this)">📄 Documentos & Office (4)</button>
         <button class="cat-pill" onclick="filterCategory('viral', this)">🚀 Áudio, Vídeo & Viral (4)</button>
         <button class="cat-pill" onclick="filterCategory('utilitarios', this)">🛠️ Utilitários & Privacidade (2)</button>
+        <button class="cat-pill" onclick="filterCategory('programas', this)" style="border-color: rgba(59,130,246,0.3); color:#60A5FA;">💻 Softwares PC (Novo)</button>
         <button class="cat-pill" onclick="filterCategory('jogos', this)" style="border-color: rgba(236,72,153,0.3); color:#F472B6;">🎮 Jogos & Arcade (+40)</button>
       </div>
 
@@ -441,6 +449,17 @@
           </div>
           <p class="tool-desc">Transcreva áudios de reuniões e aulas de até 2 horas com compreensão de contexto, sugestão inteligente de dúvidas e exportação em TXT e SRT.</p>
           <div class="tool-link" style="color: #FBBF24;">Transcrever Áudio →</div>
+        </a>
+
+        <!-- 15. SOLLIUS Desktop Studio / Softwares Instaláveis -->
+        <a id="card-programas" href="/programas" onclick="switchTab('programas'); return false;" class="tool-card" role="button" tabindex="0" data-category="programas" data-keywords="programas softwares desktop pc windows instalavel compressor winrar 7zip download instalador executavel memoria ram">
+          <div class="tool-icon-wrapper" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3);">💻</div>
+          <div class="tool-header">
+            <h3 class="tool-title">SOLLIUS Desktop Studio</h3>
+            <span class="tool-badge" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3);">Softwares PC</span>
+          </div>
+          <p class="tool-desc">Repositório oficial de programas instaláveis para Windows. Baixe o SOLLIUS Ultra Compressor v1.0.0, com auto-atualização contínua e zero adware.</p>
+          <div class="tool-link" style="color: #60A5FA;">Ver Programas →</div>
         </a>
 
         <!-- 14. SOLLIUS Games Arcade (Fase 2) -->
@@ -1953,7 +1972,226 @@
       </div>
     </div>
 
-</main>
+
+    <!-- ======================================================== -->
+    <!-- TAB: PROGRAMAS & SOFTWARES INSTALÁVEIS (DESKTOP REPO) -->
+    <!-- ======================================================== -->
+    <div id="tab-programas" class="tab-content hidden">
+      <div style="max-width: 1140px; margin: 0 auto;">
+        
+        <!-- Hero Card do Repositório -->
+        <div class="software-hero-card glass-panel">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.85rem;">
+            <span class="tool-badge" style="background: rgba(59, 130, 246, 0.18); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); font-weight: 700; text-transform: uppercase;">
+              🛡️ REPOSITÓRIO OFICIAL SOLLIUS
+            </span>
+            <span class="hero-pill">⚡ Softwares Nativos Windows • 100% Grátis • Zero Adware</span>
+          </div>
+          <h1 class="hero-title" style="margin-top: 0.5rem;">
+            Central de Softwares & <span class="hero-gradient">Programas para PC</span>
+          </h1>
+          <p class="hero-desc" style="max-width: 780px;">
+            Aplicativos de alta performance desenvolvidos para substituir programas legados e pesados. 
+            Se você ainda não possui o programa, baixe a versão estável mais recente abaixo. O software se mantém 
+            permanentemente atualizado em segundo plano com integridade e segurança.
+          </p>
+
+          <!-- Barra de Estatísticas -->
+          <div class="games-stats-bar">
+            <div class="games-stat-item">
+              <span class="games-stat-num" style="color: #60A5FA;">v1.0.0</span>
+              <span class="games-stat-label">Versão Mais Recente</span>
+            </div>
+            <div class="games-stat-item">
+              <span class="games-stat-num">Windows</span>
+              <span class="games-stat-label">10 / 11 (64-bit)</span>
+            </div>
+            <div class="games-stat-item">
+              <span class="games-stat-num">100%</span>
+              <span class="games-stat-label">Livre de Vírus</span>
+            </div>
+            <div class="games-stat-item">
+              <span class="games-stat-num">🔄 Auto</span>
+              <span class="games-stat-label">Atualização Segura</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- PROGRAMA EM DESTAQUE: SOLLIUS ULTRA COMPRESSOR v1.0.0 -->
+        <!-- ==================================================== -->
+        <div class="software-featured-box">
+          <div class="software-header-row">
+            <div class="software-title-group">
+              <div class="software-icon-big">🗜️</div>
+              <div>
+                <h2 class="software-title">
+                  <span>SOLLIUS Ultra Compressor</span>
+                  <span class="software-version-pill">
+                    <span class="pulse-dot"></span>
+                    <span>Versão Mais Recente: v1.0.0</span>
+                  </span>
+                </h2>
+                <div class="software-tagline">
+                  Substituto definitivo para WinRAR e 7-Zip com algoritmo multithread de alta compressão
+                </div>
+              </div>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: right;">
+              <div>Lançamento: <strong style="color: #fff;">29 de Outubro de 2026</strong></div>
+              <div>Status: <strong style="color: #34D399;">Disponível para Download</strong></div>
+            </div>
+          </div>
+
+          <!-- Barra de Ficha Técnica -->
+          <div class="software-specs-bar">
+            <div class="software-spec-item">
+              <span class="software-spec-label">Tamanho do Arquivo</span>
+              <span class="software-spec-val">14.2 MB (Leve)</span>
+            </div>
+            <div class="software-spec-item">
+              <span class="software-spec-label">Compatibilidade</span>
+              <span class="software-spec-val">Windows 10 / 11 (64-bit)</span>
+            </div>
+            <div class="software-spec-item">
+              <span class="software-spec-label">Licença</span>
+              <span class="software-spec-val" style="color: #34D399;">Freeware (100% Grátis)</span>
+            </div>
+            <div class="software-spec-item">
+              <span class="software-spec-label">Integridade</span>
+              <span class="software-spec-val" title="SHA-256 Verificado">🛡️ SHA-256 Verificado</span>
+            </div>
+          </div>
+
+          <!-- Botões de Download Principal -->
+          <div class="software-actions-row">
+            <a href="downloads/sollius-compressor-setup-v1.0.0.exe" download="sollius-compressor-setup-v1.0.0.exe" class="software-btn-download">
+              <span style="font-size: 1.25rem;">⬇️</span>
+              <span>Baixar Instalador Windows (v1.0.0)</span>
+            </a>
+            <a href="downloads/sollius-compressor-portable-v1.0.0.zip" download="sollius-compressor-portable-v1.0.0.zip" class="software-btn-portable">
+              <span>📦</span>
+              <span>Versão Portátil (.ZIP)</span>
+            </a>
+            <button onclick="document.getElementById('compressor-changelog-modal').classList.remove('hidden')" class="btn-secondary" style="font-size: 0.88rem; padding: 0.85rem 1.25rem;">
+              <span>📋</span>
+              <span>Ver O Que Há de Novo</span>
+            </button>
+          </div>
+
+          <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+            O <strong>SOLLIUS Ultra Compressor</strong> foi construído para quem busca compressão de arquivos sem limites artificiais e sem telas de cobrança irritantes. Utilizando algoritmos modernos como Zstandard e LZMA2, ele compacta pastas inteiras até 2 vezes mais rápido e com taxas de compressão até 90% menores.
+          </p>
+
+          <!-- Grade de Recursos -->
+          <div class="software-features-grid">
+            <div class="software-feat-box">
+              <div class="software-feat-icon">⚡</div>
+              <div class="software-feat-text"><strong>Modo Turbo Multithread:</strong> Utiliza todos os núcleos da CPU para máxima velocidade em arquivos gigantes.</div>
+            </div>
+            <div class="software-feat-box">
+              <div class="software-feat-icon">📂</div>
+              <div class="software-feat-text"><strong>Formatos Universais:</strong> Abre e extrai arquivos .ZIP, .7Z, .RAR, .TAR, .GZ, .BZ2 e imagens .ISO com 1 clique.</div>
+            </div>
+            <div class="software-feat-box">
+              <div class="software-feat-icon">🔒</div>
+              <div class="software-feat-text"><strong>Criptografia Militar AES-256:</strong> Bloqueie seus arquivos sensíveis com senha inquebrável integrada.</div>
+            </div>
+            <div class="software-feat-box">
+              <div class="software-feat-icon">🔄</div>
+              <div class="software-feat-text"><strong>Atualização Transparente:</strong> O programa se mantém sempre na versão mais nova de forma silenciosa e segura.</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 0.9rem 1.25rem; font-size: 0.85rem; color: #93C5FD; display: flex; align-items: center; gap: 0.65rem;">
+            <span style="font-size: 1.2rem;">💡</span>
+            <span><strong>Nota Técnica:</strong> Se você já possui o programa instalado, não é necessário baixar novamente. O software atualiza automaticamente em segundo plano. Use o botão acima apenas se for sua primeira instalação ou se quiser reinstalar.</span>
+          </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- PRÓXIMOS SOFTWARES EM DESENVOLVIMENTO -->
+        <!-- ==================================================== -->
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🚀</span>
+          <span>Mais Programas do Ecossistema SOLLIUS (Em Breve)</span>
+        </h3>
+
+        <div class="software-upcoming-grid">
+          
+          <!-- Programa 2: Anti-Miner & Memory Cleaner -->
+          <div class="software-card-sub">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="font-size: 2.2rem;">🧹</div>
+              <span class="tool-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">Em Testes Finais</span>
+            </div>
+            <h4 style="font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">SOLLIUS Memory & Anti-Miner</h4>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.85rem;">Versão: v1.0.0-beta • Windows 10/11</span>
+            <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.25rem;">
+              Limpador profundo de memória RAM e detector de scripts maliciosos de mineração de criptomoedas ocultos em programas de terceiros.
+            </p>
+            <div style="margin-top: auto;">
+              <button class="btn-secondary" style="width: 100%; font-size: 0.85rem; opacity: 0.8; cursor: not-allowed;" disabled>
+                <span>🔔 Lançamento em Breve</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Programa 3: Torrent Streamer -->
+          <div class="software-card-sub">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="font-size: 2.2rem;">⚡</div>
+              <span class="tool-badge" style="background: rgba(139, 92, 246, 0.15); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.3);">Em Desenvolvimento</span>
+            </div>
+            <h4 style="font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">SOLLIUS Torrent Streamer</h4>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.85rem;">Versão: v0.9.0-alpha • Windows 10/11</span>
+            <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.25rem;">
+              Cliente P2P ultraleve focado em velocidade máxima e streaming direto de vídeos sem anúncios invasivos ou bloatware.
+            </p>
+            <div style="margin-top: auto;">
+              <button class="btn-secondary" style="width: 100%; font-size: 0.85rem; opacity: 0.8; cursor: not-allowed;" disabled>
+                <span>⚙️ Em Desenvolvimento</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MODAL DE NOTAS DA VERSÃO / CHANGELOG -->
+    <div id="compressor-changelog-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-backdrop" onclick="document.getElementById('compressor-changelog-modal').classList.add('hidden')"></div>
+      <div class="modal-card glass-panel" style="max-width: 620px; width: 100%; margin: 2rem auto; position: relative; z-index: 10; padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 style="font-size: 1.3rem; font-weight: 700; color: #fff;">📋 Notas da Versão • SOLLIUS Ultra Compressor</h3>
+          <button onclick="document.getElementById('compressor-changelog-modal').classList.add('hidden')" class="btn-secondary" style="padding: 0.35rem 0.75rem;">✕</button>
+        </div>
+        <div style="max-height: 380px; overflow-y: auto;">
+          <div style="border-left: 2px solid #3B82F6; padding-left: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <strong style="color: #60A5FA; font-size: 1.05rem;">Versão 1.0.0 (Estável)</strong>
+              <span class="tool-badge" style="background: rgba(16,185,129,0.15); color: #34D399;">Mais Recente</span>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Lançado em 29 de Outubro de 2026</span>
+            <ul style="margin-top: 0.5rem; padding-left: 1.2rem; color: #CBD5E1; font-size: 0.88rem; line-height: 1.5;">
+              <li>Lançamento público inicial com algoritmo multithread de ultra compressão.</li>
+              <li>Suporte completo para compactar e descompactar arquivos ZIP, 7Z, TAR e RAR.</li>
+              <li>Criptografia militar de arquivos protegidos por senha AES-256.</li>
+              <li>Módulo de verificação contínua e atualização automática transparente em segundo plano.</li>
+              <li>Integrado ao menu de contexto do Windows para compactação com o botão direito.</li>
+            </ul>
+          </div>
+        </div>
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <button onclick="document.getElementById('compressor-changelog-modal').classList.add('hidden')" class="btn-primary" style="padding: 0.6rem 1.4rem;">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+
+  </main>
 
 
   <!-- FOOTER -->
@@ -1974,10 +2212,11 @@
         <a href="/gerador-qrcode" onclick="switchTab('qrcode'); return false;" style="color: inherit; text-decoration: none;">QR Code</a>
         <a href="/formatador-texto" onclick="switchTab('texto'); return false;" style="color: inherit; text-decoration: none;">Text Studio</a>
         <a href="/jogos" onclick="switchTab('jogos'); return false;" style="color: #F472B6; font-weight: 700; text-decoration: none;">🎮 Jogos Arcade</a>
+        <a href="/programas" onclick="switchTab('programas'); return false;" style="color: #60A5FA; font-weight: 700; text-decoration: none;">💻 Softwares Desktop</a>
       </div>
     </div>
   </footer>
 
-  <script src="app.js?v=6.9.2"></script>
+  <script src="app.js?v=6.9.3"></script>
 </body>
 </html>

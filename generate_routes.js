@@ -141,6 +141,15 @@ const ROUTES = [
     desc: 'Jogue +40 jogos online grátis sem download nem cadastro no celular e PC. Corrida 3D, Motos, Ação FPS, Puzzles, Retrô e Esportes instantâneos.',
     schemaType: 'GameApplication',
     ratingCount: '4890'
+  },
+  {
+    tab: 'programas',
+    folder: 'programas',
+    path: '/programas',
+    title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
+    desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o SOLLIUS Ultra Compressor v1.0.0 com multithread e auto-atualização contínua.',
+    schemaType: 'SoftwareApplication',
+    ratingCount: '1850'
   }
 ];
 
@@ -223,6 +232,44 @@ function buildGamesJsonLd() {
   }, null, 2);
 }
 
+function buildProgramasJsonLd() {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://sollius.com.br/programas/#webpage",
+        "url": "https://sollius.com.br/programas",
+        "name": "Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio",
+        "description": "Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o SOLLIUS Ultra Compressor v1.0.0 com multithread e auto-atualização contínua.",
+        "inLanguage": "pt-BR"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://sollius.com.br/programas/#compressor",
+        "name": "SOLLIUS Ultra Compressor",
+        "operatingSystem": "Windows 10, Windows 11 (64-bit)",
+        "applicationCategory": "UtilitiesApplication",
+        "softwareVersion": "1.0.0",
+        "fileSize": "14.2MB",
+        "downloadUrl": "https://sollius.com.br/downloads/sollius-compressor-setup-v1.0.0.exe",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "1850",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }
+    ]
+  }, null, 2);
+}
+
 function buildToolJsonLd(r) {
   return JSON.stringify({
     "@context": "https://schema.org",
@@ -294,12 +341,15 @@ for (const r of ROUTES) {
   if (r.tab === 'jogos') {
     html = html.replace('class="header-nav-btn active" data-tab="hub"', 'class="header-nav-btn" data-tab="hub"');
     html = html.replace('class="header-nav-btn" data-tab="jogos"', 'class="header-nav-btn active" data-tab="jogos"');
+  } else if (r.tab === 'programas') {
+    html = html.replace('class="header-nav-btn active" data-tab="hub"', 'class="header-nav-btn" data-tab="hub"');
+    html = html.replace('class="header-nav-btn" data-tab="programas"', 'class="header-nav-btn active" data-tab="programas"');
   }
 
   // ========================================================
   // CRITICAL SEO FIX 3: SCHEMA.ORG DEDICADO POR ROTA
   // ========================================================
-  const customSchema = r.tab === 'jogos' ? buildGamesJsonLd() : buildToolJsonLd(r);
+  const customSchema = r.tab === 'jogos' ? buildGamesJsonLd() : (r.tab === 'programas' ? buildProgramasJsonLd() : buildToolJsonLd(r));
   const schemaInjection = `\n  <!-- SCHEMA.ORG DEDICADO PARA ${r.path} -->\n  <script type="application/ld+json">\n${customSchema}\n  </script>`;
   html = html.replace('</head>', `${schemaInjection}\n</head>`);
 
