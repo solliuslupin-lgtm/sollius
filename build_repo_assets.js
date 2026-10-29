@@ -24,9 +24,9 @@ const updatesJsonContent = JSON.stringify({
       minSupportedVersion: "1.01",
       mandatory: false,
       downloadUrl: "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
-      sha256: "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
+      sha256: "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
       fileSize: "18.5 MB",
-      changelog: "Versão 1.02 do Sollarys: Nova barra de progresso com porcentagem em tempo real, medição de velocidade, suporte a Pausar, Retomar e Cancelar operações e aprimoramento no motor Zstandard."
+      changelog: "Versão 1.02 do Sollarys: Super velocidade Turbo multithread (300-600+ MB/s), inicialização instantânea com buffers de 1MB, nova barra de progresso com porcentagem em tempo real, medição de velocidade e controles para Pausar, Retomar e Cancelar."
     },
     "sollius-cleaner": {
       id: "sollius-cleaner",
@@ -53,8 +53,8 @@ const stableJsonContent = JSON.stringify({
   version: "1.02",
   type: "installer",
   url: "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
-  sha256: "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
-  notes: "Atualização Sollarys 1.02: Nova barra de progresso com porcentagem em tempo real, cálculo de velocidade de compactação/extração, e botões de controle para Pausar, Retomar e Cancelar."
+  sha256: "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
+  notes: "Atualização Sollarys 1.02: Super velocidade Turbo multithread (300-600+ MB/s), inicialização instantânea, barra de progresso com porcentagem em tempo real e botões de controle para Pausar, Retomar e Cancelar."
 }, null, 2);
 
 fs.writeFileSync(path.join(programasDir, 'stable.json'), stableJsonContent, 'utf8');

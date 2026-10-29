@@ -20,7 +20,7 @@ const SOLLIUS_DESKTOP_REPOSITORY = {
       accentColor: "#3B82F6",
       downloadUrl: "/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
       fileSize: "18.5 MB",
-      sha256: "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
+      sha256: "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
       minOS: "Windows 10 / 11 (64-bit)",
       architecture: "x64 (Nativo)",
       license: "Freeware • 100% Gratuito",
@@ -38,7 +38,7 @@ const SOLLIUS_DESKTOP_REPOSITORY = {
         {
           version: "1.02",
           date: "29/10/2026",
-          notes: "Nova barra de progresso com porcentagem em tempo real, medição de velocidade de transferência, suporte a Pausar, Retomar e Cancelar operações e motor Zstandard otimizado."
+          notes: "Super velocidade Turbo multithread (300-600+ MB/s superando WinRAR e 7-Zip), inicialização instantânea com buffers de 1MB, barra de progresso com porcentagem em tempo real, medição de velocidade e controles para Pausar, Retomar e Cancelar."
         },
         {
           version: "1.01",
