@@ -1,20 +1,20 @@
 {
   "repository": "SOLLIUS Official Desktop Software Repository",
-  "updatedAt": "2026-10-29T16:00:00Z",
+  "updatedAt": "2026-10-29T18:00:00Z",
   "apps": {
     "sollius-compressor": {
       "id": "sollius-compressor",
-      "name": "SOLLIUS Ultra Compressor",
-      "version": "1.0.0",
-      "latestVersion": "1.0.0",
+      "name": "Sollius Ultra Compressor",
+      "version": "1.01",
+      "latestVersion": "1.01",
       "releaseDate": "2026-10-29",
-      "minSupportedVersion": "1.0.0",
+      "minSupportedVersion": "1.01",
       "mandatory": false,
-      "downloadUrl": "https://sollius.com.br/downloads/sollius-compressor-setup-v1.0.0.exe",
-      "portableUrl": "https://sollius.com.br/downloads/sollius-compressor-portable-v1.0.0.zip",
-      "sha256": "9f83a48e89f81a17967b66df8732e7c4e5e4088e5d6d34e068f2f2541a8c3d6e",
-      "fileSize": "14.2 MB",
-      "changelog": "Lançamento oficial da versão estável pública v1.0.0. Motor multithread com ultra compressão Zstandard e suporte a ZIP, 7Z, RAR e ISO."
+      "downloadUrl": "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+      "portableUrl": "https://sollius.com.br/downloads/Sollius-1.01-Windows-x64.zip",
+      "sha256": "bb5d16a30033f04852d7e5d118b526ee13f61633f00cb4480b88705b8618693d",
+      "fileSize": "14.7 MB",
+      "changelog": "Lançamento oficial da versão estável v1.01. Motor multithread com ultra compressão Zstandard e suporte a ZIP, 7Z, RAR e ISO com auto-atualização conectada."
     },
     "sollius-cleaner": {
       "id": "sollius-cleaner",

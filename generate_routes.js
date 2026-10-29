@@ -147,7 +147,7 @@ const ROUTES = [
     folder: 'programas',
     path: '/programas',
     title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
-    desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o SOLLIUS Ultra Compressor v1.0.0 com multithread e auto-atualização contínua.',
+    desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollius Ultra Compressor v1.01 com multithread e auto-atualização contínua.',
     schemaType: 'SoftwareApplication',
     ratingCount: '1850'
   }
@@ -247,12 +247,12 @@ function buildProgramasJsonLd() {
       {
         "@type": "SoftwareApplication",
         "@id": "https://sollius.com.br/programas/#compressor",
-        "name": "SOLLIUS Ultra Compressor",
+        "name": "Sollius Ultra Compressor",
         "operatingSystem": "Windows 10, Windows 11 (64-bit)",
         "applicationCategory": "UtilitiesApplication",
-        "softwareVersion": "1.0.0",
-        "fileSize": "14.2MB",
-        "downloadUrl": "https://sollius.com.br/downloads/sollius-compressor-setup-v1.0.0.exe",
+        "softwareVersion": "1.01",
+        "fileSize": "14.7MB",
+        "downloadUrl": "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
         "offers": {
           "@type": "Offer",
           "price": "0",

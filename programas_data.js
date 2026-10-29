@@ -4,24 +4,24 @@
 // ========================================================
 
 const SOLLIUS_DESKTOP_REPOSITORY = {
-  updatedAt: "2026-10-29T16:00:00Z",
-  repositoryVersion: "1.0.0",
+  updatedAt: "2026-10-29T18:00:00Z",
+  repositoryVersion: "1.01",
   apps: [
     {
       id: "sollius-compressor",
-      name: "SOLLIUS Ultra Compressor",
+      name: "Sollius Ultra Compressor",
       tagline: "Substituto definitivo para WinRAR e 7-Zip com ultra compressão multithread",
-      latestVersion: "1.0.0",
+      latestVersion: "1.01",
       releaseDate: "29 de Outubro de 2026",
       status: "available",
-      badge: "Lançamento Oficial",
+      badge: "Lançamento Oficial v1.01",
       isFeatured: true,
       icon: "🗜️",
       accentColor: "#3B82F6",
-      downloadUrl: "downloads/sollius-compressor-setup-v1.0.0.exe",
-      portableUrl: "downloads/sollius-compressor-portable-v1.0.0.zip",
-      fileSize: "14.2 MB",
-      sha256: "9f83a48e89f81a17967b66df8732e7c4e5e4088e5d6d34e068f2f2541a8c3d6e",
+      downloadUrl: "downloads/Sollius-1.01-Setup-Windows-x64.exe",
+      portableUrl: "downloads/Sollius-1.01-Windows-x64.zip",
+      fileSize: "14.7 MB",
+      sha256: "bb5d16a30033f04852d7e5d118b526ee13f61633f00cb4480b88705b8618693d",
       minOS: "Windows 10 / 11 (64-bit)",
       architecture: "x64 (Nativo)",
       license: "Freeware • 100% Gratuito",
@@ -30,14 +30,14 @@ const SOLLIUS_DESKTOP_REPOSITORY = {
         "Velocidade Turbo: Compactação até 2x mais rápida que formatos legados utilizando todos os núcleos do processador",
         "Suporte Universal: Abre e extrai arquivos .ZIP, .7Z, .RAR, .TAR, .GZ, .BZ2 e imagens .ISO",
         "Segurança Militar: Criptografia AES-256 bits integrada para proteger dados confidenciais com senha",
-        "Auto-Atualização Contínua: O programa se mantém sempre na versão mais recente em segundo plano",
+        "Auto-Atualização Conectada: Conectado automaticamente ao repositório oficial da Sollius para novas versões",
         "Zero Adware: Sem telas de aviso, sem compra de licença e sem instalar softwares indesejados"
       ],
       changelog: [
         {
-          version: "1.0.0",
+          version: "1.01",
           date: "29/10/2026",
-          notes: "Lançamento oficial da versão pública estável com motor de ultra compressão e suporte a atualização transparente."
+          notes: "Versão oficial estável v1.01 com auto-atualização conectada diretamente ao repositório oficial Sollius, motor Solarys multithread e suporte a formatos universais."
         }
       ]
     },

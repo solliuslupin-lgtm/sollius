@@ -18,17 +18,17 @@ const updatesJsonContent = JSON.stringify({
   apps: {
     "sollius-compressor": {
       id: "sollius-compressor",
-      name: "SOLLIUS Ultra Compressor",
-      version: "1.0.0",
-      latestVersion: "1.0.0",
+      name: "Sollius Ultra Compressor",
+      version: "1.01",
+      latestVersion: "1.01",
       releaseDate: "2026-10-29",
-      minSupportedVersion: "1.0.0",
+      minSupportedVersion: "1.01",
       mandatory: false,
-      downloadUrl: "https://sollius.com.br/downloads/sollius-compressor-setup-v1.0.0.exe",
-      portableUrl: "https://sollius.com.br/downloads/sollius-compressor-portable-v1.0.0.zip",
-      sha256: "9f83a48e89f81a17967b66df8732e7c4e5e4088e5d6d34e068f2f2541a8c3d6e",
-      fileSize: "14.2 MB",
-      changelog: "Lançamento oficial da versão estável pública v1.0.0. Motor multithread com ultra compressão Zstandard e suporte a ZIP, 7Z, RAR e ISO."
+      downloadUrl: "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+      portableUrl: "https://sollius.com.br/downloads/Sollius-1.01-Windows-x64.zip",
+      sha256: "bb5d16a30033f04852d7e5d118b526ee13f61633f00cb4480b88705b8618693d",
+      fileSize: "14.7 MB",
+      changelog: "Lançamento oficial da versão estável v1.01. Motor multithread com ultra compressão Zstandard e suporte a ZIP, 7Z, RAR e ISO com auto-atualização conectada."
     },
     "sollius-cleaner": {
       id: "sollius-cleaner",
@@ -51,79 +51,7 @@ fs.writeFileSync(path.join(programasDir, 'updates.json'), updatesJsonContent, 'u
 fs.writeFileSync(path.join(downloadsDir, 'updates.json'), updatesJsonContent, 'utf8');
 console.log('Created updates.json in /programas and /downloads');
 
-// 2. Create clean sample downloads for SOLLIUS Ultra Compressor v1.0.0
-// Readme file
-const readmeContent = `========================================================
-SOLLIUS Ultra Compressor v1.0.0 (Windows 64-bit)
-Ecossistema SOLLIUS • https://sollius.com.br/programas
-========================================================
-
-Parabens por baixar o SOLLIUS Ultra Compressor!
-Este programa foi desenvolvido para oferecer a mais alta
-eficiencia em compactacao e descompactacao de arquivos no Windows.
-
-RECURSOS PRINCIPAIS:
-- Compactacao ultra-rapida com algoritmos modernos multithread
-- Suporte a ZIP, 7Z, RAR, TAR, GZ, ISO
-- Criptografia militar AES-256 bits com senha
-- Auto-atualizacao continua transparente em segundo plano
-- 100% Gratuito, sem adware e sem telas de cobranca
-
-COMO USAR:
-Basta executar o programa ou clicar com o botao direito em qualquer
-arquivo ou pasta e selecionar "Compactar com SOLLIUS".
-
-Para verificar atualizacoes e novas ferramentas:
-Acesse: https://sollius.com.br/programas
-
-Copyright (c) 2026 SOLLIUS Ecosystem. Todos os direitos reservados.
-`;
-
-// Helper to create a minimal valid zip file using JSZip if available or simple archive
-// Since node has jszip or we can create a clean zip file:
-try {
-  const AdmZip = require('adm-zip');
-  const zip = new AdmZip();
-  zip.addFile("README.txt", Buffer.from(readmeContent, "utf8"));
-  zip.addFile("SOLLIUS_Compressor.exe", Buffer.from("MZ" + "\x00".repeat(500) + "SOLLIUS Ultra Compressor Binary v1.0.0", "utf8"));
-  zip.writeZip(path.join(downloadsDir, 'sollius-compressor-portable-v1.0.0.zip'));
-  console.log('Generated portable zip via adm-zip');
-} catch (e) {
-  // Fallback: create zip via PowerShell Compress-Archive
-  fs.writeFileSync(path.join(downloadsDir, 'README.txt'), readmeContent, 'utf8');
-  console.log('Created README.txt in downloads directory');
-}
-
-// Create a clean setup placeholder file
-const installerScript = `@echo off
-title Instalador SOLLIUS Ultra Compressor v1.0.0
-color 0b
-echo ========================================================
-echo   SOLLIUS Ultra Compressor v1.0.0 - Instalador Oficial
-echo   Ecossistema SOLLIUS • https://sollius.com.br
-echo ========================================================
-echo.
-echo [1/3] Verificando integridade dos arquivos... Concluido.
-echo [2/3] Registrando associacoes de arquivos (.zip, .7z, .rar)... Concluido.
-echo [3/3] Configurando servico de auto-atualizacao em segundo plano... Ativo.
-echo.
-echo ========================================================
-echo   Instalacao concluida com sucesso!
-echo   O SOLLIUS Ultra Compressor esta pronto para uso.
-echo ========================================================
-echo.
-pause
-`;
-fs.writeFileSync(path.join(downloadsDir, 'sollius-compressor-setup-v1.0.0.bat'), installerScript, 'utf8');
-
-// Also create an executable placeholder or copy bat to exe
-fs.writeFileSync(path.join(downloadsDir, 'sollius-compressor-setup-v1.0.0.exe'), Buffer.from(
-  "MZ\x90\x00\x03\x00\x00\x00\x04\x00\x00\x00\xff\xff\x00\x00" +
-  "\xb8\x00\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x00" +
-  "SOLLIUS Ultra Compressor v1.0.0 Installer Package\r\n" + installerScript
-), 'utf8');
-
-// 3. Create downloads/index.html that redirects to /programas
+// 2. Create downloads/index.html that redirects to /programas
 const downloadsRedirectHtml = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -137,5 +65,6 @@ const downloadsRedirectHtml = `<!DOCTYPE html>
 </body>
 </html>`;
 fs.writeFileSync(path.join(downloadsDir, 'index.html'), downloadsRedirectHtml, 'utf8');
+console.log('Repo assets build complete for v1.01!');
 
 console.log('Build repo assets complete!');

@@ -1,0 +1,7 @@
+{
+  "version": "1.01",
+  "type": "installer",
+  "url": "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+  "sha256": "bb5d16a30033f04852d7e5d118b526ee13f61633f00cb4480b88705b8618693d",
+  "notes": "Lançamento oficial do Sollius 1.01. Motor multithread de alta compressão Zstandard, LZMA2 e suporte a arquivos .sol, ZIP, 7Z e RAR."
+}
