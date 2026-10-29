@@ -8,8 +8,8 @@ const SOLLIUS_DESKTOP_REPOSITORY = {
   repositoryVersion: "1.01",
   apps: [
     {
-      id: "sollius-compressor",
-      name: "Sollius Ultra Compressor",
+      id: "sollarys-compressor",
+      name: "Sollarys Ultra Compressor",
       tagline: "Substituto definitivo para WinRAR e 7-Zip com ultra compressão multithread",
       latestVersion: "1.01",
       releaseDate: "29 de Outubro de 2026",
@@ -18,9 +18,9 @@ const SOLLIUS_DESKTOP_REPOSITORY = {
       isFeatured: true,
       icon: "🗜️",
       accentColor: "#3B82F6",
-      downloadUrl: "/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+      downloadUrl: "/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
       fileSize: "14.7 MB",
-      sha256: "bb5d16a30033f04852d7e5d118b526ee13f61633f00cb4480b88705b8618693d",
+      sha256: "0f3686f784f6a54bfc18c315312903761dcd3d07777184611f899cc4f2a07151",
       minOS: "Windows 10 / 11 (64-bit)",
       architecture: "x64 (Nativo)",
       license: "Freeware • 100% Gratuito",

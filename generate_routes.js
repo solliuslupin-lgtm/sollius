@@ -147,7 +147,7 @@ const ROUTES = [
     folder: 'programas',
     path: '/programas/',
     title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
-    desc: 'Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollius Ultra Compressor v1.01 com multithread e auto-atualização contínua.',
+    desc: 'Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.01 com multithread e auto-atualização contínua.',
     schemaType: 'SoftwareApplication',
     ratingCount: '1850'
   },
@@ -155,8 +155,8 @@ const ROUTES = [
     tab: 'compressor-pc',
     folder: 'sollius-compressor',
     path: '/sollius-compressor/',
-    title: 'Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
-    desc: 'Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.',
+    title: 'Sollarys Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
+    desc: 'Baixe o Sollarys Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.',
     schemaType: 'SoftwareApplication',
     ratingCount: '2340'
   }
@@ -250,18 +250,18 @@ function buildProgramasJsonLd() {
         "@id": "https://sollius.com.br/programas/#webpage",
         "url": "https://sollius.com.br/programas",
         "name": "Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio",
-        "description": "Baixe o instalador oficial para Windows 10 e 11. Conheça o SOLLIUS Ultra Compressor v1.0.0 com multithread e auto-atualização contínua.",
+        "description": "Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.0.0 com multithread e auto-atualização contínua.",
         "inLanguage": "pt-BR"
       },
       {
         "@type": "SoftwareApplication",
         "@id": "https://sollius.com.br/programas/#compressor",
-        "name": "Sollius Ultra Compressor",
+        "name": "Sollarys Ultra Compressor",
         "operatingSystem": "Windows 10, Windows 11 (64-bit)",
         "applicationCategory": "UtilitiesApplication",
         "softwareVersion": "1.01",
         "fileSize": "14.7MB",
-        "downloadUrl": "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+        "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -287,20 +287,20 @@ function buildDedicatedCompressorJsonLd() {
         "@type": "WebPage",
         "@id": "https://sollius.com.br/sollius-compressor/#webpage",
         "url": "https://sollius.com.br/sollius-compressor",
-        "name": "Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis",
-        "description": "Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.",
+        "name": "Sollarys Ultra Compressor v1.01 para Windows | Download Oficial Grátis",
+        "description": "Baixe o Sollarys Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.",
         "inLanguage": "pt-BR"
       },
       {
         "@type": "SoftwareApplication",
         "@id": "https://sollius.com.br/sollius-compressor/#software",
-        "name": "Sollius Ultra Compressor",
+        "name": "Sollarys Ultra Compressor",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Windows 11, Windows 10 (64-bit)",
         "fileSize": "14.7 MB",
         "softwareVersion": "1.01",
         "releaseDate": "2026-10-29",
-        "downloadUrl": "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+        "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -418,8 +418,13 @@ for (const r of ROUTES) {
 }
 
 // Alias: /programas/compressor -> /sollius-compressor
+// Alias: /sollarys -> /sollius-compressor/
+const sollarysDir = path.join(rootDir, 'sollarys');
+if (!fs.existsSync(sollarysDir)) fs.mkdirSync(sollarysDir, { recursive: true });
+fs.writeFileSync(path.join(sollarysDir, 'index.html'), '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/sollius-compressor/"><title>Redirecionando para Sollarys Ultra Compressor...</title><link rel="canonical" href="https://sollius.com.br/sollius-compressor/"></head><body><script>window.location.href="/sollius-compressor/";</script></body></html>', 'utf8');
+
 const progCompDir = path.join(rootDir, 'programas', 'compressor');
 if (!fs.existsSync(progCompDir)) fs.mkdirSync(progCompDir, { recursive: true });
-fs.writeFileSync(path.join(progCompDir, 'index.html'), `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/sollius-compressor"><title>Redirecionando para Sollius Ultra Compressor...</title><link rel="canonical" href="https://sollius.com.br/sollius-compressor"></head><body><script>window.location.href='/sollius-compressor';</script></body></html>`, 'utf8');
+fs.writeFileSync(path.join(progCompDir, 'index.html'), `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/sollius-compressor"><title>Redirecionando para Sollarys Ultra Compressor...</title><link rel="canonical" href="https://sollius.com.br/sollius-compressor"></head><body><script>window.location.href='/sollius-compressor';</script></body></html>`, 'utf8');
 
 console.log('All routes generated successfully with 100% Pre-rendered SEO and Dedicated Schema!');

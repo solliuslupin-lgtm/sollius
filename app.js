@@ -104,13 +104,13 @@ const ROUTE_MAP = {
     path: '/programas/',
     hash: '#programas',
     title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
-    desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollius Ultra Compressor v1.01 com multithread e auto-atualização contínua.'
+    desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.01 com multithread e auto-atualização contínua.'
   },
   'compressor-pc': {
     path: '/sollius-compressor/',
     hash: '#sollius-compressor',
-    title: 'Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
-    desc: 'Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Substituto definitivo para WinRAR e 7-Zip com motor multithread, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.'
+    title: 'Sollarys Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
+    desc: 'Baixe o Sollarys Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Substituto definitivo para WinRAR e 7-Zip com motor multithread, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.'
   }
 };
 
@@ -166,6 +166,10 @@ const PATH_TO_TAB = {
   '/softwares/': 'programas',
   '/desktop': 'programas',
   '/desktop/': 'programas',
+  '/sollarys': 'compressor-pc',
+  '/sollarys/': 'compressor-pc',
+  '/sollarys-compressor': 'compressor-pc',
+  '/sollarys-compressor/': 'compressor-pc',
   '/sollius-compressor': 'compressor-pc',
   '/sollius-compressor/': 'compressor-pc',
   '/compressor-pc': 'compressor-pc',
