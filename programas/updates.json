@@ -1,19 +1,19 @@
 {
   "repository": "SOLLIUS Official Desktop Software Repository",
-  "updatedAt": "2026-10-29T21:00:00Z",
+  "updatedAt": "2026-10-29T21:35:00Z",
   "apps": {
     "sollius-compressor": {
       "id": "sollarys-compressor",
       "name": "Sollarys Ultra Compressor",
-      "version": "1.01",
-      "latestVersion": "1.01",
+      "version": "1.02",
+      "latestVersion": "1.02",
       "releaseDate": "2026-10-29",
       "minSupportedVersion": "1.01",
       "mandatory": false,
-      "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
-      "sha256": "0f3686f784f6a54bfc18c315312903761dcd3d07777184611f899cc4f2a07151",
-      "fileSize": "14.7 MB",
-      "changelog": "Lançamento oficial da versão estável v1.01 do Sollarys. Motor multithread com ultra compressão Zstandard e suporte a .sol, ZIP, 7Z, RAR e ISO com auto-atualização conectada."
+      "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
+      "sha256": "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
+      "fileSize": "18.5 MB",
+      "changelog": "Versão 1.02 do Sollarys: Nova barra de progresso com porcentagem em tempo real, medição de velocidade, suporte a Pausar, Retomar e Cancelar operações e aprimoramento no motor Zstandard."
     },
     "sollius-cleaner": {
       "id": "sollius-cleaner",

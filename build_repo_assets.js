@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const zlib = require('zlib');
 
 const repo = require('./programas_data.js');
 
@@ -17,18 +16,17 @@ const updatesJsonContent = JSON.stringify({
   updatedAt: repo.updatedAt,
   apps: {
     "sollius-compressor": {
-      id: "sollius-compressor",
-      name: "Sollius Ultra Compressor",
-      version: "1.01",
-      latestVersion: "1.01",
+      id: "sollarys-compressor",
+      name: "Sollarys Ultra Compressor",
+      version: "1.02",
+      latestVersion: "1.02",
       releaseDate: "2026-10-29",
       minSupportedVersion: "1.01",
       mandatory: false,
-      downloadUrl: "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
-      portableUrl: "https://sollius.com.br/downloads/Sollius-1.01-Windows-x64.zip",
-      sha256: "bb5d16a30033f04852d7e5d118b526ee13f61633f00cb4480b88705b8618693d",
-      fileSize: "14.7 MB",
-      changelog: "Lançamento oficial da versão estável v1.01. Motor multithread com ultra compressão Zstandard e suporte a ZIP, 7Z, RAR e ISO com auto-atualização conectada."
+      downloadUrl: "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
+      sha256: "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
+      fileSize: "18.5 MB",
+      changelog: "Versão 1.02 do Sollarys: Nova barra de progresso com porcentagem em tempo real, medição de velocidade, suporte a Pausar, Retomar e Cancelar operações e aprimoramento no motor Zstandard."
     },
     "sollius-cleaner": {
       id: "sollius-cleaner",
@@ -49,22 +47,31 @@ const updatesJsonContent = JSON.stringify({
 
 fs.writeFileSync(path.join(programasDir, 'updates.json'), updatesJsonContent, 'utf8');
 fs.writeFileSync(path.join(downloadsDir, 'updates.json'), updatesJsonContent, 'utf8');
-console.log('Created updates.json in /programas and /downloads');
 
-// 2. Create downloads/index.html that redirects to /programas
+// 2. Stable manifest for updater
+const stableJsonContent = JSON.stringify({
+  version: "1.02",
+  type: "installer",
+  url: "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
+  sha256: "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
+  notes: "Atualização Sollarys 1.02: Nova barra de progresso com porcentagem em tempo real, cálculo de velocidade de compactação/extração, e botões de controle para Pausar, Retomar e Cancelar."
+}, null, 2);
+
+fs.writeFileSync(path.join(programasDir, 'stable.json'), stableJsonContent, 'utf8');
+fs.writeFileSync(path.join(downloadsDir, 'stable.json'), stableJsonContent, 'utf8');
+
+// 3. Create downloads/index.html that redirects to /programas/
 const downloadsRedirectHtml = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=/programas">
+  <meta http-equiv="refresh" content="0; url=/programas/">
   <title>Redirecionando para SOLLIUS Softwares Desktop...</title>
-  <link rel="canonical" href="https://sollius.com.br/programas">
+  <link rel="canonical" href="https://sollius.com.br/programas/">
 </head>
 <body>
-  <p>Redirecionando para a central de downloads... <a href="/programas">Clique aqui se não for redirecionado.</a></p>
+  <p>Redirecionando para a central de downloads... <a href="/programas/">Clique aqui se não for redirecionado.</a></p>
 </body>
 </html>`;
 fs.writeFileSync(path.join(downloadsDir, 'index.html'), downloadsRedirectHtml, 'utf8');
-console.log('Repo assets build complete for v1.01!');
-
-console.log('Build repo assets complete!');
+console.log('Repo assets build complete for v1.02!');

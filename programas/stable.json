@@ -1,7 +1,7 @@
 {
-  "version": "1.01",
+  "version": "1.02",
   "type": "installer",
-  "url": "https://sollius.com.br/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
-  "sha256": "0f3686f784f6a54bfc18c315312903761dcd3d07777184611f899cc4f2a07151",
-  "notes": "Lançamento oficial do Sollarys 1.01. Motor multithread de alta compressão Zstandard, LZMA2 e suporte a arquivos .sol, ZIP, 7Z e RAR."
+  "url": "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
+  "sha256": "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
+  "notes": "Atualização Sollarys 1.02: Nova barra de progresso com porcentagem em tempo real, cálculo de velocidade de compactação/extração, e botões de controle para Pausar, Retomar e Cancelar."
 }

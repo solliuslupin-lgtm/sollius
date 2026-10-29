@@ -4,35 +4,42 @@
 // ========================================================
 
 const SOLLIUS_DESKTOP_REPOSITORY = {
-  updatedAt: "2026-10-29T18:00:00Z",
-  repositoryVersion: "1.01",
+  updatedAt: "2026-10-29T21:35:00Z",
+  repositoryVersion: "1.02",
   apps: [
     {
       id: "sollarys-compressor",
       name: "Sollarys Ultra Compressor",
       tagline: "Substituto definitivo para WinRAR e 7-Zip com ultra compressão multithread",
-      latestVersion: "1.01",
+      latestVersion: "1.02",
       releaseDate: "29 de Outubro de 2026",
       status: "available",
-      badge: "Lançamento Oficial v1.01",
+      badge: "Nova Versão v1.02",
       isFeatured: true,
       icon: "🗜️",
       accentColor: "#3B82F6",
-      downloadUrl: "/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
-      fileSize: "14.7 MB",
-      sha256: "0f3686f784f6a54bfc18c315312903761dcd3d07777184611f899cc4f2a07151",
+      downloadUrl: "/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
+      fileSize: "18.5 MB",
+      sha256: "34285b62deb294991b6ae6f80bb2fd7bbf6e41083ffe641c6462ff08992d8440",
       minOS: "Windows 10 / 11 (64-bit)",
       architecture: "x64 (Nativo)",
       license: "Freeware • 100% Gratuito",
       description: "Compactador e descompactador nativo de alta velocidade com algoritmos modernos multithread (Zstandard, 7Z, LZMA2 e ZIP). Reduza arquivos e pastas em até 90% sem perdas, com criptografia AES-256 e sem propagandas irritantes.",
       features: [
         "Velocidade Turbo: Compactação até 2x mais rápida que formatos legados utilizando todos os núcleos do processador",
-        "Suporte Universal: Abre e extrai arquivos .ZIP, .7Z, .RAR, .TAR, .GZ, .BZ2 e imagens .ISO",
-        "Segurança Militar: Criptografia AES-256 bits integrada para proteger dados confidenciais com senha",
+        "Barra de Progresso com %: Indicador visual em tempo real com porcentagem precisa e velocidade em MB/s",
+        "Controles Totais: Botões para Pausar, Retomar e Cancelar tarefas de compactação e extração a qualquer momento",
+        "Suporte Universal: Abre e extrai arquivos .sol, .ZIP, .7Z, .RAR, .TAR, .GZ, .BZ2 e imagens .ISO",
+        "Segurança Militar: Criptografia e verificação de integridade BLAKE3 integrada sem perdas",
         "Auto-Atualização Conectada: Conectado automaticamente ao repositório oficial da Sollius para novas versões",
         "Zero Adware: Sem telas de aviso, sem compra de licença e sem instalar softwares indesejados"
       ],
       changelog: [
+        {
+          version: "1.02",
+          date: "29/10/2026",
+          notes: "Nova barra de progresso com porcentagem em tempo real, medição de velocidade de transferência, suporte a Pausar, Retomar e Cancelar operações e motor Zstandard otimizado."
+        },
         {
           version: "1.01",
           date: "29/10/2026",

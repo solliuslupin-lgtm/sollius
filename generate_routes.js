@@ -147,7 +147,7 @@ const ROUTES = [
     folder: 'programas',
     path: '/programas/',
     title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
-    desc: 'Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.01 com multithread e auto-atualização contínua.',
+    desc: 'Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.02 com multithread e auto-atualização contínua.',
     schemaType: 'SoftwareApplication',
     ratingCount: '1850'
   },
@@ -155,8 +155,8 @@ const ROUTES = [
     tab: 'compressor-pc',
     folder: 'sollius-compressor',
     path: '/sollius-compressor/',
-    title: 'Sollarys Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
-    desc: 'Baixe o Sollarys Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.',
+    title: 'Sollarys Ultra Compressor v1.02 para Windows | Download Oficial Grátis',
+    desc: 'Baixe o Sollarys Ultra Compressor v1.02 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, barra de progresso com %, pausa/retomada e auto-atualização silenciosa.',
     schemaType: 'SoftwareApplication',
     ratingCount: '2340'
   }
@@ -248,9 +248,9 @@ function buildProgramasJsonLd() {
       {
         "@type": "WebPage",
         "@id": "https://sollius.com.br/programas/#webpage",
-        "url": "https://sollius.com.br/programas",
+        "url": "https://sollius.com.br/programas/",
         "name": "Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio",
-        "description": "Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.0.0 com multithread e auto-atualização contínua.",
+        "description": "Baixe o instalador oficial para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.02 com multithread e auto-atualização contínua.",
         "inLanguage": "pt-BR"
       },
       {
@@ -259,9 +259,9 @@ function buildProgramasJsonLd() {
         "name": "Sollarys Ultra Compressor",
         "operatingSystem": "Windows 10, Windows 11 (64-bit)",
         "applicationCategory": "UtilitiesApplication",
-        "softwareVersion": "1.01",
-        "fileSize": "14.7MB",
-        "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
+        "softwareVersion": "1.02",
+        "fileSize": "18.5 MB",
+        "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -286,9 +286,9 @@ function buildDedicatedCompressorJsonLd() {
       {
         "@type": "WebPage",
         "@id": "https://sollius.com.br/sollius-compressor/#webpage",
-        "url": "https://sollius.com.br/sollius-compressor",
-        "name": "Sollarys Ultra Compressor v1.01 para Windows | Download Oficial Grátis",
-        "description": "Baixe o Sollarys Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.",
+        "url": "https://sollius.com.br/sollius-compressor/",
+        "name": "Sollarys Ultra Compressor v1.02 para Windows | Download Oficial Grátis",
+        "description": "Baixe o Sollarys Ultra Compressor v1.02 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, barra de progresso com %, pausa/retomada e auto-atualização silenciosa.",
         "inLanguage": "pt-BR"
       },
       {
@@ -297,10 +297,10 @@ function buildDedicatedCompressorJsonLd() {
         "name": "Sollarys Ultra Compressor",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Windows 11, Windows 10 (64-bit)",
-        "fileSize": "14.7 MB",
-        "softwareVersion": "1.01",
+        "fileSize": "18.5 MB",
+        "softwareVersion": "1.02",
         "releaseDate": "2026-10-29",
-        "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.01-Setup-Windows-x64.exe",
+        "downloadUrl": "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
         "offers": {
           "@type": "Offer",
           "price": "0",
