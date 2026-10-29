@@ -8,6 +8,7 @@ const payload = JSON.stringify({
     'https://sollius.com.br/',
     'https://sollius.com.br/jogos',
     'https://sollius.com.br/programas',
+    'https://sollius.com.br/sollius-compressor',
     'https://sollius.com.br/remover-fundo',
     'https://sollius.com.br/curriculo-ats',
     'https://sollius.com.br/cartao-de-visita',

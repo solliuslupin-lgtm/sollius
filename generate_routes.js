@@ -150,6 +150,15 @@ const ROUTES = [
     desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollius Ultra Compressor v1.01 com multithread e auto-atualização contínua.',
     schemaType: 'SoftwareApplication',
     ratingCount: '1850'
+  },
+  {
+    tab: 'compressor-pc',
+    folder: 'sollius-compressor',
+    path: '/sollius-compressor',
+    title: 'Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis',
+    desc: 'Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.',
+    schemaType: 'SoftwareApplication',
+    ratingCount: '2340'
   }
 ];
 
@@ -270,6 +279,45 @@ function buildProgramasJsonLd() {
   }, null, 2);
 }
 
+function buildDedicatedCompressorJsonLd() {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://sollius.com.br/sollius-compressor/#webpage",
+        "url": "https://sollius.com.br/sollius-compressor",
+        "name": "Sollius Ultra Compressor v1.01 para Windows | Download Oficial Grátis",
+        "description": "Baixe o Sollius Ultra Compressor v1.01 para Windows 11 e 10 (64-bit). Motor multithread ultrarrápido, suporte a .sol, ZIP, 7Z, RAR e auto-atualização silenciosa.",
+        "inLanguage": "pt-BR"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://sollius.com.br/sollius-compressor/#software",
+        "name": "Sollius Ultra Compressor",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Windows 11, Windows 10 (64-bit)",
+        "fileSize": "14.7 MB",
+        "softwareVersion": "1.01",
+        "releaseDate": "2026-10-29",
+        "downloadUrl": "https://sollius.com.br/downloads/Sollius-1.01-Setup-Windows-x64.exe",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.95",
+          "ratingCount": "2340",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }
+    ]
+  }, null, 2);
+}
+
 function buildToolJsonLd(r) {
   return JSON.stringify({
     "@context": "https://schema.org",
@@ -341,7 +389,7 @@ for (const r of ROUTES) {
   if (r.tab === 'jogos') {
     html = html.replace('class="header-nav-btn active" data-tab="hub"', 'class="header-nav-btn" data-tab="hub"');
     html = html.replace('class="header-nav-btn" data-tab="jogos"', 'class="header-nav-btn active" data-tab="jogos"');
-  } else if (r.tab === 'programas') {
+  } else if (r.tab === 'programas' || r.tab === 'compressor-pc') {
     html = html.replace('class="header-nav-btn active" data-tab="hub"', 'class="header-nav-btn" data-tab="hub"');
     html = html.replace('class="header-nav-btn" data-tab="programas"', 'class="header-nav-btn active" data-tab="programas"');
   }
@@ -349,7 +397,9 @@ for (const r of ROUTES) {
   // ========================================================
   // CRITICAL SEO FIX 3: SCHEMA.ORG DEDICADO POR ROTA
   // ========================================================
-  const customSchema = r.tab === 'jogos' ? buildGamesJsonLd() : (r.tab === 'programas' ? buildProgramasJsonLd() : buildToolJsonLd(r));
+  const customSchema = r.tab === 'jogos' ? buildGamesJsonLd() : 
+                       (r.tab === 'programas' ? buildProgramasJsonLd() : 
+                       (r.tab === 'compressor-pc' ? buildDedicatedCompressorJsonLd() : buildToolJsonLd(r)));
   const schemaInjection = `\n  <!-- SCHEMA.ORG DEDICADO PARA ${r.path} -->\n  <script type="application/ld+json">\n${customSchema}\n  </script>`;
   html = html.replace('</head>', `${schemaInjection}\n</head>`);
 
@@ -366,5 +416,10 @@ for (const r of ROUTES) {
   fs.writeFileSync(targetFile, html, 'utf8');
   console.log(`Generated route for ${r.path} -> ${targetFile}`);
 }
+
+// Alias: /programas/compressor -> /sollius-compressor
+const progCompDir = path.join(rootDir, 'programas', 'compressor');
+if (!fs.existsSync(progCompDir)) fs.mkdirSync(progCompDir, { recursive: true });
+fs.writeFileSync(path.join(progCompDir, 'index.html'), `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/sollius-compressor"><title>Redirecionando para Sollius Ultra Compressor...</title><link rel="canonical" href="https://sollius.com.br/sollius-compressor"></head><body><script>window.location.href='/sollius-compressor';</script></body></html>`, 'utf8');
 
 console.log('All routes generated successfully with 100% Pre-rendered SEO and Dedicated Schema!');

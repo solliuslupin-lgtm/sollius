@@ -2738,3 +2738,406 @@ button:active, .cat-pill:active, .header-nav-btn:active {
 
 
 
+
+/* ======================================================== */
+/* PÁGINA DEDICADA: SOLLIUS ULTRA COMPRESSOR LANDING PAGE   */
+/* ======================================================== */
+
+.product-landing {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.product-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.product-breadcrumb a {
+  color: #60A5FA;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.product-breadcrumb a:hover {
+  color: #93C5FD;
+  text-decoration: underline;
+}
+
+.product-hero-container {
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 50%),
+              linear-gradient(135deg, rgba(17, 24, 48, 0.95) 0%, rgba(10, 14, 28, 0.98) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.product-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 9999px;
+  color: #60A5FA;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1.25rem;
+}
+
+.product-hero-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.5px;
+}
+
+.product-hero-title .gradient-text {
+  background: linear-gradient(135deg, #60A5FA 0%, #38BDF8 50%, #34D399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.product-hero-lead {
+  font-size: 1.15rem;
+  color: #CBD5E1;
+  line-height: 1.6;
+  max-width: 820px;
+  margin-bottom: 2rem;
+}
+
+.product-quick-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.btn-cta-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.1rem 2rem;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #07090E;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  text-decoration: none;
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.35);
+  transition: all 0.25s ease;
+  border: 1px solid rgba(253, 230, 138, 0.4);
+}
+
+.btn-cta-gold:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(245, 158, 11, 0.5);
+  color: #07090E;
+}
+
+.product-trust-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.88rem;
+  color: #94A3B8;
+}
+
+.product-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.product-trust-item span:first-child {
+  color: #34D399;
+}
+
+/* ÁREA DE DOWNLOAD COMPACTA & BEM ARRUMADA */
+.download-section-box {
+  background: linear-gradient(135deg, rgba(15, 21, 43, 0.95) 0%, rgba(9, 13, 26, 0.98) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.download-section-header {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 2rem auto;
+}
+
+.download-section-header h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.download-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.download-option-card {
+  background: rgba(10, 14, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.download-option-card.featured {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15);
+  background: linear-gradient(180deg, rgba(20, 29, 60, 0.9) 0%, rgba(10, 14, 28, 0.95) 100%);
+}
+
+.download-option-card:hover {
+  transform: translateY(-4px);
+  border-color: #60A5FA;
+}
+
+.download-card-badge {
+  position: absolute;
+  top: -12px;
+  left: 1.5rem;
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  letter-spacing: 0.5px;
+}
+
+.download-card-badge.gold {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #07090E;
+}
+
+.download-card-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0.5rem 0 0.25rem 0;
+}
+
+.download-card-meta {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  margin-bottom: 1.25rem;
+}
+
+.download-card-meta strong {
+  color: #34D399;
+}
+
+.download-benefit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.88rem;
+  color: #CBD5E1;
+}
+
+.download-benefit-list li {
+  padding: 0.35rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* MATRIZ DE COMPATIBILIDADE WINDOWS & 32/64 BITS */
+.compat-matrix-panel {
+  background: rgba(8, 12, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.compat-matrix-header {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.compat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.compat-pill-box {
+  background: rgba(16, 22, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.compat-pill-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.compat-status-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.compat-status-tag.ok {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.compat-status-tag.warn {
+  background: rgba(245, 158, 11, 0.2);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.compat-status-tag.info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60A5FA;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.compat-pill-desc {
+  font-size: 0.78rem;
+  color: #94A3B8;
+  line-height: 1.4;
+}
+
+/* SHA-256 BOX */
+.hash-verify-box {
+  background: rgba(10, 14, 26, 0.9);
+  border: 1px dashed rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: #94A3B8;
+}
+
+.hash-code-display {
+  font-family: monospace;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  color: #60A5FA;
+  word-break: break-all;
+}
+
+.btn-copy-hash {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #93C5FD;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy-hash:hover {
+  background: rgba(59, 130, 246, 0.3);
+  color: #fff;
+}
+
+/* TABELA COMPARATIVA */
+.comparison-section {
+  margin-bottom: 2.5rem;
+}
+
+.comparison-table-wrapper {
+  overflow-x: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(13, 18, 36, 0.85);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.comparison-table th {
+  background: rgba(18, 25, 48, 0.95);
+  color: #94A3B8;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comparison-table th.sollius-col,
+.comparison-table td.sollius-col {
+  background: rgba(59, 130, 246, 0.08);
+  border-left: 1px solid rgba(59, 130, 246, 0.25);
+  border-right: 1px solid rgba(59, 130, 246, 0.25);
+  font-weight: 700;
+  color: #fff;
+}
+
+.comparison-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.comparison-table tr:hover td.sollius-col {
+  background: rgba(59, 130, 246, 0.12);
+}
