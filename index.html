@@ -1518,64 +1518,184 @@
     <!-- TAB: GRAVADOR DE TELA -->
     <!-- ======================================================== -->
     <div id="tab-recorder" class="tab-content hidden">
-      <div style="max-width: 860px; margin: 0 auto;">
+      <div style="max-width: 920px; margin: 0 auto;">
         
         <div class="tool-back-bar">
           <a href="/" onclick="switchTab('hub'); return false;" class="btn-back">← Voltar para Todas as Ferramentas</a>
           <div class="shield-badge"><span class="pulse-dot"></span> 100% no seu navegador • Zero nuvem</div>
         </div>
 
-        <div class="flex-between" style="margin-bottom: 1.5rem;">
+        <div class="flex-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h2 style="font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+            <h2 style="font-size: 1.7rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; color: #fff;">
               <span>🎥</span>
               <span>Gravador de Tela & Áudio Local</span>
             </h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Grave sua tela, gameplay ou tutoriais com som do sistema e microfone sem instalar nenhum programa.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+              Grave tutoriais, gameplay e apresentações com áudio do PC e microfone em faixas separadas ou sem áudio.
+            </p>
           </div>
-          <span style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; font-size: 0.75rem; font-weight: 700;">
-            Zero Instalação • Ilimitado
+          <span class="tool-badge" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; font-weight: 700;">
+            Gravação Local • Sem Limite de Tempo
           </span>
         </div>
 
-        <div class="glass-panel" style="padding: 2.5rem; text-align: center;">
-          
-          <div style="height: 320px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; margin-bottom: 2rem;">
-            <video id="recorder-video-preview" style="width: 100%; height: 100%; object-fit: contain;" class="hidden" autoplay muted></video>
+        <!-- Painel de Configurações de Áudio -->
+        <div class="recorder-settings-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎙️</span>
+                <span>Opções de Áudio da Gravação</span>
+              </h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0.25rem 0 0;">
+                Selecione como deseja gravar o som antes de iniciar:
+              </p>
+            </div>
+            <span id="recorder-selected-badge" class="tool-badge" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); font-weight: 700;">
+              🔀 Faixas Separadas (Recomendado)
+            </span>
+          </div>
+
+          <!-- Grade de Seleção dos Modos -->
+          <div class="recorder-modes-grid">
             
-            <div id="recorder-idle-state">
-              <div style="width: 64px; height: 64px; border-radius: 18px; background: rgba(239, 68, 68, 0.15); color: #F87171; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem auto;">
-                🔴
+            <!-- Modo 1: Áudio do PC e Mic SEPARADOS -->
+            <div class="recorder-mode-card active" id="rec-card-separate" onclick="setRecorderAudioMode('separate')">
+              <div class="recorder-mode-icon" style="color: #60A5FA;">🔀</div>
+              <div class="recorder-mode-info">
+                <div class="recorder-mode-title">Microfone e Som do PC Separados</div>
+                <div class="recorder-mode-desc">Gera o vídeo + arquivos de áudio isolados (perfeito para editar no Premiere/CapCut).</div>
               </div>
-              <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">Pronto para Gravar</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Você poderá escolher uma janela de jogo, aba ou sua tela cheia.</p>
             </div>
 
-            <!-- Timer Badge -->
-            <div id="recorder-timer-badge" class="hidden" style="position: absolute; top: 1rem; left: 1rem; padding: 0.4rem 0.85rem; border-radius: 9999px; background: rgba(220, 38, 38, 0.9); color: #fff; font-family: monospace; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-              <span style="width: 8px; height: 8px; background: #fff; border-radius: 50%;"></span>
-              <span id="recorder-timer-text">00:00</span>
+            <!-- Modo 2: Nenhum dos dois (Mudo / Sem Áudio) -->
+            <div class="recorder-mode-card" id="rec-card-none" onclick="setRecorderAudioMode('none')">
+              <div class="recorder-mode-icon" style="color: #94A3B8;">🔇</div>
+              <div class="recorder-mode-info">
+                <div class="recorder-mode-title">Nenhum dos dois (Sem Áudio)</div>
+                <div class="recorder-mode-desc">Gravação 100% muda da tela, sem microfone e sem som do sistema.</div>
+              </div>
+            </div>
+
+            <!-- Modo 3: Apenas Áudio do PC -->
+            <div class="recorder-mode-card" id="rec-card-pc" onclick="setRecorderAudioMode('pc')">
+              <div class="recorder-mode-icon" style="color: #34D399;">🔊</div>
+              <div class="recorder-mode-info">
+                <div class="recorder-mode-title">Apenas Áudio do PC</div>
+                <div class="recorder-mode-desc">Grava somente o som do sistema, jogo ou aba do navegador (sem microfone).</div>
+              </div>
+            </div>
+
+            <!-- Modo 4: Apenas Microfone -->
+            <div class="recorder-mode-card" id="rec-card-mic" onclick="setRecorderAudioMode('mic')">
+              <div class="recorder-mode-icon" style="color: #FBBF24;">🎙️</div>
+              <div class="recorder-mode-info">
+                <div class="recorder-mode-title">Apenas Microfone</div>
+                <div class="recorder-mode-desc">Grava somente sua voz (sem o áudio do computador).</div>
+              </div>
+            </div>
+
+            <!-- Modo 5: Ambos Mixados -->
+            <div class="recorder-mode-card" id="rec-card-mixed" onclick="setRecorderAudioMode('mixed')">
+              <div class="recorder-mode-icon" style="color: #C084FC;">🎛️</div>
+              <div class="recorder-mode-info">
+                <div class="recorder-mode-title">Ambos Mixados Juntos</div>
+                <div class="recorder-mode-desc">Junta o som do PC e do microfone em uma única faixa direta dentro do vídeo.</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dica Dinâmica de Áudio -->
+          <div id="recorder-audio-hint" style="margin-top: 1rem; font-size: 0.82rem; color: #93C5FD; background: rgba(59, 130, 246, 0.1); padding: 0.75rem 1rem; border-radius: 12px; border-left: 3px solid #3B82F6; display: flex; align-items: center; gap: 0.6rem;">
+            <span>💡</span>
+            <span><strong>Dica para o som do PC:</strong> Ao clicar em "Iniciar Gravação", certifique-se de marcar a caixinha <em>"Compartilhar áudio do sistema"</em> na janela de seleção do navegador.</span>
+          </div>
+        </div>
+
+        <!-- Área de Gravação / Preview de Vídeo -->
+        <div class="glass-panel" style="padding: 2.25rem; text-align: center;">
+          
+          <div style="height: 360px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: #000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; margin-bottom: 2rem;">
+            <video id="recorder-video-preview" style="width: 100%; height: 100%; object-fit: contain;" class="hidden" autoplay muted playsinline></video>
+            
+            <div id="recorder-idle-state">
+              <div style="width: 68px; height: 68px; border-radius: 20px; background: rgba(239, 68, 68, 0.15); color: #F87171; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.25rem auto; border: 1px solid rgba(239, 68, 68, 0.3);">
+                🔴
+              </div>
+              <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.4rem; color: #fff;">Pronto para Gravar</h4>
+              <p style="font-size: 0.88rem; color: var(--text-muted); max-width: 480px; margin: 0 auto;">
+                Clique no botão abaixo para escolher sua tela cheia, janela de jogo ou aba do navegador.
+              </p>
+            </div>
+
+            <!-- Timer & Badges de Gravação Ativa -->
+            <div id="recorder-timer-badge" class="hidden" style="position: absolute; top: 1rem; left: 1rem; padding: 0.45rem 1rem; border-radius: 9999px; background: rgba(220, 38, 38, 0.9); color: #fff; font-family: monospace; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);">
+              <span style="width: 10px; height: 10px; background: #fff; border-radius: 50%; animation: pulse 1s infinite;"></span>
+              <span id="recorder-timer-text">00:00:00</span>
+            </div>
+
+            <!-- Badge do Modo Ativo durante a Gravação -->
+            <div id="recorder-live-mode-badge" class="hidden" style="position: absolute; top: 1rem; right: 1rem; padding: 0.45rem 0.9rem; border-radius: 9999px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); font-size: 0.78rem; font-weight: 700; color: #60A5FA;">
+              🔀 Faixas Separadas Ativas
             </div>
           </div>
 
-          <div style="display: flex; justify-content: center; gap: 1rem;">
-            <button id="recorder-start-btn" onclick="startScreenRecording()" class="btn-primary" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #fff;">
+          <!-- Botões de Controle -->
+          <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <button id="recorder-start-btn" onclick="startScreenRecording()" class="btn-primary" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #fff; font-size: 1.05rem; padding: 0.9rem 2rem; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);">
               <span>🔴</span>
               <span>Iniciar Gravação</span>
             </button>
-            <button id="recorder-stop-btn" onclick="stopScreenRecording()" class="hidden btn-secondary">
+            <button id="recorder-stop-btn" onclick="stopScreenRecording()" class="hidden btn-secondary" style="border-color: #EF4444; color: #F87171; font-size: 1.05rem; padding: 0.9rem 2rem; background: rgba(239, 68, 68, 0.15);">
               <span>⏹️</span>
-              <span>Parar e Baixar Vídeo</span>
+              <span>Parar Gravação e Salvar</span>
             </button>
           </div>
 
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- PAINEL DE RESULTADOS COM FAIXAS SEPARADAS / DOWNLOAD     -->
+        <!-- ======================================================== -->
+        <div id="recorder-results-panel" class="hidden recorder-results-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 1rem;">
+            <div>
+              <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎉</span>
+                <span>Gravação Concluída com Sucesso!</span>
+              </h3>
+              <p style="font-size: 0.85rem; color: #CBD5E1; margin: 0.25rem 0 0;" id="recorder-result-summary">
+                Seus arquivos foram gerados e estão prontos para download.
+              </p>
+            </div>
+            <button onclick="resetRecorderUI()" class="btn-secondary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>🔄</span>
+              <span>Gravar Novamente</span>
+            </button>
+          </div>
+
+          <!-- Grade de Arquivos Separados -->
+          <div class="recorder-tracks-grid" id="recorder-tracks-container">
+            <!-- Os cards de faixas separadas são injetados aqui dinamicamente -->
+          </div>
+
+          <!-- Botão de Download Completo em ZIP -->
+          <div id="recorder-zip-row" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <strong style="color: #fff; font-size: 0.95rem; display: block;">Pacote Completo de Edição:</strong>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Baixe todas as faixas e o vídeo reunidos em um único arquivo .ZIP</span>
+            </div>
+            <button id="recorder-btn-zip" onclick="downloadAllRecordingAsZip()" class="btn-primary" style="background: linear-gradient(135deg, #10B981, #059669); font-size: 0.95rem; padding: 0.85rem 1.6rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);">
+              <span>📦</span>
+              <span>Baixar Tudo em 1 ZIP (.zip)</span>
+            </button>
+          </div>
         </div>
 
       </div>
     </div>
-
-
-
     <!-- ======================================================== -->
     <!-- TAB: TRANSCRITOR DE ÁUDIO & VÍDEO INTELIGENTE (ATÉ 2H) -->
     <!-- ======================================================== -->

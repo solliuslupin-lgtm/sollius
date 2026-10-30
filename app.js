@@ -983,76 +983,501 @@ function downloadQrCode() {
 
 
 // ========================================================
-// 6. GRAVADOR DE TELA & ÁUDIO CLIENT-SIDE
 // ========================================================
-let mediaRecorder = null;
-let recordedChunks = [];
+// 6. GRAVADOR DE TELA & ÁUDIO CLIENT-SIDE (MULTIFAIXAS E MUDO)
+// ========================================================
+let currentRecorderAudioMode = 'separate'; // 'separate', 'none', 'pc', 'mic', 'mixed'
+
+let activeDisplayStream = null;
+let activeMicStream = null;
+
+let mediaRecorderVideo = null;
+let mediaRecorderPcAudio = null;
+let mediaRecorderMic = null;
+
+let recordedVideoChunks = [];
+let recordedPcAudioChunks = [];
+let recordedMicChunks = [];
+
+let recordedVideoBlob = null;
+let recordedPcAudioBlob = null;
+let recordedMicBlob = null;
+
 let recordTimerInterval = null;
 let recordSeconds = 0;
 
+function setRecorderAudioMode(mode) {
+  currentRecorderAudioMode = mode;
+  
+  // Atualiza classes ativas nos cards
+  const cards = document.querySelectorAll('.recorder-mode-card');
+  cards.forEach(card => card.classList.remove('active'));
+  
+  const targetCard = document.getElementById(`rec-card-${mode}`);
+  if (targetCard) targetCard.classList.add('active');
+
+  // Atualiza badge e dica
+  const badge = document.getElementById('recorder-selected-badge');
+  const hint = document.getElementById('recorder-audio-hint');
+
+  if (mode === 'separate') {
+    if (badge) badge.innerText = '🔀 Faixas Separadas (Recomendado)';
+    if (hint) hint.innerHTML = '💡 <strong>Modo Faixas Separadas:</strong> Gera o vídeo da tela + o som do PC (.webm) + a voz do microfone (.webm) isolados em arquivos distintos ou em um ZIP.';
+  } else if (mode === 'none') {
+    if (badge) badge.innerText = '🔇 Nenhum dos dois (Mudo)';
+    if (hint) hint.innerHTML = '💡 <strong>Modo Silencioso:</strong> Grava apenas a imagem da tela. Nenhum som de microfone e nenhum som do computador será capturado.';
+  } else if (mode === 'pc') {
+    if (badge) badge.innerText = '🔊 Apenas Áudio do PC';
+    if (hint) hint.innerHTML = '💡 <strong>Modo Som do PC:</strong> Grava o áudio do sistema/jogo dentro do vídeo. Seu microfone não será ativado.';
+  } else if (mode === 'mic') {
+    if (badge) badge.innerText = '🎙️ Apenas Microfone';
+    if (hint) hint.innerHTML = '💡 <strong>Modo Apenas Voz:</strong> Grava sua voz no microfone. Nenhum som interno do computador será gravado.';
+  } else if (mode === 'mixed') {
+    if (badge) badge.innerText = '🎛️ Ambos Mixados Juntos';
+    if (hint) hint.innerHTML = '💡 <strong>Modo Mixado:</strong> Junta a sua voz e o som do jogo/PC em uma única faixa de áudio direto no vídeo gravado.';
+  }
+}
+
 async function startScreenRecording() {
   try {
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: { frameRate: { ideal: 30 } },
-      audio: true
-    });
-
     const preview = document.getElementById('recorder-video-preview');
     const idle = document.getElementById('recorder-idle-state');
     const timerBadge = document.getElementById('recorder-timer-badge');
+    const liveModeBadge = document.getElementById('recorder-live-mode-badge');
     const startBtn = document.getElementById('recorder-start-btn');
     const stopBtn = document.getElementById('recorder-stop-btn');
+    const resultsPanel = document.getElementById('recorder-results-panel');
 
-    preview.srcObject = stream;
+    if (resultsPanel) resultsPanel.classList.add('hidden');
+
+    const needPcAudio = (currentRecorderAudioMode === 'separate' || currentRecorderAudioMode === 'pc' || currentRecorderAudioMode === 'mixed');
+    const needMic = (currentRecorderAudioMode === 'separate' || currentRecorderAudioMode === 'mic' || currentRecorderAudioMode === 'mixed');
+
+    // 1. Capturar Tela (com ou sem áudio do display)
+    activeDisplayStream = await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: { ideal: 60 } },
+      audio: needPcAudio ? true : false
+    });
+
+    // 2. Capturar Microfone se solicitado
+    activeMicStream = null;
+    if (needMic) {
+      try {
+        activeMicStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+      } catch (micErr) {
+        console.warn('Microfone não concedido ou indisponível:', micErr);
+        if (typeof showToast === 'function') {
+          showToast('Aviso: Microfone não detectado. A gravação prosseguirá sem voz.');
+        }
+      }
+    }
+
+    // Alerta se o usuário selecionou áudio do PC mas esqueceu de marcar a caixinha no navegador
+    if (needPcAudio && activeDisplayStream.getAudioTracks().length === 0) {
+      if (typeof showToast === 'function') {
+        showToast('Aviso: Áudio do PC não foi marcado na janela de compartilhamento.');
+      }
+    }
+
+    // Atualiza preview de vídeo
+    preview.srcObject = activeDisplayStream;
     preview.classList.remove('hidden');
     idle.classList.add('hidden');
     timerBadge.classList.remove('hidden');
     startBtn.classList.add('hidden');
     stopBtn.classList.remove('hidden');
 
-    recordedChunks = [];
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9,opus' });
+    if (liveModeBadge) {
+      liveModeBadge.classList.remove('hidden');
+      if (currentRecorderAudioMode === 'separate') liveModeBadge.innerText = '🔀 Faixas Separadas Ativas';
+      else if (currentRecorderAudioMode === 'none') liveModeBadge.innerText = '🔇 Gravação Sem Áudio';
+      else if (currentRecorderAudioMode === 'pc') liveModeBadge.innerText = '🔊 Áudio do PC Ativo';
+      else if (currentRecorderAudioMode === 'mic') liveModeBadge.innerText = '🎙️ Microfone Ativo';
+      else if (currentRecorderAudioMode === 'mixed') liveModeBadge.innerText = '🎛️ Áudio Mixado';
+    }
 
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) recordedChunks.push(e.data);
+    // Parar automaticamente se o usuário clicar no botão nativo "Parar compartilhamento" do navegador
+    activeDisplayStream.getVideoTracks()[0].onended = () => {
+      stopScreenRecording();
     };
 
-    mediaRecorder.onstop = () => {
-      clearInterval(recordTimerInterval);
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      downloadBlob(blob, `sollius_gravacao_${Date.now()}.webm`);
+    recordedVideoChunks = [];
+    recordedPcAudioChunks = [];
+    recordedMicChunks = [];
 
-      // Reseta UI
-      preview.classList.add('hidden');
-      idle.classList.remove('hidden');
-      timerBadge.classList.add('hidden');
-      startBtn.classList.remove('hidden');
-      stopBtn.classList.add('hidden');
-      stream.getTracks().forEach(t => t.stop());
-    };
+    const mimeOptions = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm',
+      'video/mp4'
+    ];
+    let selectedMime = 'video/webm';
+    for (const m of mimeOptions) {
+      if (MediaRecorder.isTypeSupported(m)) {
+        selectedMime = m;
+        break;
+      }
+    }
 
-    mediaRecorder.start(1000);
+    // ========================================================
+    // CASO 1: MODO SEPARADO (VÍDEO + ÁUDIO PC + MIC ISOLADOS)
+    // ========================================================
+    if (currentRecorderAudioMode === 'separate') {
+      // 1.1 Gravador de Vídeo (com o som do PC embutido para reprodução direta)
+      let videoRecordStream;
+      if (activeDisplayStream.getAudioTracks().length > 0) {
+        videoRecordStream = new MediaStream([
+          ...activeDisplayStream.getVideoTracks(),
+          ...activeDisplayStream.getAudioTracks()
+        ]);
+      } else {
+        videoRecordStream = new MediaStream([...activeDisplayStream.getVideoTracks()]);
+      }
+      mediaRecorderVideo = new MediaRecorder(videoRecordStream, { mimeType: selectedMime });
+      mediaRecorderVideo.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedVideoChunks.push(e.data);
+      };
 
-    // Timer
+      // 1.2 Gravador dedicado do Áudio do PC
+      if (activeDisplayStream.getAudioTracks().length > 0) {
+        const pcAudioStream = new MediaStream([...activeDisplayStream.getAudioTracks()]);
+        mediaRecorderPcAudio = new MediaRecorder(pcAudioStream, { mimeType: 'audio/webm' });
+        mediaRecorderPcAudio.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedPcAudioChunks.push(e.data);
+        };
+        mediaRecorderPcAudio.start(1000);
+      } else {
+        mediaRecorderPcAudio = null;
+      }
+
+      // 1.3 Gravador dedicado do Microfone
+      if (activeMicStream && activeMicStream.getAudioTracks().length > 0) {
+        const micAudioStream = new MediaStream([...activeMicStream.getAudioTracks()]);
+        mediaRecorderMic = new MediaRecorder(micAudioStream, { mimeType: 'audio/webm' });
+        mediaRecorderMic.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedMicChunks.push(e.data);
+        };
+        mediaRecorderMic.start(1000);
+      } else {
+        mediaRecorderMic = null;
+      }
+
+      mediaRecorderVideo.onstop = handleRecordingStopped;
+      mediaRecorderVideo.start(1000);
+
+    // ========================================================
+    // CASO 2: NENHUM DOS DOIS (100% MUDO)
+    // ========================================================
+    } else if (currentRecorderAudioMode === 'none') {
+      const pureVideoStream = new MediaStream([...activeDisplayStream.getVideoTracks()]);
+      mediaRecorderVideo = new MediaRecorder(pureVideoStream, { mimeType: selectedMime });
+      mediaRecorderVideo.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedVideoChunks.push(e.data);
+      };
+      mediaRecorderPcAudio = null;
+      mediaRecorderMic = null;
+      mediaRecorderVideo.onstop = handleRecordingStopped;
+      mediaRecorderVideo.start(1000);
+
+    // ========================================================
+    // CASO 3: APENAS ÁUDIO DO PC
+    // ========================================================
+    } else if (currentRecorderAudioMode === 'pc') {
+      const pcStream = new MediaStream([
+        ...activeDisplayStream.getVideoTracks(),
+        ...activeDisplayStream.getAudioTracks()
+      ]);
+      mediaRecorderVideo = new MediaRecorder(pcStream, { mimeType: selectedMime });
+      mediaRecorderVideo.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedVideoChunks.push(e.data);
+      };
+      mediaRecorderPcAudio = null;
+      mediaRecorderMic = null;
+      mediaRecorderVideo.onstop = handleRecordingStopped;
+      mediaRecorderVideo.start(1000);
+
+    // ========================================================
+    // CASO 4: APENAS MICROFONE
+    // ========================================================
+    } else if (currentRecorderAudioMode === 'mic') {
+      const tracks = [...activeDisplayStream.getVideoTracks()];
+      if (activeMicStream && activeMicStream.getAudioTracks().length > 0) {
+        tracks.push(...activeMicStream.getAudioTracks());
+      }
+      const micVideoStream = new MediaStream(tracks);
+      mediaRecorderVideo = new MediaRecorder(micVideoStream, { mimeType: selectedMime });
+      mediaRecorderVideo.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedVideoChunks.push(e.data);
+      };
+      mediaRecorderPcAudio = null;
+      mediaRecorderMic = null;
+      mediaRecorderVideo.onstop = handleRecordingStopped;
+      mediaRecorderVideo.start(1000);
+
+    // ========================================================
+    // CASO 5: AMBOS MIXADOS JUNTOS
+    // ========================================================
+    } else if (currentRecorderAudioMode === 'mixed') {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const dest = audioCtx.createMediaStreamDestination();
+
+        if (activeDisplayStream.getAudioTracks().length > 0) {
+          const pcSource = audioCtx.createMediaStreamSource(new MediaStream(activeDisplayStream.getAudioTracks()));
+          pcSource.connect(dest);
+        }
+        if (activeMicStream && activeMicStream.getAudioTracks().length > 0) {
+          const micSource = audioCtx.createMediaStreamSource(activeMicStream);
+          micSource.connect(dest);
+        }
+
+        const mixedStream = new MediaStream([
+          ...activeDisplayStream.getVideoTracks(),
+          ...dest.stream.getAudioTracks()
+        ]);
+        mediaRecorderVideo = new MediaRecorder(mixedStream, { mimeType: selectedMime });
+      } catch (errMix) {
+        console.warn('Fallback sem mixagem de áudio:', errMix);
+        mediaRecorderVideo = new MediaRecorder(activeDisplayStream, { mimeType: selectedMime });
+      }
+
+      mediaRecorderVideo.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedVideoChunks.push(e.data);
+      };
+      mediaRecorderPcAudio = null;
+      mediaRecorderMic = null;
+      mediaRecorderVideo.onstop = handleRecordingStopped;
+      mediaRecorderVideo.start(1000);
+    }
+
+    // Timer de gravação
     recordSeconds = 0;
+    const timerText = document.getElementById('recorder-timer-text');
     recordTimerInterval = setInterval(() => {
       recordSeconds++;
-      const m = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+      const h = String(Math.floor(recordSeconds / 3600)).padStart(2, '0');
+      const m = String(Math.floor((recordSeconds % 3600) / 60)).padStart(2, '0');
       const s = String(recordSeconds % 60).padStart(2, '0');
-      document.getElementById('recorder-timer-text').innerText = `${m}:${s}`;
+      if (timerText) timerText.innerText = (h > 0) ? `${h}:${m}:${s}` : `${m}:${s}`;
     }, 1000);
 
   } catch (err) {
     if (err.name !== 'NotAllowedError') {
       alert('Não foi possível iniciar a gravação: ' + err.message);
     }
+    resetRecorderUI();
   }
 }
 
 function stopScreenRecording() {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
+  if (recordTimerInterval) {
+    clearInterval(recordTimerInterval);
+    recordTimerInterval = null;
   }
+
+  if (mediaRecorderPcAudio && mediaRecorderPcAudio.state !== 'inactive') {
+    mediaRecorderPcAudio.stop();
+  }
+  if (mediaRecorderMic && mediaRecorderMic.state !== 'inactive') {
+    mediaRecorderMic.stop();
+  }
+  if (mediaRecorderVideo && mediaRecorderVideo.state !== 'inactive') {
+    mediaRecorderVideo.stop();
+  }
+}
+
+function handleRecordingStopped() {
+  // Parar tracks de mídia
+  if (activeDisplayStream) {
+    activeDisplayStream.getTracks().forEach(t => t.stop());
+    activeDisplayStream = null;
+  }
+  if (activeMicStream) {
+    activeMicStream.getTracks().forEach(t => t.stop());
+    activeMicStream = null;
+  }
+
+  // Criar Blobs
+  recordedVideoBlob = new Blob(recordedVideoChunks, { type: 'video/webm' });
+  recordedPcAudioBlob = recordedPcAudioChunks.length > 0 ? new Blob(recordedPcAudioChunks, { type: 'audio/webm' }) : null;
+  recordedMicBlob = recordedMicChunks.length > 0 ? new Blob(recordedMicChunks, { type: 'audio/webm' }) : null;
+
+  // Atualizar UI
+  const preview = document.getElementById('recorder-video-preview');
+  const idle = document.getElementById('recorder-idle-state');
+  const timerBadge = document.getElementById('recorder-timer-badge');
+  const liveModeBadge = document.getElementById('recorder-live-mode-badge');
+  const startBtn = document.getElementById('recorder-start-btn');
+  const stopBtn = document.getElementById('recorder-stop-btn');
+  const resultsPanel = document.getElementById('recorder-results-panel');
+  const tracksContainer = document.getElementById('recorder-tracks-container');
+  const resultSummary = document.getElementById('recorder-result-summary');
+  const zipRow = document.getElementById('recorder-zip-row');
+
+  if (preview) {
+    preview.srcObject = null;
+    preview.classList.add('hidden');
+  }
+  if (idle) idle.classList.remove('hidden');
+  if (timerBadge) timerBadge.classList.add('hidden');
+  if (liveModeBadge) liveModeBadge.classList.add('hidden');
+  if (startBtn) startBtn.classList.remove('hidden');
+  if (stopBtn) stopBtn.classList.add('hidden');
+
+  if (!resultsPanel || !tracksContainer) return;
+
+  resultsPanel.classList.remove('hidden');
+  tracksContainer.innerHTML = '';
+
+  const timestamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+
+  // Card 1: Vídeo da Tela
+  const videoSizeStr = formatFileSize(recordedVideoBlob.size);
+  let videoTitle = 'Vídeo da Tela';
+  if (currentRecorderAudioMode === 'none') videoTitle = 'Vídeo da Tela (Sem Áudio / Mudo)';
+  else if (currentRecorderAudioMode === 'pc') videoTitle = 'Vídeo da Tela (com Áudio do PC)';
+  else if (currentRecorderAudioMode === 'mic') videoTitle = 'Vídeo da Tela (com Microfone)';
+  else if (currentRecorderAudioMode === 'mixed') videoTitle = 'Vídeo da Tela (Áudios Mixados)';
+
+  tracksContainer.innerHTML += `
+    <div class="recorder-track-card">
+      <div class="recorder-track-name">🎥 ${videoTitle}</div>
+      <div class="recorder-track-meta">Formato: WebM • Tamanho: <strong>${videoSizeStr}</strong></div>
+      <button onclick="downloadBlob(recordedVideoBlob, 'sollius_video_${timestamp}.webm')" class="recorder-btn-dl-track">
+        <span>⬇️</span>
+        <span>Baixar Vídeo (.webm)</span>
+      </button>
+    </div>
+  `;
+
+  // Se modo separado: Adicionar cards para Áudio do PC e Microfone
+  if (currentRecorderAudioMode === 'separate') {
+    if (resultSummary) {
+      resultSummary.innerText = 'Seus arquivos foram gerados em faixas separadas para edição profissional:';
+    }
+    if (zipRow) zipRow.style.display = 'flex';
+
+    // Faixa 2: Áudio do PC
+    if (recordedPcAudioBlob) {
+      const pcSizeStr = formatFileSize(recordedPcAudioBlob.size);
+      tracksContainer.innerHTML += `
+        <div class="recorder-track-card" style="border-color: rgba(52, 211, 153, 0.3);">
+          <div class="recorder-track-name" style="color: #34D399;">🔊 Som do PC (Jogo/Sistema)</div>
+          <div class="recorder-track-meta">Faixa Isolada • Tamanho: <strong>${pcSizeStr}</strong></div>
+          <button onclick="downloadBlob(recordedPcAudioBlob, 'sollius_audio_pc_${timestamp}.webm')" class="recorder-btn-dl-track" style="border-color: rgba(52,211,153,0.4); color: #34D399;">
+            <span>⬇️</span>
+            <span>Baixar Som do PC (.webm)</span>
+          </button>
+        </div>
+      `;
+    }
+
+    // Faixa 3: Microfone
+    if (recordedMicBlob) {
+      const micSizeStr = formatFileSize(recordedMicBlob.size);
+      tracksContainer.innerHTML += `
+        <div class="recorder-track-card" style="border-color: rgba(245, 158, 11, 0.3);">
+          <div class="recorder-track-name" style="color: #FBBF24;">🎙️ Voz do Microfone</div>
+          <div class="recorder-track-meta">Faixa Isolada • Tamanho: <strong>${micSizeStr}</strong></div>
+          <button onclick="downloadBlob(recordedMicBlob, 'sollius_voz_microfone_${timestamp}.webm')" class="recorder-btn-dl-track" style="border-color: rgba(245,158,11,0.4); color: #FBBF24;">
+            <span>⬇️</span>
+            <span>Baixar Voz (.webm)</span>
+          </button>
+        </div>
+      `;
+    }
+
+  } else {
+    // Modo simples (nenhum, pc, mic, mixed): baixa o vídeo diretamente e oculta linha do zip se só tiver 1 arquivo
+    if (resultSummary) {
+      resultSummary.innerText = 'Gravação concluída! Clique no botão abaixo para baixar seu vídeo:';
+    }
+    if (zipRow) zipRow.style.display = 'none';
+
+    // Download automático imediato por conveniência
+    downloadBlob(recordedVideoBlob, `sollius_gravacao_${timestamp}.webm`);
+  }
+
+  // Rolar suavemente para o painel de resultados
+  resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function downloadAllRecordingAsZip() {
+  if (!recordedVideoBlob) return;
+
+  const btn = document.getElementById('recorder-btn-zip');
+  const oldText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.innerHTML = '<span>⏳ Gerando Pacote ZIP...</span>';
+    btn.disabled = true;
+  }
+
+  try {
+    const timestamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+
+    if (typeof JSZip !== 'undefined') {
+      const zip = new JSZip();
+      zip.file(`video_tela_${timestamp}.webm`, recordedVideoBlob);
+      if (recordedPcAudioBlob) {
+        zip.file(`audio_pc_sistema_${timestamp}.webm`, recordedPcAudioBlob);
+      }
+      if (recordedMicBlob) {
+        zip.file(`voz_microfone_${timestamp}.webm`, recordedMicBlob);
+      }
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(zipBlob, `sollius_gravacao_multifaixas_${timestamp}.zip`);
+      if (typeof showToast === 'function') {
+        showToast('Pacote ZIP baixado com sucesso! 📦');
+      }
+    } else {
+      // Fallback: baixar os arquivos individualmente
+      downloadBlob(recordedVideoBlob, `video_tela_${timestamp}.webm`);
+      if (recordedPcAudioBlob) {
+        setTimeout(() => downloadBlob(recordedPcAudioBlob, `audio_pc_${timestamp}.webm`), 400);
+      }
+      if (recordedMicBlob) {
+        setTimeout(() => downloadBlob(recordedMicBlob, `microfone_${timestamp}.webm`), 800);
+      }
+    }
+  } catch (err) {
+    alert('Erro ao gerar pacote: ' + err.message);
+  } finally {
+    if (btn) {
+      btn.innerHTML = oldText;
+      btn.disabled = false;
+    }
+  }
+}
+
+function resetRecorderUI() {
+  if (recordTimerInterval) {
+    clearInterval(recordTimerInterval);
+    recordTimerInterval = null;
+  }
+  const preview = document.getElementById('recorder-video-preview');
+  const idle = document.getElementById('recorder-idle-state');
+  const timerBadge = document.getElementById('recorder-timer-badge');
+  const liveModeBadge = document.getElementById('recorder-live-mode-badge');
+  const startBtn = document.getElementById('recorder-start-btn');
+  const stopBtn = document.getElementById('recorder-stop-btn');
+  const resultsPanel = document.getElementById('recorder-results-panel');
+
+  if (preview) {
+    preview.srcObject = null;
+    preview.classList.add('hidden');
+  }
+  if (idle) idle.classList.remove('hidden');
+  if (timerBadge) timerBadge.classList.add('hidden');
+  if (liveModeBadge) liveModeBadge.classList.add('hidden');
+  if (startBtn) startBtn.classList.remove('hidden');
+  if (stopBtn) stopBtn.classList.add('hidden');
+  if (resultsPanel) resultsPanel.classList.add('hidden');
 }
 
 
