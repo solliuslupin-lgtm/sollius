@@ -26,13 +26,22 @@ const ROUTES = [
     ratingCount: '3890'
   },
   {
-    tab: 'gow3-pc-fraco',
+    tab: 'gow-pc-fraco',
+    folder: 'tutoriais/god-of-war-pc-fraco',
+    path: '/tutoriais/god-of-war-pc-fraco/',
+    title: 'Como Baixar God of War no PC Fraco [Download Google Drive + Guia] | SOLLIUS',
+    desc: 'Baixe God of War para PC Fraco 100% grátis com link direto no Google Drive em alta velocidade. Tutorial completo de instalação e configurações para rodar sem lag.',
+    schemaType: 'HowTo',
+    ratingCount: '5280'
+  },
+  {
+    tab: 'gow-pc-fraco',
     folder: 'tutoriais/god-of-war-3-pc-fraco',
     path: '/tutoriais/god-of-war-3-pc-fraco/',
-    title: 'God of War 3 no PC Fraco: Como Rodar a 60 FPS no RPCS3 [Guia Definitivo + Download] | SOLLIUS',
-    desc: 'Guia completo passo a passo para rodar God of War 3 no PC fraco utilizando o emulador RPCS3. Baixe o preset de configuração, patches de 60 FPS e resolva travamentos.',
+    title: 'Como Baixar God of War no PC Fraco [Download Google Drive + Guia] | SOLLIUS',
+    desc: 'Baixe God of War para PC Fraco 100% grátis com link direto no Google Drive em alta velocidade. Tutorial completo de instalação e configurações para rodar sem lag.',
     schemaType: 'HowTo',
-    ratingCount: '4820'
+    ratingCount: '5280'
   },
 
   {
@@ -338,24 +347,46 @@ function buildDedicatedCompressorJsonLd() {
 }
 
 
-function buildGow3TutorialJsonLd() {
+function buildGowTutorialJsonLd() {
   return JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebPage",
-        "@id": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#webpage",
-        "url": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/",
-        "name": "God of War 3 no PC Fraco: Como Rodar a 60 FPS no RPCS3 [Guia Definitivo + Download]",
-        "description": "Guia completo passo a passo para rodar God of War 3 no PC fraco utilizando o emulador RPCS3. Baixe o preset de configuração, patches de 60 FPS e resolva travamentos.",
+        "@id": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#webpage",
+        "url": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/",
+        "name": "Como Baixar God of War no PC Fraco [Download Google Drive + Guia]",
+        "description": "Baixe God of War para PC Fraco 100% grátis com link direto no Google Drive em alta velocidade. Tutorial completo de instalação e configurações para rodar sem lag.",
         "inLanguage": "pt-BR"
       },
       {
+        "@type": "VideoGame",
+        "@id": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#game",
+        "name": "God of War (PC Fraco Edition)",
+        "operatingSystem": "Windows 10, Windows 11 (64-bit)",
+        "applicationCategory": "GameApplication",
+        "genre": "Ação / Aventura",
+        "playMode": "SinglePlayer",
+        "downloadUrl": "https://drive.google.com/file/d/1MJGJKsFzp7HAbLWkNjIvrZOqUT5n4cNU/view?usp=sharing",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.96",
+          "ratingCount": "5280",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      },
+      {
         "@type": "HowTo",
-        "@id": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#howto",
-        "name": "Como Rodar God of War 3 no RPCS3 em PC Fraco a 60 FPS",
-        "description": "Aprenda a configurar o emulador RPCS3 com renderização Vulkan, patches de 60 FPS, FSR upscaling e ajuste de SPU Block Size para jogar God of War 3 sem travamentos em computadores modestos.",
-        "totalTime": "PT15M",
+        "@id": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#howto",
+        "name": "Como Baixar e Instalar God of War no PC Fraco",
+        "description": "Guia prático para baixar God of War pelo Google Drive, descompactar os arquivos e configurar os gráficos em resolução 720p com FSR para atingir 60 FPS constantes em computadores modestos.",
+        "totalTime": "PT10M",
         "image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=80",
         "estimatedCost": {
           "@type": "MonetaryAmount",
@@ -363,45 +394,44 @@ function buildGow3TutorialJsonLd() {
           "value": "0"
         },
         "tool": [
-          { "@type": "HowToTool", "name": "Emulador RPCS3 (Vulkan)" },
-          { "@type": "HowToTool", "name": "Firmware Oficial Sony PS3 (PS3UPDAT.PUP)" },
-          { "@type": "HowToTool", "name": "Pacote de Patches 60 FPS e No-Blur" }
+          { "@type": "HowToTool", "name": "Google Drive (Link Oficial de Download)" },
+          { "@type": "HowToTool", "name": "Descompactador (Sollarys Ultra Compressor ou WinRAR)" }
         ],
         "step": [
           {
             "@type": "HowToStep",
             "position": 1,
-            "name": "Instalar o Firmware Oficial no RPCS3",
-            "text": "Abra o RPCS3, vá em File -> Install Firmware e selecione o arquivo PS3UPDAT.PUP baixado.",
-            "url": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#step-1"
+            "name": "Baixar o Jogo pelo Google Drive",
+            "text": "Clique no botão de download seguro para baixar o arquivo completo pelo Google Drive.",
+            "url": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#step-1"
           },
           {
             "@type": "HowToStep",
             "position": 2,
-            "name": "Adicionar o Jogo à Biblioteca",
-            "text": "Clique em File -> Add Games e aponte para a pasta com os arquivos do God of War 3.",
-            "url": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#step-2"
+            "name": "Extrair os Arquivos do Jogo",
+            "text": "Descompacte o arquivo baixado em uma pasta sem caracteres especiais.",
+            "url": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#step-2"
           },
           {
             "@type": "HowToStep",
             "position": 3,
-            "name": "Configurar Gráficos e CPU",
-            "text": "Crie uma configuração customizada definindo Vulkan, SPU Block Size em Mega e Wake-Up Delay em 200 microssegundos.",
-            "url": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#step-3"
+            "name": "Executar como Administrador",
+            "text": "Clique com o botão direito no executável do jogo e escolha Executar como Administrador.",
+            "url": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#step-3"
           },
           {
             "@type": "HowToStep",
             "position": 4,
-            "name": "Ativar Patches de 60 FPS e Desativar Sombras",
-            "text": "Em Game Patches, ative Unlock FPS, Disable Motion Blur e Disable Depth of Field.",
-            "url": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#step-4"
+            "name": "Ajustar Gráficos e FSR para 60 FPS",
+            "text": "Defina resolução 720p, FSR em Desempenho e sombras em Baixo para máxima fluidez.",
+            "url": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#step-4"
           },
           {
             "@type": "HowToStep",
             "position": 5,
-            "name": "Iniciar e Compilar Shaders",
-            "text": "Inicie o jogo e aguarde a compilação inicial de shaders PPU para jogar a 60 FPS.",
-            "url": "https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/#step-5"
+            "name": "Jogar com Fluidez Total",
+            "text": "Inicie a gameplay fluida e aproveite o God of War sem travamentos.",
+            "url": "https://sollius.com.br/tutoriais/god-of-war-pc-fraco/#step-5"
           }
         ]
       }
@@ -483,7 +513,7 @@ for (const r of ROUTES) {
   } else if (r.tab === 'programas' || r.tab === 'compressor-pc') {
     html = html.replace('class="header-nav-btn active" data-tab="hub"', 'class="header-nav-btn" data-tab="hub"');
     html = html.replace('class="header-nav-btn" data-tab="programas"', 'class="header-nav-btn active" data-tab="programas"');
-  } else if (r.tab === 'tutoriais' || r.tab === 'gow3-pc-fraco') {
+  } else if (r.tab === 'tutoriais' || r.tab === 'gow-pc-fraco' || r.tab === 'gow3-pc-fraco') {
     html = html.replace('class="header-nav-btn active" data-tab="hub"', 'class="header-nav-btn" data-tab="hub"');
     html = html.replace('class="header-nav-btn" data-tab="tutoriais"', 'class="header-nav-btn active" data-tab="tutoriais"');
   }
@@ -494,7 +524,7 @@ for (const r of ROUTES) {
   const customSchema = r.tab === 'jogos' ? buildGamesJsonLd() : 
                        (r.tab === 'programas' ? buildProgramasJsonLd() : 
                        (r.tab === 'compressor-pc' ? buildDedicatedCompressorJsonLd() : 
-                       (r.tab === 'gow3-pc-fraco' ? buildGow3TutorialJsonLd() : buildToolJsonLd(r))));
+                       ((r.tab === 'gow-pc-fraco' || r.tab === 'gow3-pc-fraco') ? buildGowTutorialJsonLd() : buildToolJsonLd(r))));
   const schemaInjection = `\n  <!-- SCHEMA.ORG DEDICADO PARA ${r.path} -->\n  <script type="application/ld+json">\n${customSchema}\n  </script>`;
   html = html.replace('</head>', `${schemaInjection}\n</head>`);
 
@@ -527,5 +557,15 @@ fs.writeFileSync(path.join(progCompDir, 'index.html'), `<!DOCTYPE html><html lan
 const gow3AliasDir = path.join(rootDir, 'god-of-war-3-pc-fraco');
 if (!fs.existsSync(gow3AliasDir)) fs.mkdirSync(gow3AliasDir, { recursive: true });
 fs.writeFileSync(path.join(gow3AliasDir, 'index.html'), '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/tutoriais/god-of-war-3-pc-fraco/"><title>Redirecionando para Tutorial God of War 3 PC Fraco...</title><link rel="canonical" href="https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/"></head><body><script>window.location.href="/tutoriais/god-of-war-3-pc-fraco/";</script></body></html>', 'utf8');
+
+
+// Alias: /god-of-war-pc-fraco -> /tutoriais/god-of-war-pc-fraco/
+const gowPcDir = path.join(rootDir, 'god-of-war-pc-fraco');
+if (!fs.existsSync(gowPcDir)) fs.mkdirSync(gowPcDir, { recursive: true });
+fs.writeFileSync(path.join(gowPcDir, 'index.html'), '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/tutoriais/god-of-war-pc-fraco/"><title>Redirecionando para Tutorial God of War PC Fraco...</title><link rel="canonical" href="https://sollius.com.br/tutoriais/god-of-war-pc-fraco/"></head><body><script>window.location.href="/tutoriais/god-of-war-pc-fraco/";</script></body></html>', 'utf8');
+
+const gowAlias3 = path.join(rootDir, 'god-of-war-3-pc-fraco');
+if (!fs.existsSync(gowAlias3)) fs.mkdirSync(gowAlias3, { recursive: true });
+fs.writeFileSync(path.join(gowAlias3, 'index.html'), '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=/tutoriais/god-of-war-pc-fraco/"><title>Redirecionando para Tutorial God of War PC Fraco...</title><link rel="canonical" href="https://sollius.com.br/tutoriais/god-of-war-pc-fraco/"></head><body><script>window.location.href="/tutoriais/god-of-war-pc-fraco/";</script></body></html>', 'utf8');
 
 console.log('All routes generated successfully with 100% Pre-rendered SEO and Dedicated Schema!');

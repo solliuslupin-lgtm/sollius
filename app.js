@@ -112,6 +112,12 @@ const ROUTE_MAP = {
     title: 'Tutoriais & Guias de PC Fraco e Emulação | SOLLIUS Tech',
     desc: 'Tutoriais práticos passo a passo para PC fraco: configurações de emuladores (RPCS3, PCSX2), otimização de FPS, remoção de lag e links de download.'
   },
+    'gow-pc-fraco': {
+    path: '/tutoriais/god-of-war-pc-fraco/',
+    hash: '#god-of-war-pc-fraco',
+    title: 'Como Baixar God of War no PC Fraco [Download Google Drive + Guia] | SOLLIUS',
+    desc: 'Baixe God of War para PC Fraco 100% grátis com link direto no Google Drive em alta velocidade. Tutorial completo de instalação e configurações para rodar sem lag.'
+  },
   'gow3-pc-fraco': {
     path: '/tutoriais/god-of-war-3-pc-fraco/',
     hash: '#god-of-war-3-pc-fraco',
@@ -128,6 +134,15 @@ const ROUTE_MAP = {
 
 // Aliases para suportar múltiplos formatos de URL (ex: /compressor ou /compressor-imagem)
 const PATH_TO_TAB = {
+  '/tutoriais/god-of-war-pc-fraco': 'gow-pc-fraco',
+  '/tutoriais/god-of-war-pc-fraco/': 'gow-pc-fraco',
+  '/god-of-war-pc-fraco': 'gow-pc-fraco',
+  '/god-of-war-pc-fraco/': 'gow-pc-fraco',
+  '/gow-pc-fraco': 'gow-pc-fraco',
+  '/gow-pc-fraco/': 'gow-pc-fraco',
+  '/baixar-god-of-war-pc-fraco': 'gow-pc-fraco',
+  '/baixar-god-of-war-pc-fraco/': 'gow-pc-fraco',
+
   '/tutoriais': 'tutoriais',
   '/tutoriais/': 'tutoriais',
   '/guias': 'tutoriais',
@@ -377,7 +392,7 @@ function switchTab(tabId, pushHistory = true) {
   const buttons = document.querySelectorAll('.nav-item, .header-nav-btn');
   buttons.forEach(btn => {
     const bTab = btn.dataset.tab;
-    if (bTab === tabId || (bTab === 'tutoriais' && tabId === 'gow3-pc-fraco') || (bTab === 'programas' && tabId === 'compressor-pc')) {
+    if (bTab === tabId || (bTab === 'tutoriais' && (tabId === 'gow-pc-fraco' || tabId === 'gow3-pc-fraco')) || (bTab === 'programas' && tabId === 'compressor-pc')) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');

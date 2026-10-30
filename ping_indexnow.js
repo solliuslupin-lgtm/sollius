@@ -8,6 +8,7 @@ const payload = JSON.stringify({
     'https://sollius.com.br/',
     'https://sollius.com.br/jogos/',
     'https://sollius.com.br/tutoriais/',
+    'https://sollius.com.br/tutoriais/god-of-war-pc-fraco/',
     'https://sollius.com.br/tutoriais/god-of-war-3-pc-fraco/',
     'https://sollius.com.br/programas/',
     'https://sollius.com.br/sollius-compressor/',
