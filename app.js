@@ -106,6 +106,18 @@ const ROUTE_MAP = {
     title: 'Programas e Softwares Gratuitos para PC | SOLLIUS Desktop Studio',
     desc: 'Baixe softwares instaláveis e portáteis para Windows 10 e 11. Conheça o Sollarys Ultra Compressor v1.01 com multithread e auto-atualização contínua.'
   },
+    'tutoriais': {
+    path: '/tutoriais/',
+    hash: '#tutoriais',
+    title: 'Tutoriais & Guias de PC Fraco e Emulação | SOLLIUS Tech',
+    desc: 'Tutoriais práticos passo a passo para PC fraco: configurações de emuladores (RPCS3, PCSX2), otimização de FPS, remoção de lag e links de download.'
+  },
+  'gow3-pc-fraco': {
+    path: '/tutoriais/god-of-war-3-pc-fraco/',
+    hash: '#god-of-war-3-pc-fraco',
+    title: 'God of War 3 no PC Fraco: Como Rodar a 60 FPS no RPCS3 [Guia Definitivo + Download] | SOLLIUS',
+    desc: 'Guia completo passo a passo para rodar God of War 3 no PC fraco utilizando o emulador RPCS3. Baixe o preset de configuração, patches de 60 FPS e resolva travamentos.'
+  },
   'compressor-pc': {
     path: '/sollius-compressor/',
     hash: '#sollius-compressor',
@@ -116,6 +128,19 @@ const ROUTE_MAP = {
 
 // Aliases para suportar múltiplos formatos de URL (ex: /compressor ou /compressor-imagem)
 const PATH_TO_TAB = {
+  '/tutoriais': 'tutoriais',
+  '/tutoriais/': 'tutoriais',
+  '/guias': 'tutoriais',
+  '/guias/': 'tutoriais',
+  '/tutoriais/god-of-war-3-pc-fraco': 'gow3-pc-fraco',
+  '/tutoriais/god-of-war-3-pc-fraco/': 'gow3-pc-fraco',
+  '/god-of-war-3-pc-fraco': 'gow3-pc-fraco',
+  '/god-of-war-3-pc-fraco/': 'gow3-pc-fraco',
+  '/gow3-pc-fraco': 'gow3-pc-fraco',
+  '/gow3-pc-fraco/': 'gow3-pc-fraco',
+  '/gow3': 'gow3-pc-fraco',
+  '/gow3/': 'gow3-pc-fraco',
+
   '/': 'hub',
   '/hub': 'hub',
   '/remover-fundo': 'remover',
@@ -351,7 +376,8 @@ function switchTab(tabId, pushHistory = true) {
   // Atualiza botões
   const buttons = document.querySelectorAll('.nav-item, .header-nav-btn');
   buttons.forEach(btn => {
-    if (btn.dataset.tab === tabId) {
+    const bTab = btn.dataset.tab;
+    if (bTab === tabId || (bTab === 'tutoriais' && tabId === 'gow3-pc-fraco') || (bTab === 'programas' && tabId === 'compressor-pc')) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
@@ -3352,3 +3378,70 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+
+// ========================================================
+// FUNÇÕES DA SEÇÃO DE TUTORIAIS & DOWNLOADS
+// ========================================================
+function copyTutorialDownloadLink(url, btnElement) {
+  if (!url) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (typeof showToast === 'function') {
+        showToast('Link copiado para a área de transferência! 📋');
+      } else {
+        alert('Link copiado!');
+      }
+      if (btnElement) {
+        const oldText = btnElement.innerHTML;
+        btnElement.innerHTML = '<span>✅ Link Copiado!</span>';
+        btnElement.style.borderColor = '#10B981';
+        btnElement.style.color = '#34D399';
+        setTimeout(() => {
+          btnElement.innerHTML = oldText;
+          btnElement.style.borderColor = '';
+          btnElement.style.color = '';
+        }, 2500);
+      }
+    }).catch(() => {
+      prompt('Copie o link abaixo:', url);
+    });
+  } else {
+    prompt('Copie o link abaixo:', url);
+  }
+}
+
+function scrollToTutorialDownloads() {
+  const el = document.getElementById('tutorial-downloads-area');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.style.boxShadow = '0 0 35px rgba(239, 68, 68, 0.45)';
+    setTimeout(() => { el.style.boxShadow = ''; }, 2000);
+  }
+}
+
+function filterTutorialsCategory(category, buttonEl) {
+  const cards = document.querySelectorAll('.tutorial-item-card');
+  cards.forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  document.querySelectorAll('.tut-cat-pill').forEach(btn => btn.classList.remove('active'));
+  if (buttonEl) buttonEl.classList.add('active');
+}
+
+function filterTutorialsSearch(query) {
+  const clean = query.toLowerCase().trim();
+  const cards = document.querySelectorAll('.tutorial-item-card');
+  cards.forEach(card => {
+    const text = (card.innerText + ' ' + (card.dataset.keywords || '')).toLowerCase();
+    if (!clean || text.includes(clean)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
