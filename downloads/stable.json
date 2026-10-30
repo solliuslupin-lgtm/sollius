@@ -1,7 +1,7 @@
 {
-  "version": "1.02",
+  "version": "1.03",
   "type": "installer",
-  "url": "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
-  "sha256": "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
-  "notes": "Atualização Sollarys 1.02: Super velocidade Turbo multithread (300-600+ MB/s), inicialização instantânea, barra de progresso com porcentagem em tempo real e botões de controle para Pausar, Retomar e Cancelar."
+  "url": "https://sollius.com.br/downloads/Sollarys-1.03-Setup-Windows-x64.exe",
+  "sha256": "0d0cdb65905805ce08613156e1398c7817fbcd977c887087fb10985ffe1b2a44",
+  "notes": "Atualização Sollarys 1.03: Validação de auto-atualização direta pelo app, novo pacote assinado com SHA-256 e melhorias de estabilidade."
 }

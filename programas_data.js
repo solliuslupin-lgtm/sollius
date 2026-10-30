@@ -4,23 +4,23 @@
 // ========================================================
 
 const SOLLIUS_DESKTOP_REPOSITORY = {
-  updatedAt: "2026-10-29T21:35:00Z",
-  repositoryVersion: "1.02",
+  updatedAt: "2026-10-29T21:40:00Z",
+  repositoryVersion: "1.03",
   apps: [
     {
       id: "sollarys-compressor",
       name: "Sollarys Ultra Compressor",
       tagline: "Substituto definitivo para WinRAR e 7-Zip com ultra compressão multithread",
-      latestVersion: "1.02",
+      latestVersion: "1.03",
       releaseDate: "29 de Outubro de 2026",
       status: "available",
-      badge: "Nova Versão v1.02",
+      badge: "Nova Versão v1.03",
       isFeatured: true,
       icon: "🗜️",
       accentColor: "#3B82F6",
-      downloadUrl: "/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
+      downloadUrl: "/downloads/Sollarys-1.03-Setup-Windows-x64.exe",
       fileSize: "18.5 MB",
-      sha256: "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
+      sha256: "0d0cdb65905805ce08613156e1398c7817fbcd977c887087fb10985ffe1b2a44",
       minOS: "Windows 10 / 11 (64-bit)",
       architecture: "x64 (Nativo)",
       license: "Freeware • 100% Gratuito",
@@ -35,6 +35,11 @@ const SOLLIUS_DESKTOP_REPOSITORY = {
         "Zero Adware: Sem telas de aviso, sem compra de licença e sem instalar softwares indesejados"
       ],
       changelog: [
+        {
+          version: "1.03",
+          date: "29/10/2026",
+          notes: "Atualização Sollarys 1.03: Validação de auto-atualização direta pelo app, novo pacote assinado com SHA-256 e melhorias de estabilidade."
+        },
         {
           version: "1.02",
           date: "29/10/2026",

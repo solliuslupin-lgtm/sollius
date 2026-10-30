@@ -18,15 +18,15 @@ const updatesJsonContent = JSON.stringify({
     "sollius-compressor": {
       id: "sollarys-compressor",
       name: "Sollarys Ultra Compressor",
-      version: "1.02",
-      latestVersion: "1.02",
+      version: "1.03",
+      latestVersion: "1.03",
       releaseDate: "2026-10-29",
       minSupportedVersion: "1.01",
       mandatory: false,
-      downloadUrl: "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
-      sha256: "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
+      downloadUrl: "https://sollius.com.br/downloads/Sollarys-1.03-Setup-Windows-x64.exe",
+      sha256: "0d0cdb65905805ce08613156e1398c7817fbcd977c887087fb10985ffe1b2a44",
       fileSize: "18.5 MB",
-      changelog: "Versão 1.02 do Sollarys: Super velocidade Turbo multithread (300-600+ MB/s), inicialização instantânea com buffers de 1MB, nova barra de progresso com porcentagem em tempo real, medição de velocidade e controles para Pausar, Retomar e Cancelar."
+      changelog: "Versão 1.03 do Sollarys: Atualização direta pelo app, validação de integridade SHA-256 e melhorias de estabilidade."
     },
     "sollius-cleaner": {
       id: "sollius-cleaner",
@@ -50,11 +50,11 @@ fs.writeFileSync(path.join(downloadsDir, 'updates.json'), updatesJsonContent, 'u
 
 // 2. Stable manifest for updater
 const stableJsonContent = JSON.stringify({
-  version: "1.02",
+  version: "1.03",
   type: "installer",
-  url: "https://sollius.com.br/downloads/Sollarys-1.02-Setup-Windows-x64.exe",
-  sha256: "aff735ad89141893327ae99dabee3e83e26d07e957134aa2e2f3313f39c87e3a",
-  notes: "Atualização Sollarys 1.02: Super velocidade Turbo multithread (300-600+ MB/s), inicialização instantânea, barra de progresso com porcentagem em tempo real e botões de controle para Pausar, Retomar e Cancelar."
+  url: "https://sollius.com.br/downloads/Sollarys-1.03-Setup-Windows-x64.exe",
+  sha256: "0d0cdb65905805ce08613156e1398c7817fbcd977c887087fb10985ffe1b2a44",
+  notes: "Atualização Sollarys 1.03: Validação de auto-atualização direta pelo app, novo pacote assinado com SHA-256 e melhorias de estabilidade."
 }, null, 2);
 
 fs.writeFileSync(path.join(programasDir, 'stable.json'), stableJsonContent, 'utf8');
