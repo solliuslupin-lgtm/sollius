@@ -1,0 +1,4 @@
+# Cloudflare Pages Redirects
+/gow3 https://drive.google.com/file/d/1MJGJKsFzp7HAbLWkNjIvrZOqUT5n4cNU/view?usp=sharing 302
+/gow3-download https://drive.google.com/file/d/1MJGJKsFzp7HAbLWkNjIvrZOqUT5n4cNU/view?usp=sharing 302
+/sollarys-download https://sollius.com.br/sollarys/ 302
